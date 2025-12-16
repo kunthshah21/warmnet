@@ -3,6 +3,13 @@
 ## Overview
 The Contact Management feature allows users to store and manage their personal contacts with comprehensive details. The feature follows the MV (Model-View) architecture pattern with SwiftData for persistence.
 
+## Navigation
+
+The app uses a bottom tab bar with three main sections:
+- **Home**: Welcome screen with quick add contact button
+- **Contacts**: Full contact list with search and management
+- **Map**: Visual map showing contact locations with filtering
+
 ## Architecture
 
 ### Data Layer
@@ -27,6 +34,17 @@ The Contact Management feature allows users to store and manage their personal c
 - Forward geocoding (text to location) using `CLGeocoder`
 - Reverse geocoding (coordinates to address) using `CLGeocoder`
 - Parses results into City, State, Country components
+
+**`ContactLocationService.swift`** - Contact location caching service:
+- Batch geocodes all contact locations
+- Caches coordinates to avoid repeated geocoding
+- Provides filter options (cities, states, countries)
+- Calculates map regions for filtered views
+
+**`ContactAnnotation.swift`** - Map annotation model:
+- Conforms to `MKAnnotation` protocol
+- Represents contact pins on the map
+- Supports clustering for nearby contacts
 
 ## Data Flow
 
@@ -82,6 +100,39 @@ The Contact Management feature allows users to store and manage their personal c
 └───────────────────────────┘
 ```
 
+### Map View Flow
+
+```
+┌─────────────────────┐
+│     MapScreen       │
+│  (@Query contacts)  │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│ ContactLocationService │
+│  (Geocode & Cache)  │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│  ContactAnnotation  │
+│     (Map Pins)      │
+└─────────┬───────────┘
+          │
+          ▼
+┌─────────────────────┐
+│    MapKit View      │
+│  (Clustered Pins)   │
+└─────────────────────┘
+          ▲
+          │
+┌─────────┴───────────┐
+│   MapFilterBar      │
+│ (City/State/Country)│
+└─────────────────────┘
+```
+
 ## Screens
 
 ### HomeScreen
@@ -92,6 +143,13 @@ The Contact Management feature allows users to store and manage their personal c
   - Swipe-to-delete action
   - Empty state for first-time users
   - Floating "Add Contact" button
+
+### ContactsScreen
+- **Purpose**: Full contact management
+- **Features**:
+  - Complete contact list
+  - Search and filter
+  - Contact details view
 
 ### AddContactSheet
 - **Purpose**: Create new contacts
@@ -104,6 +162,17 @@ The Contact Management feature allows users to store and manage their personal c
   - Notes text field
   - Real-time avatar preview
 
+### MapScreen
+- **Purpose**: Visual map of contact locations
+- **Features**:
+  - Interactive MapKit map with pinch/zoom
+  - Contact pins with name tooltips
+  - Clustered pins for nearby contacts
+  - Filter bar for City/State/Country filtering
+  - Animated zoom-to-location on filter selection
+  - Loading indicator during geocoding
+  - Empty state for no contacts
+
 ## Components (Views folder)
 
 | Component | Purpose |
@@ -113,6 +182,7 @@ The Contact Management feature allows users to store and manage their personal c
 | `FormTextField` | Styled text input with label |
 | `PrimaryButton` | Main action button styling |
 | `LocationInputView` | Smart location input with autocomplete and current location support |
+| `MapFilterBar` | Filter controls for map (All/City/State/Country) |
 
 ## Location Input Feature
 
@@ -150,6 +220,46 @@ The location input provides a unified experience for entering contact locations 
 | Network unavailable | Show error: "Unable to verify location. Please check your connection." |
 | Location service unavailable | Show error: "Location service unavailable. Please enter manually." |
 
+## Map Feature
+
+### Overview
+The map view provides a visual representation of where contacts are located, with filtering and navigation capabilities.
+
+### Features
+
+1. **Interactive Map**:
+   - Full MapKit integration with standard gestures
+   - Pinch to zoom, pan to navigate
+   - Map controls (compass, scale, user location)
+
+2. **Contact Pins**:
+   - Each contact with location shows as a pin
+   - Pin displays contact initial in a blue bubble
+   - Tap pin to see contact name tooltip
+   - Nearby pins cluster with count badge
+
+3. **Filtering**:
+   - Filter by All, City, State, or Country
+   - Dynamic filter options from contact data
+   - Animated zoom to filtered location
+   - "All" option resets to show all contacts
+
+### User Flow
+
+1. Navigate to Map tab
+2. App geocodes all contacts (shows loading progress)
+3. Pins appear on map at contact locations
+4. Use filter bar to narrow by location type
+5. Select specific city/state/country to zoom
+6. Tap pins to see contact names
+
+### Technical Notes
+
+- Geocoding is rate-limited to avoid API throttling
+- Coordinates are cached to avoid repeated geocoding
+- Map region auto-adjusts to fit visible pins
+- Zoom level varies by filter type (city=close, country=far)
+
 ### Required Permissions
 
 - `NSLocationWhenInUseUsageDescription` in Info.plist
@@ -170,9 +280,16 @@ The location input provides a unified experience for entering contact locations 
 1. On HomeScreen, swipe left on any contact
 2. Tap "Delete" to remove
 
+### Using the Map
+1. Navigate to Map tab
+2. Wait for contacts to load (shows progress)
+3. Pinch/zoom to explore
+4. Use filter bar to focus on specific locations
+5. Tap pins to see contact names
+
 ## Build Target
 - **iOS 26+**
 - Uses latest SwiftUI components and modifiers
 - SwiftData for persistence (no CoreData)
 - CoreLocation for device location
-- MapKit for geocoding and autocomplete
+- MapKit for geocoding, autocomplete, and map display
