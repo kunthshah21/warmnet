@@ -204,28 +204,11 @@ struct AddContactSheet: View {
             VStack(spacing: 16) {
                 sectionHeader("Location")
                 
-                VStack(spacing: 12) {
-                    FormTextField(
-                        title: "City",
-                        text: $city,
-                        placeholder: "City",
-                        autocapitalization: .words
-                    )
-                    
-                    FormTextField(
-                        title: "State / Province",
-                        text: $state,
-                        placeholder: "State or Province",
-                        autocapitalization: .words
-                    )
-                    
-                    FormTextField(
-                        title: "Country",
-                        text: $country,
-                        placeholder: "Country",
-                        autocapitalization: .words
-                    )
-                }
+                LocationInputView(
+                    city: $city,
+                    state: $state,
+                    country: $country
+                )
                 .padding(16)
                 .background(cardBackground)
             }

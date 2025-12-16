@@ -17,6 +17,17 @@ The Contact Management feature allows users to store and manage their personal c
 
 **`CountryCode.swift`** - Static data structure for phone country codes
 
+**`LocationManager.swift`** - CoreLocation wrapper for device location services:
+- Manages location permission requests
+- Provides approximate location (city/state level accuracy)
+- Handles authorization state changes
+
+**`GeocodingService.swift`** - MapKit geocoding service:
+- Autocomplete suggestions using `MKLocalSearchCompleter`
+- Forward geocoding (text to location) using `CLGeocoder`
+- Reverse geocoding (coordinates to address) using `CLGeocoder`
+- Parses results into City, State, Country components
+
 ## Data Flow
 
 ```
@@ -38,6 +49,39 @@ The Contact Management feature allows users to store and manage their personal c
 └─────────────────┘
 ```
 
+### Location Input Flow
+
+```
+┌─────────────────────┐
+│  LocationInputView  │
+└─────────┬───────────┘
+          │
+    ┌─────┴─────┐
+    ▼           ▼
+┌────────┐  ┌──────────────┐
+│ Manual │  │ Use Current  │
+│ Input  │  │   Location   │
+└────┬───┘  └──────┬───────┘
+     │             │
+     ▼             ▼
+┌──────────┐  ┌─────────────┐
+│ Geocoding │  │ Location    │
+│ Service   │  │ Manager     │
+└────┬──────┘  └──────┬──────┘
+     │                │
+     ▼                ▼
+┌───────────────────────────┐
+│   GeocodingService        │
+│   (Reverse Geocode)       │
+└────────────┬──────────────┘
+             │
+             ▼
+┌───────────────────────────┐
+│  LocationResult           │
+│  (City, State, Country)   │
+└───────────────────────────┘
+```
+
 ## Screens
 
 ### HomeScreen
@@ -55,6 +99,7 @@ The Contact Management feature allows users to store and manage their personal c
   - Basic info section (always visible)
   - Advanced info section (expandable)
   - Country code picker for phone numbers
+  - Smart location input with autocomplete
   - Birthday date picker
   - Notes text field
   - Real-time avatar preview
@@ -67,6 +112,48 @@ The Contact Management feature allows users to store and manage their personal c
 | `ContactRow` | List row displaying contact summary |
 | `FormTextField` | Styled text input with label |
 | `PrimaryButton` | Main action button styling |
+| `LocationInputView` | Smart location input with autocomplete and current location support |
+
+## Location Input Feature
+
+### Overview
+The location input provides a unified experience for entering contact locations with:
+- Single text field instead of separate City/State/Country fields
+- Real-time autocomplete suggestions from MapKit
+- "Use Current Location" button for quick entry
+- Validation with clear error messaging
+
+### User Flow
+
+1. **Manual Input**:
+   - User types location text (e.g., "New York" or "San Francisco, CA")
+   - Autocomplete suggestions appear below the input
+   - User can select a suggestion or submit manually
+   - On submit, location is geocoded and validated
+   - If valid: City, State, Country are parsed and saved
+   - If invalid: Error alert shown, user can retry
+
+2. **Current Location**:
+   - User taps "Use Current" button
+   - If permission not determined: System prompts for permission
+   - If authorized: Device location is fetched (approximate, city/state level)
+   - Location is reverse geocoded to get City/State
+   - Fields are auto-filled
+
+### Error Handling
+
+| Scenario | Behavior |
+|----------|----------|
+| Invalid location text | Show error: "Location not found. Please check spelling and try again." |
+| Partial match (e.g., only state) | Fill available fields, leave others empty |
+| Permission denied | Hide "Use Current" button, show manual input only |
+| Network unavailable | Show error: "Unable to verify location. Please check your connection." |
+| Location service unavailable | Show error: "Location service unavailable. Please enter manually." |
+
+### Required Permissions
+
+- `NSLocationWhenInUseUsageDescription` in Info.plist
+- Uses approximate location accuracy (kCLLocationAccuracyKilometer)
 
 ## Usage
 
@@ -76,7 +163,8 @@ The Contact Management feature allows users to store and manage their personal c
 3. Optionally add phone number with country code
 4. Add reference to remember context
 5. Expand "Advanced Details" for more fields
-6. Tap "Save" to persist
+6. For location: type to search or tap "Use Current" for auto-fill
+7. Tap "Save" to persist
 
 ### Deleting a Contact
 1. On HomeScreen, swipe left on any contact
@@ -86,4 +174,5 @@ The Contact Management feature allows users to store and manage their personal c
 - **iOS 26+**
 - Uses latest SwiftUI components and modifiers
 - SwiftData for persistence (no CoreData)
-
+- CoreLocation for device location
+- MapKit for geocoding and autocomplete
