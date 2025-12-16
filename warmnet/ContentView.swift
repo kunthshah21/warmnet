@@ -3,7 +3,15 @@ import SwiftData
 
 struct ContentView: View {
     var body: some View {
-        HomeScreen()
+        TabView {
+            Tab("Home", systemImage: "house.fill") {
+                HomeScreen()
+            }
+            
+            Tab("Contacts", systemImage: "person.2.fill") {
+                ContactsScreen()
+            }
+        }
     }
 }
 
