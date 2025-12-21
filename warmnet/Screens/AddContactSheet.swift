@@ -15,7 +15,6 @@ struct AddContactSheet: View {
     @State private var priority: Priority = .broaderNetwork
     
     // Advanced info
-    @State private var showAdvanced = false
     @State private var email = ""
     @State private var city = ""
     @State private var state = ""
@@ -47,12 +46,6 @@ struct AddContactSheet: View {
             _company = State(initialValue: contact.company)
             _jobTitle = State(initialValue: contact.jobTitle)
             _notes = State(initialValue: contact.notes)
-            
-            let hasAdvanced = !contact.email.isEmpty || !contact.city.isEmpty ||
-                              !contact.state.isEmpty || !contact.country.isEmpty ||
-                              contact.birthday != nil || !contact.company.isEmpty ||
-                              !contact.jobTitle.isEmpty || !contact.notes.isEmpty
-            _showAdvanced = State(initialValue: hasAdvanced)
         }
     }
     
@@ -73,16 +66,11 @@ struct AddContactSheet: View {
                     // Priority
                     prioritySection
                     
-                    // Advanced toggle
-                    advancedToggle
-                    
                     // Advanced fields
-                    if showAdvanced {
-                        advancedInfoSection
-                    }
+                    advancedInfoSection
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 100)
+                .padding(.bottom, 20)
             }
             .scrollContentBackground(.visible)
             .background(Color(.systemGroupedBackground))
@@ -102,9 +90,6 @@ struct AddContactSheet: View {
                     .fontWeight(.semibold)
                     .disabled(!isValid)
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                saveButtonSection
             }
         }
     }
@@ -152,12 +137,36 @@ struct AddContactSheet: View {
             sectionHeader("Priority")
             
             VStack(spacing: 12) {
-                Picker("Priority", selection: $priority) {
-                    ForEach(Priority.allCases, id: \.self) { priority in
-                        Text(priority.rawValue).tag(priority)
+                HStack(spacing: 0) {
+                    ForEach(Priority.allCases, id: \.self) { option in
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                priority = option
+                            }
+                        } label: {
+                            Text(option.rawValue.replacingOccurrences(of: " ", with: "\n"))
+                                .font(.subheadline)
+                                .fontWeight(priority == option ? .semibold : .regular)
+                                .multilineTextAlignment(.center)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.vertical, 12)
+                                .padding(.horizontal, 4)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7)
+                                        .fill(priority == option ? Color(.systemBackground) : Color.clear)
+                                        .shadow(color: priority == option ? .black.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
+                                        .padding(2)
+                                )
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-                .pickerStyle(.segmented)
+                .background(
+                    RoundedRectangle(cornerRadius: 9)
+                        .fill(Color(.tertiarySystemFill))
+                )
                 
                 HStack {
                     Circle()
@@ -222,32 +231,6 @@ struct AddContactSheet: View {
         }
     }
     
-    private var advancedToggle: some View {
-        Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                showAdvanced.toggle()
-            }
-        } label: {
-            HStack {
-                Image(systemName: "slider.horizontal.3")
-                    .font(.body.weight(.medium))
-                
-                Text("Advanced Details")
-                    .font(.subheadline.weight(.medium))
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption.weight(.semibold))
-                    .rotationEffect(.degrees(showAdvanced ? 90 : 0))
-            }
-            .foregroundStyle(.secondary)
-            .padding(16)
-            .background(cardBackground)
-        }
-        .buttonStyle(.plain)
-    }
-    
     private var advancedInfoSection: some View {
         VStack(spacing: 16) {
             // Contact details
@@ -308,7 +291,6 @@ struct AddContactSheet: View {
                 .background(cardBackground)
             }
         }
-        .transition(.opacity.combined(with: .move(edge: .top)))
     }
     
     private var birthdayField: some View {
@@ -380,19 +362,6 @@ struct AddContactSheet: View {
                         .fill(Color(.systemGray6))
                 )
         }
-    }
-    
-    private var saveButtonSection: some View {
-        VStack {
-            PrimaryButton(contactToEdit == nil ? "Save Contact" : "Update Contact", icon: "checkmark") {
-                saveContact()
-            }
-            .disabled(!isValid)
-            .opacity(isValid ? 1 : 0.6)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
-        }
-        .background(.ultraThinMaterial)
     }
     
     // MARK: - Helpers

@@ -8,111 +8,118 @@ struct ContactsScreen: View {
     @State private var showAddContact = false
     @State private var searchText = ""
     
-    private var filteredContacts: [Contact] {
-        if searchText.isEmpty {
-            return contacts
+    private var groupedContacts: [(key: String, value: [Contact])] {
+        let filtered = contacts.filter { contact in
+            searchText.isEmpty ||
+            contact.name.localizedCaseInsensitiveContains(searchText)
         }
-        return contacts.filter { contact in
-            contact.name.localizedCaseInsensitiveContains(searchText) ||
-            contact.phoneNumber.contains(searchText) ||
-            contact.reference.localizedCaseInsensitiveContains(searchText)
+        
+        let grouped = Dictionary(grouping: filtered) { contact in
+            String(contact.name.prefix(1)).uppercased()
         }
+        
+        return grouped.sorted { $0.key < $1.key }
     }
+    
+    private let alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ#".map { String($0) }
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Background gradient
-                LinearGradient(
-                    colors: [Color(.systemBackground), Color(.systemGray6)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                
-                VStack(spacing: 0) {
-                    if contacts.isEmpty {
-                        emptyStateView
-                    } else {
-                        contactsListView
+            ScrollViewReader { proxy in
+                ZStack {
+                    List {
+                        // My Card Section
+                        if searchText.isEmpty {
+                            Section {
+                                HStack(spacing: 16) {
+                                    // Placeholder for My Card Avatar
+                                    Circle()
+                                        .fill(Color.gray.opacity(0.3))
+                                        .frame(width: 60, height: 60)
+                                        .overlay(
+                                            Image(systemName: "person.fill")
+                                                .font(.title)
+                                                .foregroundStyle(.gray)
+                                        )
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text("Kunth Shah")
+                                            .font(.title3.weight(.semibold))
+                                        Text("My Card")
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .padding(.vertical, 8)
+                            }
+                        }
+                        
+                        ForEach(groupedContacts, id: \.key) { key, contacts in
+                            Section(header: Text(key).font(.headline).fontWeight(.bold)) {
+                                ForEach(contacts) { contact in
+                                    ZStack {
+                                        ContactRow(contact: contact)
+                                        NavigationLink(destination: ContactDetailScreen(contact: contact)) {
+                                            EmptyView()
+                                        }
+                                        .opacity(0)
+                                    }
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                        Button(role: .destructive) {
+                                            deleteContact(contact)
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                }
+                            }
+                            .id(key)
+                        }
                     }
+                    .listStyle(.plain)
                     
-                    // Bottom add button
-                    addButtonSection
+                    // A-Z Index Bar
+                    if !groupedContacts.isEmpty {
+                        HStack {
+                            Spacer()
+                            VStack(spacing: 2) {
+                                ForEach(alphabet, id: \.self) { letter in
+                                    Text(letter)
+                                        .font(.system(size: 10, weight: .semibold))
+                                        .foregroundStyle(.blue)
+                                        .frame(width: 20)
+                                        .onTapGesture {
+                                            withAnimation {
+                                                // Find the closest section
+                                                if let section = groupedContacts.first(where: { $0.key >= letter }) {
+                                                    proxy.scrollTo(section.key, anchor: .top)
+                                                }
+                                            }
+                                        }
+                                }
+                            }
+                            .padding(.vertical, 8)
+                            .padding(.trailing, 4)
+                        }
+                    }
                 }
             }
             .navigationTitle("Contacts")
-            .searchable(text: $searchText, prompt: "Search contacts")
+            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddContact = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+                }
+            }
             .sheet(isPresented: $showAddContact) {
                 AddContactSheet()
             }
         }
     }
-    
-    // MARK: - Subviews
-    
-    private var emptyStateView: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            
-            Image(systemName: "person.2.circle")
-                .font(.system(size: 80))
-                .foregroundStyle(.tertiary)
-            
-            VStack(spacing: 8) {
-                Text("No Contacts Yet")
-                    .font(.title2.weight(.semibold))
-                
-                Text("Add your first contact to get started")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-            
-            Spacer()
-        }
-        .frame(maxWidth: .infinity)
-    }
-    
-    private var contactsListView: some View {
-        List {
-            ForEach(filteredContacts) { contact in
-                ZStack {
-                    ContactRow(contact: contact)
-                    
-                    NavigationLink(destination: ContactDetailScreen(contact: contact)) {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                }
-                .listRowBackground(Color.clear)
-                .listRowSeparator(.hidden)
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    Button(role: .destructive) {
-                        deleteContact(contact)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
-                }
-            }
-        }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
-    }
-    
-    private var addButtonSection: some View {
-        VStack {
-            Divider()
-            
-            PrimaryButton("Add Contact", icon: "plus") {
-                showAddContact = true
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-        }
-        .background(.ultraThinMaterial)
-    }
-    
-    // MARK: - Actions
     
     private func deleteContact(_ contact: Contact) {
         withAnimation {

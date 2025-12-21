@@ -1,6 +1,8 @@
 import SwiftUI
+import SwiftData
 
 struct TestingScreen: View {
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @State private var showImportFlow = false
     
@@ -15,12 +17,18 @@ struct TestingScreen: View {
                 )
                 .ignoresSafeArea()
                 
-                VStack {
+                VStack(spacing: 20) {
                     PrimaryButton(
                         "Test Contact Input",
                         action: {
                             showImportFlow = true
                         }
+                    )
+                    .padding(.horizontal, 16)
+                    
+                    PrimaryButton(
+                        "Reset All Data",
+                        action: resetAllData
                     )
                     .padding(.horizontal, 16)
                 }
@@ -39,6 +47,14 @@ struct TestingScreen: View {
     
     private var backgroundBottomColor: Color {
         colorScheme == .dark ? Color(red: 0.1, green: 0.1, blue: 0.15) : Color(red: 0.85, green: 0.90, blue: 0.98)
+    }
+    
+    private func resetAllData() {
+        do {
+            try modelContext.delete(model: Contact.self)
+        } catch {
+            print("Failed to reset data: \(error)")
+        }
     }
 }
 
