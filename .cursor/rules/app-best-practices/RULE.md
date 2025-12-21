@@ -21,3 +21,11 @@ Make sure to write clean code which is readable and scallable
 Make sure to breakdown views, when they start getting too complicated. Always limit yourself to writing both easy to understand and efficient code. 
 Make sure to follow all rules in this document when making either any code updates, changes or adding new features.
 When adding a new feature, or making a big update to some flow or architecture, make sure to update the readme file exising in Features and logic folder. If the readme does not exist, create one. Only create a readme, if its a big change, otherwise ignore this rule. 
+
+SwiftUI best practices
+
+When building elements using swiftUI, make sure that when there are multiple glass effect elements such as buttons, views, items, etc. You must combine views into glass efect containers. You however, only need to combine them if they follow these two key constraints: size and positinon. The elements should be of similar size and should be relatively togeather in that screen. 
+
+When building a scrollable view, if the background of the screen is static such as a fixed background color, gradient, image, etc and does not update dynamically, make sure to append the ‘.scrollContentBackground(.visible)’ to the ‘ScrollView’. 
+
+Reduce re-rendering when visually not apparent 
