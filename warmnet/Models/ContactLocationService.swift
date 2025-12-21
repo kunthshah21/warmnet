@@ -1,10 +1,16 @@
 import Foundation
+import SwiftData
 import MapKit
 import CoreLocation
 
 /// Service for geocoding contact locations and caching coordinates
 @Observable
 final class ContactLocationService {
+    
+    // MARK: - Shared
+    
+    /// Shared instance so the preview map can reflect the last refreshed results from the Map screen.
+    static let shared = ContactLocationService()
     
     // MARK: - Configuration
     /// Delay before starting bulk geocoding to allow initial map layout to stabilize
@@ -112,6 +118,18 @@ final class ContactLocationService {
         }
     }
     
+    /// Cancel any in-flight geocoding work and reset loading UI state.
+    /// This does NOT clear `cachedLocations` so the preview can keep showing the last refreshed results.
+    func cancelGeocoding() {
+        debouncedGeocodeTask?.cancel()
+        debouncedGeocodeTask = nil
+        
+        Task { @MainActor in
+            isLoading = false
+            loadingProgress = 0
+        }
+    }
+    
     /// Geocode all contacts and cache their coordinates
     /// - Parameter contacts: Array of contacts to geocode
     func geocodeContacts(_ contacts: [Contact]) async {
@@ -173,9 +191,10 @@ final class ContactLocationService {
                 // Periodically yield and update progress on main thread
                 if processed % yieldEveryNItems == 0 || processed == totalCount {
                     let progress = Double(processed) / Double(totalCount)
+                    let batch = newCached
+                    newCached.removeAll(keepingCapacity: true)
                     await MainActor.run {
-                        self.cachedLocations.append(contentsOf: newCached)
-                        newCached.removeAll(keepingCapacity: true)
+                        self.cachedLocations.append(contentsOf: batch)
                         loadingProgress = progress
                     }
                     await Task.yield()
@@ -184,8 +203,9 @@ final class ContactLocationService {
         }
 
         // Flush any remaining items and finish
+        let finalBatch = newCached
         await MainActor.run {
-            self.cachedLocations.append(contentsOf: newCached)
+            self.cachedLocations.append(contentsOf: finalBatch)
             self.loadingProgress = 1.0
             self.isLoading = false
         }

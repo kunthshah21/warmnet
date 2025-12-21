@@ -12,7 +12,7 @@ struct MapScreen: View {
     
     // MARK: - State
     
-    @State private var locationService = ContactLocationService()
+    @State private var locationService = ContactLocationService.shared
     @State private var cameraPosition: MapCameraPosition = .automatic
     @State private var selectedFilterType: FilterType = .all
     @State private var selectedFilterValue: String?
@@ -83,12 +83,9 @@ struct MapScreen: View {
                     refreshButton
                 }
             }
-            .onAppear {
-                // Start geocoding without blocking initial layout
-                locationService.debouncedGeocodeContacts(contacts)
-            }
             .onDisappear {
                 // Map may be torn down; pause heavy updates
+                locationService.cancelGeocoding()
                 locationService.notifyMapNotReady()
             }
             .onChange(of: locationService.isLoading) { _, isLoading in
@@ -102,10 +99,6 @@ struct MapScreen: View {
                 } else {
                     hasLoaded = false
                 }
-            }
-            .onChange(of: contacts) { _, _ in
-                // Re-run geocoding when contacts change
-                locationService.debouncedGeocodeContacts(contacts)
             }
         }
     }

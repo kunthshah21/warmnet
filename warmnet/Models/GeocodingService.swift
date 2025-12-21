@@ -68,6 +68,9 @@ final class GeocodingService: NSObject {
     var suggestions: [SearchSuggestion] = []
     var isSearching = false
     
+    /// Debounce task to prevent excessive search queries
+    private var debounceTask: Task<Void, Never>?
+    
     // MARK: - Init
     
     override init() {
@@ -78,20 +81,35 @@ final class GeocodingService: NSObject {
     
     // MARK: - Public Methods
     
-    /// Update autocomplete suggestions based on query
+    /// Update autocomplete suggestions based on query (debounced)
     /// - Parameter query: The search query string
     func updateSearchQuery(_ query: String) {
+        // Cancel previous debounce task if any
+        debounceTask?.cancel()
+        
         guard !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             suggestions = []
+            isSearching = false
             return
         }
         
-        isSearching = true
-        searchCompleter.queryFragment = query
+        // Debounce: wait 400ms after user stops typing before triggering search
+        // This prevents blocking the main thread on every keystroke
+        debounceTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 400_000_000) // 400ms
+            guard let self, !Task.isCancelled else { return }
+            
+            await MainActor.run {
+                self.isSearching = true
+                self.searchCompleter.queryFragment = query
+            }
+        }
     }
     
     /// Clear current suggestions
     func clearSuggestions() {
+        debounceTask?.cancel()
+        debounceTask = nil
         suggestions = []
         isSearching = false
     }

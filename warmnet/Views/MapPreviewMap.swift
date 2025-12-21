@@ -4,11 +4,9 @@ import MapKit
 
 /// Lightweight, non-interactive map preview used inside the Home map card.
 struct MapPreviewMap: View {
-    @Query private var contacts: [Contact]
 
-    @State private var locationService = ContactLocationService()
+    @State private var locationService = ContactLocationService.shared
     @State private var cameraPosition: MapCameraPosition = .automatic
-    @State private var hasLoaded = false
 
     private var cachedLocations: [ContactLocationService.CachedLocation] {
         locationService.cachedLocations
@@ -36,30 +34,18 @@ struct MapPreviewMap: View {
 
             if locationService.isLoading {
                 loadingOverlay
-            } else if hasLoaded && cachedLocations.isEmpty {
+            } else if cachedLocations.isEmpty {
                 emptyOverlay
             }
         }
-        .onAppear {
-            locationService.debouncedGeocodeContacts(contacts)
-        }
-        .onDisappear {
-            locationService.notifyMapNotReady()
-        }
         .onChange(of: locationService.isLoading) { _, isLoading in
-            if !isLoading {
-                hasLoaded = true
+            if !isLoading, !cachedLocations.isEmpty {
                 if let region = locationService.regionToFit(cachedLocations) {
                     withAnimation(.easeInOut(duration: 0.35)) {
                         cameraPosition = .region(region)
                     }
                 }
-            } else {
-                hasLoaded = false
             }
-        }
-        .onChange(of: contacts) { _, _ in
-            locationService.debouncedGeocodeContacts(contacts)
         }
     }
 
@@ -123,7 +109,7 @@ struct MapPreviewMap: View {
             Text("No locations yet")
                 .font(.caption.weight(.semibold))
 
-            Text("Add a contact with a city/state/country.")
+            Text("Open the map and tap refresh to load locations.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
