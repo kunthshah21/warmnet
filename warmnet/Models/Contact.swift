@@ -1,5 +1,6 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 final class Contact {
@@ -18,6 +19,7 @@ final class Contact {
     var company: String
     var jobTitle: String
     var notes: String
+    var priority: Priority?
     
     var createdAt: Date
     var updatedAt: Date
@@ -34,7 +36,8 @@ final class Contact {
         birthday: Date? = nil,
         company: String = "",
         jobTitle: String = "",
-        notes: String = ""
+        notes: String = "",
+        priority: Priority = .broaderNetwork
     ) {
         self.id = UUID()
         self.name = name
@@ -49,6 +52,7 @@ final class Contact {
         self.company = company
         self.jobTitle = jobTitle
         self.notes = notes
+        self.priority = priority
         self.createdAt = Date()
         self.updatedAt = Date()
     }
@@ -61,6 +65,20 @@ final class Contact {
         [city, state, country]
             .filter { !$0.isEmpty }
             .joined(separator: ", ")
+    }
+}
+
+enum Priority: String, Codable, CaseIterable {
+    case innerCircle = "Inner Circle"
+    case keyRelationships = "Key Relationships"
+    case broaderNetwork = "Broader Network"
+    
+    var color: Color {
+        switch self {
+        case .innerCircle: return .green
+        case .keyRelationships: return .blue
+        case .broaderNetwork: return .yellow
+        }
     }
 }
 

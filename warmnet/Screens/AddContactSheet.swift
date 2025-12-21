@@ -6,12 +6,13 @@ struct AddContactSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     var contactToEdit: Contact?
-    
+      
     // Basic info
     @State private var name = ""
     @State private var selectedCountryCode = CountryCode.all[0]
     @State private var phoneNumber = ""
     @State private var reference = ""
+    @State private var priority: Priority = .broaderNetwork
     
     // Advanced info
     @State private var showAdvanced = false
@@ -37,6 +38,7 @@ struct AddContactSheet: View {
             
             _phoneNumber = State(initialValue: contact.phoneNumber)
             _reference = State(initialValue: contact.reference)
+            _priority = State(initialValue: contact.priority ?? .broaderNetwork)
             _email = State(initialValue: contact.email)
             _city = State(initialValue: contact.city)
             _state = State(initialValue: contact.state)
@@ -67,6 +69,9 @@ struct AddContactSheet: View {
                     
                     // Basic fields
                     basicInfoSection
+                    
+                    // Priority
+                    prioritySection
                     
                     // Advanced toggle
                     advancedToggle
@@ -136,6 +141,36 @@ struct AddContactSheet: View {
                     text: $reference,
                     placeholder: "How do you know this person?"
                 )
+            }
+            .padding(16)
+            .background(cardBackground)
+        }
+    }
+    
+    private var prioritySection: some View {
+        VStack(spacing: 16) {
+            sectionHeader("Priority")
+            
+            VStack(spacing: 12) {
+                Picker("Priority", selection: $priority) {
+                    ForEach(Priority.allCases, id: \.self) { priority in
+                        Text(priority.rawValue).tag(priority)
+                    }
+                }
+                .pickerStyle(.segmented)
+                
+                HStack {
+                    Circle()
+                        .fill(priority.color)
+                        .frame(width: 8, height: 8)
+                    
+                    Text(priority.rawValue)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, 4)
             }
             .padding(16)
             .background(cardBackground)
@@ -393,6 +428,7 @@ struct AddContactSheet: View {
             contact.company = company
             contact.jobTitle = jobTitle
             contact.notes = notes
+            contact.priority = priority
             contact.updatedAt = Date()
         } else {
             let contact = Contact(
@@ -407,7 +443,8 @@ struct AddContactSheet: View {
                 birthday: birthday,
                 company: company,
                 jobTitle: jobTitle,
-                notes: notes
+                notes: notes,
+                priority: priority
             )
             
             modelContext.insert(contact)

@@ -9,9 +9,15 @@ struct ContactRow: View {
             AvatarView(name: contact.name)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(contact.name)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                HStack(spacing: 6) {
+                    Text(contact.name)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    
+                    Circle()
+                        .fill((contact.priority ?? .broaderNetwork).color)
+                        .frame(width: 8, height: 8)
+                }
                 
                 if !contact.phoneNumber.isEmpty {
                     Text(contact.fullPhoneNumber)
