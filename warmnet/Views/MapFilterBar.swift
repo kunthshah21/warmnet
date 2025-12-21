@@ -103,6 +103,7 @@ struct MapFilterBar: View {
             }
             .padding(.horizontal, 4)
         }
+        .scrollContentBackground(.visible)
     }
     
     private var allTypeButton: some View {

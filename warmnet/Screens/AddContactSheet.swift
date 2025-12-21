@@ -48,6 +48,7 @@ struct AddContactSheet: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 100)
             }
+            .scrollContentBackground(.visible)
             .background(Color(.systemGroupedBackground))
             .navigationTitle("New Contact")
             .navigationBarTitleDisplayMode(.inline)

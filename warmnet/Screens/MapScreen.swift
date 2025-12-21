@@ -67,8 +67,29 @@ struct MapScreen: View {
                     refreshButton
                 }
             }
-            .task {
-                await loadContactLocations()
+            .onAppear {
+                // Start geocoding without blocking initial layout
+                locationService.debouncedGeocodeContacts(contacts)
+            }
+            .onDisappear {
+                // Map may be torn down; pause heavy updates
+                locationService.notifyMapNotReady()
+            }
+            .onChange(of: locationService.isLoading) { isLoading in
+                if !isLoading {
+                    hasLoaded = true
+                    if let region = locationService.regionToFit(filteredLocations) {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            cameraPosition = .region(region)
+                        }
+                    }
+                } else {
+                    hasLoaded = false
+                }
+            }
+            .onChange(of: contacts) { _ in
+                // Re-run geocoding when contacts change
+                locationService.debouncedGeocodeContacts(contacts)
             }
         }
     }
@@ -95,6 +116,24 @@ struct MapScreen: View {
             MapUserLocationButton()
         }
         .ignoresSafeArea(edges: .bottom)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(minHeight: 300)
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        let size = proxy.size
+                        if size.width > 0 && size.height > 0 {
+                            locationService.notifyMapReady()
+                        }
+                    }
+                    .onChange(of: proxy.size) { newSize in
+                        if newSize.width > 0 && newSize.height > 0 {
+                            locationService.notifyMapReady()
+                        }
+                    }
+            }
+        )
     }
     
     private func annotationView(for annotation: ContactAnnotation) -> some View {
@@ -191,9 +230,7 @@ struct MapScreen: View {
     
     private var refreshButton: some View {
         Button {
-            Task {
-                await loadContactLocations()
-            }
+            locationService.debouncedGeocodeContacts(contacts)
         } label: {
             Image(systemName: "arrow.clockwise")
                 .font(.body)
