@@ -24,7 +24,7 @@ When adding a new feature, or making a big update to some flow or architecture, 
 
 SwiftUI best practices
 
-When building elements using swiftUI, make sure that when there are multiple glass effect elements such as buttons, views, items, etc. You must combine views into glass efect containers. You however, only need to combine them if they follow these two key constraints: size and positinon. The elements should be of similar size and should be relatively togeather in that screen. 
+When building elements using swiftUI, make sure that when there are multiple 'glass effect elements' such as buttons, views, items, etc. You must combine views into glass efect containers. You however, only need to combine them if they follow these two key constraints: size and positinon. The elements should be of similar size and should be relatively togeather in that screen.  This does not apply to elements which do not have glass effect elements. 
 
 When building a scrollable view, if the background of the screen is static such as a fixed background color, gradient, image, etc and does not update dynamically, make sure to append the ‘.scrollContentBackground(.visible)’ to the ‘ScrollView’. 
 
