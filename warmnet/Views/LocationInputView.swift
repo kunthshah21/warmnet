@@ -331,6 +331,12 @@ struct LocationInputView: View {
             geocodingService?.clearSuggestions()
             clearBindings()
         } else {
+            // Check if this is a programmatic update from selection
+            // If we are in .found state and the text matches, we should stay in .found state
+            if case .found(let displayName) = inputState, displayName == newValue {
+                return
+            }
+
             // Check if we had a valid result BEFORE changing state
             let hadValidResult: Bool
             if case .found = inputState {
