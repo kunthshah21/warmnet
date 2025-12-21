@@ -12,6 +12,10 @@ struct ContactRow: View {
                 .font(.body.weight(.semibold))
                 .foregroundStyle(.primary)
             
+            Circle()
+                .fill((contact.priority ?? .broaderNetwork).color)
+                .frame(width: 8, height: 8)
+            
             Spacer()
         }
         .padding(.vertical, 2)

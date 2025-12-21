@@ -7,11 +7,14 @@ struct ContactsScreen: View {
     
     @State private var showAddContact = false
     @State private var searchText = ""
+    @State private var selectedPriority: Priority? = nil
     
     private var groupedContacts: [(key: String, value: [Contact])] {
         let filtered = contacts.filter { contact in
-            searchText.isEmpty ||
-            contact.name.localizedCaseInsensitiveContains(searchText)
+            let matchesSearch = searchText.isEmpty || contact.name.localizedCaseInsensitiveContains(searchText)
+            let effectivePriority = contact.priority ?? .broaderNetwork
+            let matchesPriority = selectedPriority == nil || effectivePriority == selectedPriority
+            return matchesSearch && matchesPriority
         }
         
         let grouped = Dictionary(grouping: filtered) { contact in
@@ -25,9 +28,28 @@ struct ContactsScreen: View {
     
     var body: some View {
         NavigationStack {
-            ScrollViewReader { proxy in
-                ZStack {
-                    List {
+            VStack(spacing: 0) {
+                // Priority Filter
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        FilterButton(title: "All", isSelected: selectedPriority == nil) {
+                            withAnimation { selectedPriority = nil }
+                        }
+                        
+                        ForEach(Priority.allCases, id: \.self) { priority in
+                            FilterButton(title: priority.rawValue, isSelected: selectedPriority == priority, color: priority.color) {
+                                withAnimation { selectedPriority = priority }
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+                .background(Color(uiColor: .systemBackground))
+                
+                ScrollViewReader { proxy in
+                    ZStack {
+                        List {
                         // My Card Section
                         if searchText.isEmpty {
                             Section {
@@ -104,6 +126,7 @@ struct ContactsScreen: View {
                     }
                 }
             }
+            }
             .navigationTitle("Contacts")
             .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
             .toolbar {
@@ -124,6 +147,31 @@ struct ContactsScreen: View {
     private func deleteContact(_ contact: Contact) {
         withAnimation {
             modelContext.delete(contact)
+        }
+    }
+}
+
+struct FilterButton: View {
+    let title: String
+    let isSelected: Bool
+    var color: Color = .blue
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    Capsule()
+                        .fill(isSelected ? color.opacity(0.2) : Color.gray.opacity(0.1))
+                )
+                .overlay(
+                    Capsule()
+                        .strokeBorder(isSelected ? color : Color.clear, lineWidth: 1)
+                )
+                .foregroundStyle(isSelected ? color : .primary)
         }
     }
 }
