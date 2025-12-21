@@ -2,35 +2,33 @@ import SwiftUI
 import SwiftData
 
 struct HomeScreen: View {
+    @Environment(\.colorScheme) private var colorScheme
+
     @State private var showAddContact = false
+    @State private var showMapSheet = false
     
     var body: some View {
         NavigationStack {
             ZStack {
                 // Background gradient
                 LinearGradient(
-                    colors: [Color(.systemBackground), Color(.systemGray6)],
+                    colors: [backgroundTopColor, backgroundBottomColor],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
                 
-                // Empty state placeholder
-                VStack(spacing: 24) {
-                    Image(systemName: "house.circle")
-                        .font(.system(size: 80))
-                        .foregroundStyle(.tertiary)
-                    
-                    VStack(spacing: 8) {
-                        Text("Welcome to WarmNet")
-                            .font(.title2.weight(.semibold))
-                        
-                        Text("Your home for managing connections")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                ScrollView {
+                    VStack(spacing: 16) {
+                        MapPreviewCard {
+                            showMapSheet = true
+                        }
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 120) // Space for floating button
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .scrollContentBackground(.visible)
                 
                 // Floating Add Contact Button
                 VStack {
@@ -47,10 +45,23 @@ struct HomeScreen: View {
             .sheet(isPresented: $showAddContact) {
                 AddContactSheet()
             }
+            .sheet(isPresented: $showMapSheet) {
+                MapScreen(showsDismissButton: true)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
     
     // MARK: - Subviews
+
+    private var backgroundTopColor: Color {
+        colorScheme == .dark ? Color(.sRGB, white: 0.02, opacity: 1) : Color(.sRGB, white: 1.0, opacity: 1)
+    }
+
+    private var backgroundBottomColor: Color {
+        colorScheme == .dark ? Color(.sRGB, white: 0.10, opacity: 1) : Color(.sRGB, white: 0.95, opacity: 1)
+    }
     
     private var addContactButton: some View {
         Button {
@@ -78,5 +89,4 @@ struct HomeScreen: View {
 
 #Preview {
     HomeScreen()
-        .modelContainer(for: Contact.self, inMemory: true)
 }

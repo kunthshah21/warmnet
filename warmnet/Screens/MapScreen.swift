@@ -8,6 +8,7 @@ struct MapScreen: View {
     // MARK: - Environment
     
     @Query private var contacts: [Contact]
+    @Environment(\.dismiss) private var dismiss
     
     // MARK: - State
     
@@ -17,6 +18,14 @@ struct MapScreen: View {
     @State private var selectedFilterValue: String?
     @State private var selectedAnnotation: ContactAnnotation?
     @State private var hasLoaded = false
+
+    // MARK: - Configuration
+
+    let showsDismissButton: Bool
+
+    init(showsDismissButton: Bool = false) {
+        self.showsDismissButton = showsDismissButton
+    }
     
     // MARK: - Computed
     
@@ -63,6 +72,13 @@ struct MapScreen: View {
             .navigationTitle("Map")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                if showsDismissButton {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Close") {
+                            dismiss()
+                        }
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     refreshButton
                 }
