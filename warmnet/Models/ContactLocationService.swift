@@ -48,7 +48,14 @@ final class ContactLocationService {
     /// Indicates when the map view has a stable, non-zero size and can accept updates
     private var mapIsReady: Bool = false
     /// Continuations waiting for the map to become ready
-    private var mapReadyWaiters: [CheckedContinuation<Void, Never>] = []
+    @MainActor
+    private struct MapReadyWaiter {
+        let id: UUID
+        let continuation: CheckedContinuation<Void, Never>
+    }
+    /// Continuations waiting for the map to become ready (MainActor-only)
+    @MainActor
+    private var mapReadyWaiters: [MapReadyWaiter] = []
     
     /// Debounced task for bulk geocoding, allowing cancellation when view changes
     private var debouncedGeocodeTask: Task<Void, Never>? = nil
@@ -75,17 +82,21 @@ final class ContactLocationService {
     
     /// Call when the map view has a non-zero, stable size so heavy updates can proceed
     func notifyMapReady() {
-        guard mapIsReady == false else { return }
-        mapIsReady = true
-        // Resume any waiters
-        let waiters = mapReadyWaiters
-        mapReadyWaiters.removeAll()
-        waiters.forEach { $0.resume() }
+        Task { @MainActor in
+            guard mapIsReady == false else { return }
+            mapIsReady = true
+            // Resume any waiters
+            let waiters = mapReadyWaiters
+            mapReadyWaiters.removeAll()
+            waiters.forEach { $0.continuation.resume() }
+        }
     }
 
     /// Call when the map is being torn down or may become zero-sized (e.g., during navigation)
     func notifyMapNotReady() {
-        mapIsReady = false
+        Task { @MainActor in
+            mapIsReady = false
+        }
     }
     
     /// Debounced trigger to geocode contacts without blocking initial UI setup
@@ -134,7 +145,7 @@ final class ContactLocationService {
                 if Task.isCancelled { break }
                 await semaphore.wait()
                 group.addTask { [weak self] in
-                    defer { semaphore.signal() }
+                    defer { Task { await semaphore.signal() } }
                     guard let self else { return nil }
                     if Task.isCancelled { return nil }
                     if let coordinate = await self.geocodeContact(contact) {
@@ -291,19 +302,12 @@ final class ContactLocationService {
     
     /// Wait until the map is marked ready or until timeout elapses
     private func waitForMapReady(timeoutNanoseconds: UInt64) async {
-        if mapIsReady { return }
+        if await MainActor.run(body: { mapIsReady }) { return }
         // Race a readiness continuation against a timeout sleep
         await withTaskGroup(of: Void.self) { group in
             group.addTask { [weak self] in
                 guard let self else { return }
-                await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-                    // If ready already flipped while scheduling, resume immediately
-                    if self.mapIsReady {
-                        continuation.resume()
-                    } else {
-                        self.mapReadyWaiters.append(continuation)
-                    }
-                }
+                await self.awaitMapReady()
             }
             group.addTask {
                 try? await Task.sleep(nanoseconds: timeoutNanoseconds)
@@ -313,6 +317,28 @@ final class ContactLocationService {
             // Cancel the other task
             group.cancelAll()
         }
+    }
+
+    /// Suspend until `notifyMapReady()` is called (or return immediately if already ready).
+    /// Cancellation removes the registered waiter to avoid leaking continuations.
+    @MainActor
+    private func awaitMapReady() async {
+        if mapIsReady { return }
+        let id = UUID()
+        await withTaskCancellationHandler(operation: {
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                // If ready already flipped while scheduling, resume immediately
+                if mapIsReady {
+                    continuation.resume()
+                } else {
+                    mapReadyWaiters.append(.init(id: id, continuation: continuation))
+                }
+            }
+        }, onCancel: {
+            Task { @MainActor in
+                mapReadyWaiters.removeAll { $0.id == id }
+            }
+        })
     }
     
     /// Forward geocode a textual location using MapKit search
@@ -332,7 +358,11 @@ final class ContactLocationService {
             let response = try await search.start()
             // Prefer the first map item that has a coordinate
             if let item = response.mapItems.first {
-                return item.placemark.coordinate
+                if #available(iOS 26.0, *) {
+                    return item.location.coordinate
+                } else {
+                    return item.placemark.coordinate
+                }
             }
         } catch {
             // Search failed; fall through to return nil

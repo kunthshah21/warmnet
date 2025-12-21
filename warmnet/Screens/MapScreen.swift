@@ -91,7 +91,7 @@ struct MapScreen: View {
                 // Map may be torn down; pause heavy updates
                 locationService.notifyMapNotReady()
             }
-            .onChange(of: locationService.isLoading) { isLoading in
+            .onChange(of: locationService.isLoading) { _, isLoading in
                 if !isLoading {
                     hasLoaded = true
                     if let region = locationService.regionToFit(filteredLocations) {
@@ -103,7 +103,7 @@ struct MapScreen: View {
                     hasLoaded = false
                 }
             }
-            .onChange(of: contacts) { _ in
+            .onChange(of: contacts) { _, _ in
                 // Re-run geocoding when contacts change
                 locationService.debouncedGeocodeContacts(contacts)
             }
@@ -125,7 +125,7 @@ struct MapScreen: View {
                 .tag(annotation)
             }
         }
-        .mapStyle(.standard(elevation: .realistic))
+        .mapStyle(.standard)
         .mapControls {
             MapCompass()
             MapScaleView()
@@ -143,7 +143,7 @@ struct MapScreen: View {
                             locationService.notifyMapReady()
                         }
                     }
-                    .onChange(of: proxy.size) { newSize in
+                    .onChange(of: proxy.size) { _, newSize in
                         if newSize.width > 0 && newSize.height > 0 {
                             locationService.notifyMapReady()
                         }

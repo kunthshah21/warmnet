@@ -31,7 +31,7 @@ struct MapPreviewMap: View {
                     }
                 }
             }
-            .mapStyle(.standard(elevation: .realistic))
+            .mapStyle(.standard)
             .background(mapReadyReporter)
 
             if locationService.isLoading {
@@ -46,7 +46,7 @@ struct MapPreviewMap: View {
         .onDisappear {
             locationService.notifyMapNotReady()
         }
-        .onChange(of: locationService.isLoading) { isLoading in
+        .onChange(of: locationService.isLoading) { _, isLoading in
             if !isLoading {
                 hasLoaded = true
                 if let region = locationService.regionToFit(cachedLocations) {
@@ -58,7 +58,7 @@ struct MapPreviewMap: View {
                 hasLoaded = false
             }
         }
-        .onChange(of: contacts) { _ in
+        .onChange(of: contacts) { _, _ in
             locationService.debouncedGeocodeContacts(contacts)
         }
     }
@@ -72,7 +72,7 @@ struct MapPreviewMap: View {
                         locationService.notifyMapReady()
                     }
                 }
-                .onChange(of: proxy.size) { newSize in
+                .onChange(of: proxy.size) { _, newSize in
                     if newSize.width > 0 && newSize.height > 0 {
                         locationService.notifyMapReady()
                     }
