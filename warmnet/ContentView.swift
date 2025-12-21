@@ -11,6 +11,10 @@ struct ContentView: View {
             Tab("Contacts", systemImage: "person.2.fill") {
                 ContactsScreen()
             }
+            
+            Tab("Testing", systemImage: "hammer.fill") {
+                TestingScreen()
+            }
         }
     }
 }

@@ -34,3 +34,4 @@ flowchart TD
 - Both `MapScreen` and `MapPreviewMap` call `ContactLocationService.notifyMapReady()` when their map has a stable size. This prevents geocoding from running while the map is zero-sized, improving reliability and performance.
 
 
+
