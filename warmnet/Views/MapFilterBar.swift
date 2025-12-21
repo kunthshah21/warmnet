@@ -44,7 +44,7 @@ struct MapFilterBar: View {
             }
         }
         .padding(.horizontal, 16)
-        .padding(.vertical, 12)
+        .padding(.vertical, 10)
         .background(.ultraThinMaterial)
     }
     
@@ -73,7 +73,8 @@ struct MapFilterBar: View {
         } label: {
             Text(type.rawValue)
                 .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(
                     Capsule()

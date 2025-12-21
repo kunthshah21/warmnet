@@ -198,6 +198,7 @@ struct MapScreen: View {
             Image(systemName: "arrow.clockwise")
                 .font(.body)
         }
+        .scaleEffect(0.5)
         .disabled(locationService.isLoading)
     }
     
