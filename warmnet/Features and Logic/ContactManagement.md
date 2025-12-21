@@ -411,3 +411,37 @@ The map view provides a visual representation of where contacts are located, wit
 - SwiftData for persistence (no CoreData)
 - CoreLocation for device location
 - MapKit for geocoding, autocomplete, and map display
+
+## Contact Details & Editing
+
+### Overview
+Users can view detailed information for each contact and edit existing details. This flow ensures that contact information remains up-to-date and accessible.
+
+### User Flow
+1. **Contacts List** → Tap on a contact row.
+2. **Contact Detail Screen** → View full contact information.
+3. **Edit Mode** → Tap "Edit" button to open the edit sheet.
+4. **Save Changes** → Update contact information in SwiftData.
+
+### Screens
+
+**ContactDetailScreen**
+- Displays contact avatar and name prominently.
+- Shows organized sections for:
+  - Contact Info (Phone, Email)
+  - Location (Address)
+  - Personal Details (Company, Job Title, Birthday)
+  - Notes
+  - Reference
+- "Edit" button in the navigation bar.
+
+**AddContactSheet (Edit Mode)**
+- Reuses the `AddContactSheet` component.
+- Pre-populates fields with existing contact data.
+- Updates the existing `Contact` object in SwiftData upon saving.
+- Validates input before allowing updates.
+
+### Technical Details
+- **Navigation**: Uses `NavigationLink` within `ContactsScreen` list rows to push `ContactDetailScreen`.
+- **State Management**: `ContactDetailScreen` uses `@Bindable` for the contact object.
+- **Reusability**: `AddContactSheet` is refactored to support both creation and editing modes via an optional `contactToEdit` parameter.

@@ -76,16 +76,23 @@ struct ContactsScreen: View {
     private var contactsListView: some View {
         List {
             ForEach(filteredContacts) { contact in
-                ContactRow(contact: contact)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                        Button(role: .destructive) {
-                            deleteContact(contact)
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
+                ZStack {
+                    ContactRow(contact: contact)
+                    
+                    NavigationLink(destination: ContactDetailScreen(contact: contact)) {
+                        EmptyView()
                     }
+                    .opacity(0)
+                }
+                .listRowBackground(Color.clear)
+                .listRowSeparator(.hidden)
+                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    Button(role: .destructive) {
+                        deleteContact(contact)
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
             }
         }
         .listStyle(.plain)

@@ -5,6 +5,8 @@ struct AddContactSheet: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
+    var contactToEdit: Contact?
+    
     // Basic info
     @State private var name = ""
     @State private var selectedCountryCode = CountryCode.all[0]
@@ -22,6 +24,35 @@ struct AddContactSheet: View {
     @State private var company = ""
     @State private var jobTitle = ""
     @State private var notes = ""
+    
+    init(contactToEdit: Contact? = nil) {
+        self.contactToEdit = contactToEdit
+        
+        if let contact = contactToEdit {
+            _name = State(initialValue: contact.name)
+            
+            if let match = CountryCode.all.first(where: { $0.code == contact.phoneCountryCode }) {
+                _selectedCountryCode = State(initialValue: match)
+            }
+            
+            _phoneNumber = State(initialValue: contact.phoneNumber)
+            _reference = State(initialValue: contact.reference)
+            _email = State(initialValue: contact.email)
+            _city = State(initialValue: contact.city)
+            _state = State(initialValue: contact.state)
+            _country = State(initialValue: contact.country)
+            _birthday = State(initialValue: contact.birthday)
+            _company = State(initialValue: contact.company)
+            _jobTitle = State(initialValue: contact.jobTitle)
+            _notes = State(initialValue: contact.notes)
+            
+            let hasAdvanced = !contact.email.isEmpty || !contact.city.isEmpty ||
+                              !contact.state.isEmpty || !contact.country.isEmpty ||
+                              contact.birthday != nil || !contact.company.isEmpty ||
+                              !contact.jobTitle.isEmpty || !contact.notes.isEmpty
+            _showAdvanced = State(initialValue: hasAdvanced)
+        }
+    }
     
     private var isValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -50,7 +81,7 @@ struct AddContactSheet: View {
             }
             .scrollContentBackground(.visible)
             .background(Color(.systemGroupedBackground))
-            .navigationTitle("New Contact")
+            .navigationTitle(contactToEdit == nil ? "New Contact" : "Edit Contact")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -79,7 +110,7 @@ struct AddContactSheet: View {
         VStack(spacing: 12) {
             AvatarView(name: name.isEmpty ? "?" : name, size: 100)
             
-            Text(name.isEmpty ? "New Contact" : name)
+            Text(name.isEmpty ? (contactToEdit == nil ? "New Contact" : "Edit Contact") : name)
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(name.isEmpty ? .secondary : .primary)
         }
@@ -318,7 +349,7 @@ struct AddContactSheet: View {
     
     private var saveButtonSection: some View {
         VStack {
-            PrimaryButton("Save Contact", icon: "checkmark") {
+            PrimaryButton(contactToEdit == nil ? "Save Contact" : "Update Contact", icon: "checkmark") {
                 saveContact()
             }
             .disabled(!isValid)
@@ -349,22 +380,38 @@ struct AddContactSheet: View {
     // MARK: - Actions
     
     private func saveContact() {
-        let contact = Contact(
-            name: name.trimmingCharacters(in: .whitespacesAndNewlines),
-            phoneCountryCode: selectedCountryCode.code,
-            phoneNumber: phoneNumber,
-            reference: reference,
-            email: email,
-            city: city,
-            state: state,
-            country: country,
-            birthday: birthday,
-            company: company,
-            jobTitle: jobTitle,
-            notes: notes
-        )
-        
-        modelContext.insert(contact)
+        if let contact = contactToEdit {
+            contact.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
+            contact.phoneCountryCode = selectedCountryCode.code
+            contact.phoneNumber = phoneNumber
+            contact.reference = reference
+            contact.email = email
+            contact.city = city
+            contact.state = state
+            contact.country = country
+            contact.birthday = birthday
+            contact.company = company
+            contact.jobTitle = jobTitle
+            contact.notes = notes
+            contact.updatedAt = Date()
+        } else {
+            let contact = Contact(
+                name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+                phoneCountryCode: selectedCountryCode.code,
+                phoneNumber: phoneNumber,
+                reference: reference,
+                email: email,
+                city: city,
+                state: state,
+                country: country,
+                birthday: birthday,
+                company: company,
+                jobTitle: jobTitle,
+                notes: notes
+            )
+            
+            modelContext.insert(contact)
+        }
         dismiss()
     }
 }
@@ -373,4 +420,3 @@ struct AddContactSheet: View {
     AddContactSheet()
         .modelContainer(for: Contact.self, inMemory: true)
 }
-
