@@ -3,6 +3,7 @@ import CoreLocation
 
 /// Manages device location services for approximate location detection (city/state level)
 @Observable
+@MainActor
 final class LocationManager: NSObject {
     
     // MARK: - Types
@@ -37,6 +38,7 @@ final class LocationManager: NSObject {
     
     private let locationManager = CLLocationManager()
     private var locationContinuation: CheckedContinuation<CLLocation, Error>?
+    private var authorizationContinuation: CheckedContinuation<Void, Never>?
     
     var authorizationStatus: AuthorizationStatus {
         switch locationManager.authorizationStatus {
@@ -78,12 +80,15 @@ final class LocationManager: NSObject {
         guard CLLocationManager.locationServicesEnabled() else {
             throw LocationError.serviceUnavailable
         }
-        
+
+        // Ensure we have authorization without blocking the main thread
         switch authorizationStatus {
         case .notDetermined:
             requestPermission()
-            // Wait briefly for permission response
-            try await Task.sleep(nanoseconds: 500_000_000)
+            // Await delegate-driven authorization change instead of sleeping
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                self.authorizationContinuation = continuation
+            }
             if authorizationStatus == .denied {
                 throw LocationError.permissionDenied
             }
@@ -92,18 +97,17 @@ final class LocationManager: NSObject {
         case .authorized:
             break
         }
-        
+
         return try await withCheckedThrowingContinuation { continuation in
             self.locationContinuation = continuation
             locationManager.requestLocation()
-            
+
             // Timeout after 10 seconds
-            Task {
-                try await Task.sleep(nanoseconds: 10_000_000_000)
-                if self.locationContinuation != nil {
-                    self.locationContinuation?.resume(throwing: LocationError.timeout)
-                    self.locationContinuation = nil
-                }
+            Task { [weak self] in
+                try? await Task.sleep(nanoseconds: 10_000_000_000)
+                guard let self, self.locationContinuation != nil else { return }
+                self.locationContinuation?.resume(throwing: LocationError.timeout)
+                self.locationContinuation = nil
             }
         }
     }
@@ -130,7 +134,11 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        // Authorization changed - UI will update via @Observable
+        // Resume any pending authorization wait if status is now determined
+        if authorizationStatus != .notDetermined {
+            authorizationContinuation?.resume()
+            authorizationContinuation = nil
+        }
     }
 }
 

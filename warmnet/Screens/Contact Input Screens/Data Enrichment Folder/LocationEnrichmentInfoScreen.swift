@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct PriorityEnrichInfoScreen: View {
+struct LocationEnrichmentInfoScreen: View {
     var onEnrich: () -> Void
     var onFlowComplete: () -> Void
     @State private var navigateToEnrichment = false
@@ -9,24 +9,24 @@ struct PriorityEnrichInfoScreen: View {
         VStack(spacing: 24) {
             Spacer()
             
-            Image(systemName: "list.number")
+            Image(systemName: "location.circle.fill")
                 .font(.system(size: 60))
                 .foregroundStyle(.secondary)
                 .padding(.bottom, 20)
             
-            Text("Select Priority")
+            Text("Enrich Location")
                 .font(.largeTitle.weight(.bold))
                 .multilineTextAlignment(.center)
             
-            Text("Categorize your contacts into three distinct priority levels to manage your interactions effectively.")
+            Text("Add location data to your contacts to visualize your network on a map and plan meetups when you travel.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
             
             VStack(alignment: .leading, spacing: 12) {
-                priorityRow(icon: "star.fill", color: .green, title: "High Priority", description: "Close friends and family you talk to often.")
-                priorityRow(icon: "circle.fill", color: .blue, title: "Medium Priority", description: "Friends and colleagues you keep in touch with.")
-                priorityRow(icon: "circle.fill", color: .yellow, title: "Low Priority", description: "Acquaintances and extended network.")
+                infoRow(icon: "map.fill", color: .blue, title: "Visualize Network", description: "See where your friends and connections are located globally.")
+                infoRow(icon: "airplane", color: .orange, title: "Travel Planning", description: "Easily find who to meet when you visit a new city.")
+                infoRow(icon: "mappin.and.ellipse", color: .red, title: "Smart Suggestions", description: "Get reminders to connect when you are nearby.")
             }
             .padding()
             .background(
@@ -37,7 +37,7 @@ struct PriorityEnrichInfoScreen: View {
             
             Spacer()
             
-            PrimaryButton("Enrich Priorities", icon: "checkmark.circle") {
+            PrimaryButton("Enrich Locations", icon: "location.fill") {
                 navigateToEnrichment = true
                 onEnrich()
             }
@@ -45,18 +45,14 @@ struct PriorityEnrichInfoScreen: View {
             .padding(.bottom)
         }
         .padding()
-        .navigationTitle("Priority")
+        .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToEnrichment) {
-            PriorityEnrichmentScreen(onSave: {
-                // Handle save completion, maybe navigate to next step or dismiss
-                // For now, we can just print or dismiss if it was the last step
-                print("Saved priorities")
-            }, onFlowComplete: onFlowComplete)
+            LocationEnrichmentScreen(onFlowComplete: onFlowComplete)
         }
     }
     
-    private func priorityRow(icon: String, color: Color, title: String, description: String) -> some View {
+    private func infoRow(icon: String, color: Color, title: String, description: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: icon)
                 .foregroundStyle(color)
@@ -76,6 +72,6 @@ struct PriorityEnrichInfoScreen: View {
 
 #Preview {
     NavigationStack {
-        PriorityEnrichInfoScreen(onEnrich: {}, onFlowComplete: {})
+        LocationEnrichmentInfoScreen(onEnrich: {}, onFlowComplete: {})
     }
 }

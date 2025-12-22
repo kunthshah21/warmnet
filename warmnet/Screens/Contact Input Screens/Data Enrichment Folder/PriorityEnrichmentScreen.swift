@@ -8,6 +8,7 @@ struct PriorityEnrichmentScreen: View {
     @State private var navigateToLocation = false
     
     var onSave: () -> Void
+    var onFlowComplete: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -37,7 +38,7 @@ struct PriorityEnrichmentScreen: View {
             LocationEnrichmentInfoScreen(onEnrich: {
                 // TODO: Navigate to actual location enrichment screen
                 print("Start location enrichment")
-            })
+            }, onFlowComplete: onFlowComplete)
         }
     }
 }
@@ -103,7 +104,7 @@ struct PriorityEnrichmentRow: View {
     container.mainContext.insert(contact2)
     
     return NavigationStack {
-        PriorityEnrichmentScreen(onSave: {})
+        PriorityEnrichmentScreen(onSave: {}, onFlowComplete: {})
             .modelContainer(container)
     }
 }

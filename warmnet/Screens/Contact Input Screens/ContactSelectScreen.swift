@@ -75,11 +75,13 @@ struct ContactSelectScreen: View {
         }
         .navigationDestination(isPresented: $navigateToEnrichment) {
             EnrichInfoScreen(onGetStarted: {
-                // This closure will be handled by EnrichInfoScreen's internal navigation logic
-                // or we can handle it here if we want to control the flow from outside.
-                // For now, let's assume EnrichInfoScreen handles the next step, 
-                // but wait, EnrichInfoScreen takes a closure. 
-                // Let's modify EnrichInfoScreen to handle navigation.
+                // Navigation handled internally
+            }, onFlowComplete: {
+                // Dismiss back to the root
+                navigateToEnrichment = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    dismiss()
+                }
             })
         }
     }

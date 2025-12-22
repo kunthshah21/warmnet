@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EnrichInfoScreen: View {
     var onGetStarted: () -> Void
+    var onFlowComplete: () -> Void
     @State private var navigateToPriority = false
     
     var body: some View {
@@ -44,13 +45,13 @@ struct EnrichInfoScreen: View {
             PriorityEnrichInfoScreen(onEnrich: {
                 // TODO: Navigate to next step or finish
                 print("Priority enrichment done")
-            })
+            }, onFlowComplete: onFlowComplete)
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        EnrichInfoScreen(onGetStarted: {})
+        EnrichInfoScreen(onGetStarted: {}, onFlowComplete: {})
     }
 }
