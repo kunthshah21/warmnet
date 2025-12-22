@@ -21,6 +21,7 @@ final class Contact {
     var notes: String
     var priority: Priority?
     
+    var lastInteractionDate: Date?
     var createdAt: Date
     var updatedAt: Date
     
@@ -37,7 +38,8 @@ final class Contact {
         company: String = "",
         jobTitle: String = "",
         notes: String = "",
-        priority: Priority = .broaderNetwork
+        priority: Priority = .broaderNetwork,
+        lastInteractionDate: Date? = nil
     ) {
         self.id = UUID()
         self.name = name
@@ -53,6 +55,7 @@ final class Contact {
         self.jobTitle = jobTitle
         self.notes = notes
         self.priority = priority
+        self.lastInteractionDate = lastInteractionDate ?? Date()
         self.createdAt = Date()
         self.updatedAt = Date()
     }
@@ -65,6 +68,24 @@ final class Contact {
         [city, state, country]
             .filter { !$0.isEmpty }
             .joined(separator: ", ")
+    }
+    
+    var reminderInterval: Int {
+        switch priority {
+        case .innerCircle: return 7
+        case .keyRelationships: return 30
+        case .broaderNetwork: return 180
+        case .none: return 180
+        }
+    }
+    
+    var nextReminderDate: Date {
+        let baseDate = lastInteractionDate ?? createdAt
+        return Calendar.current.date(byAdding: .day, value: reminderInterval, to: baseDate) ?? baseDate
+    }
+    
+    var isOverdue: Bool {
+        Date() > nextReminderDate
     }
 }
 
