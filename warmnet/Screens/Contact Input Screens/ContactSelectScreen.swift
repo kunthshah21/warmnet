@@ -14,6 +14,7 @@ struct ContactSelectScreen: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var isImporting = false
+    @State private var navigateToEnrichment = false
     
     private let minimumSelection = 3
     
@@ -71,6 +72,15 @@ struct ContactSelectScreen: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+        .navigationDestination(isPresented: $navigateToEnrichment) {
+            EnrichInfoScreen(onGetStarted: {
+                // This closure will be handled by EnrichInfoScreen's internal navigation logic
+                // or we can handle it here if we want to control the flow from outside.
+                // For now, let's assume EnrichInfoScreen handles the next step, 
+                // but wait, EnrichInfoScreen takes a closure. 
+                // Let's modify EnrichInfoScreen to handle navigation.
+            })
         }
     }
     
@@ -241,9 +251,10 @@ struct ContactSelectScreen: View {
                 do {
                     try modelContext.save()
                     
-                    // Navigate back to root or show success
+                    // Navigate to enrichment pipeline
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        dismiss()
+                        navigateToEnrichment = true
+                        isImporting = false
                     }
                 } catch {
                     self.errorMessage = "Failed to save contacts: \(error.localizedDescription)"
