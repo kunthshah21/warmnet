@@ -4,7 +4,9 @@ import SwiftData
 struct TestingScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showImportFlow = false
+    @State private var showOnboarding = false
     
     var body: some View {
         NavigationStack {
@@ -23,6 +25,12 @@ struct TestingScreen: View {
                         action: {
                             showImportFlow = true
                         }
+                    )
+                    .padding(.horizontal, 16)
+                    
+                    PrimaryButton(
+                        "Test Onboarding",
+                        action: resetOnboarding
                     )
                     .padding(.horizontal, 16)
                     
@@ -55,6 +63,14 @@ struct TestingScreen: View {
         } catch {
             print("Failed to reset data: \(error)")
         }
+    }
+    
+    private func resetOnboarding() {
+        hasCompletedOnboarding = false
+        // Force the app to show onboarding by restarting
+        // The RootView will detect hasCompletedOnboarding = false
+        // and show OnboardingView on next launch
+        exit(0)
     }
 }
 

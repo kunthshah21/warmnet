@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct SplashScreen: View {
+    var onSkip: () -> Void = {}
+    
     var body: some View {
         ZStack {
             // Background gradient
@@ -28,6 +30,33 @@ struct SplashScreen: View {
                         endPoint: .bottom
                     )
                 )
+            
+            // Skip button in top right
+            VStack {
+                HStack {
+                    Spacer()
+                    
+                    Button(action: onSkip) {
+                        Text("Skip")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.9))
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(
+                                Capsule()
+                                    .fill(Color.white.opacity(0.2))
+                                    .background(
+                                        Capsule()
+                                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                    )
+                            )
+                    }
+                    .padding(.top, 60)
+                    .padding(.trailing, 24)
+                }
+                
+                Spacer()
+            }
         }
     }
 }

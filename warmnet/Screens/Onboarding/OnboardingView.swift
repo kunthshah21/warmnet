@@ -15,6 +15,8 @@ struct OnboardingView: View {
     @State private var navigateToContactImport = false
     @State private var showFinalCongratulations = false
     
+    var onComplete: () -> Void = {}
+    
     enum OnboardingScreen {
         case splash
         case problem
@@ -31,16 +33,19 @@ struct OnboardingView: View {
                 Group {
                     switch currentScreen {
                     case .splash:
-                        SplashScreen()
-                            .transition(.opacity)
-                            .onAppear {
-                                // Auto-advance from splash after 2 seconds
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                    withAnimation(.easeInOut(duration: 0.5)) {
-                                        currentScreen = .problem
-                                    }
+                        SplashScreen(onSkip: {
+                            // Skip entire onboarding
+                            onComplete()
+                        })
+                        .transition(.opacity)
+                        .onAppear {
+                            // Auto-advance from splash after 2 seconds
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                withAnimation(.easeInOut(duration: 0.5)) {
+                                    currentScreen = .problem
                                 }
                             }
+                        }
                         
                     case .problem:
                         ProblemScreen(onContinue: {
@@ -88,8 +93,8 @@ struct OnboardingView: View {
                     
                     case .contactImport:
                         OnboardingContactImportWrapper(onComplete: {
-                            // Navigate to main app
-                            print("🎉 Complete onboarding - launching main app")
+                            // Onboarding fully complete
+                            onComplete()
                         })
                         .navigationBarBackButtonHidden(true)
                         .transition(.asymmetric(
