@@ -16,6 +16,8 @@ struct ContactSelectScreen: View {
     @State private var isImporting = false
     @State private var navigateToEnrichment = false
     
+    var onFlowComplete: (() -> Void)? = nil
+    
     private let minimumSelection = 3
     
     private var filteredContacts: [CNContact] {
@@ -77,10 +79,15 @@ struct ContactSelectScreen: View {
             EnrichInfoScreen(onGetStarted: {
                 // Navigation handled internally
             }, onFlowComplete: {
-                // Dismiss back to the root
-                navigateToEnrichment = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    dismiss()
+                // Call the onboarding flow complete handler if provided
+                if let onFlowComplete = onFlowComplete {
+                    onFlowComplete()
+                } else {
+                    // Default behavior: Dismiss back to the root
+                    navigateToEnrichment = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        dismiss()
+                    }
                 }
             })
         }

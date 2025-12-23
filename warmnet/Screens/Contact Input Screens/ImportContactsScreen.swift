@@ -8,6 +8,8 @@ struct ImportContactsScreen: View {
     @State private var errorMessage = ""
     @State private var navigateToSelection = false
     
+    var onFlowComplete: (() -> Void)? = nil
+    
     var body: some View {
         ZStack {
             // Background gradient
@@ -54,7 +56,7 @@ struct ImportContactsScreen: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToSelection) {
-            ContactSelectScreen()
+            ContactSelectScreen(onFlowComplete: onFlowComplete)
         }
         .onAppear {
             checkPermissionStatus()
