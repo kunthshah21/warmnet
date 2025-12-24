@@ -38,7 +38,10 @@ struct PriorityEnrichmentScreen: View {
             LocationEnrichmentInfoScreen(onEnrich: {
                 // TODO: Navigate to actual location enrichment screen
                 print("Start location enrichment")
-            }, onFlowComplete: onFlowComplete)
+            }, onFlowComplete: {
+                print("PriorityEnrichmentScreen: onFlowComplete called")
+                onFlowComplete()
+            })
         }
     }
 }

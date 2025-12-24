@@ -52,7 +52,10 @@ struct PriorityEnrichInfoScreen: View {
                 // Handle save completion, maybe navigate to next step or dismiss
                 // For now, we can just print or dismiss if it was the last step
                 print("Saved priorities")
-            }, onFlowComplete: onFlowComplete)
+            }, onFlowComplete: {
+                print("PriorityEnrichInfoScreen: onFlowComplete called")
+                onFlowComplete()
+            })
         }
     }
     

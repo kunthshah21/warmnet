@@ -98,6 +98,7 @@ struct LocationEnrichmentScreen: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {
+                    print("LocationEnrichmentScreen: Done pressed, calling onFlowComplete")
                     onFlowComplete()
                 }
                 .fontWeight(.semibold)

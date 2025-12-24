@@ -26,6 +26,7 @@ struct OnboardingContactImportWrapper: View {
             switch currentScreen {
             case .contactImport:
                 ImportContactsScreen(onFlowComplete: {
+                    print("OnboardingContactImportWrapper: onFlowComplete called, transitioning to finalCongratulations")
                     withAnimation(.easeInOut(duration: 0.5)) {
                         currentScreen = .finalCongratulations
                     }

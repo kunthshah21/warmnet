@@ -45,7 +45,10 @@ struct EnrichInfoScreen: View {
             PriorityEnrichInfoScreen(onEnrich: {
                 // TODO: Navigate to next step or finish
                 print("Priority enrichment done")
-            }, onFlowComplete: onFlowComplete)
+            }, onFlowComplete: {
+                print("EnrichInfoScreen: onFlowComplete called")
+                onFlowComplete()
+            })
         }
     }
 }

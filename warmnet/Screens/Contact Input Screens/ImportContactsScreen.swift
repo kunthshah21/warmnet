@@ -7,6 +7,7 @@ struct ImportContactsScreen: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var navigateToSelection = false
+    @State private var hasCalledCompletion = false
     
     var onFlowComplete: (() -> Void)? = nil
     
@@ -56,10 +57,23 @@ struct ImportContactsScreen: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToSelection) {
-            ContactSelectScreen(onFlowComplete: onFlowComplete)
+            ContactSelectScreen(onFlowComplete: {
+                print("ImportContactsScreen: Received onFlowComplete from ContactSelectScreen")
+                // Reset navigation state first
+                navigateToSelection = false
+                // Prevent multiple calls
+                guard !hasCalledCompletion else { return }
+                hasCalledCompletion = true
+                // Call the wrapper's completion handler after a brief delay
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    print("ImportContactsScreen: Calling onFlowComplete")
+                    onFlowComplete?()
+                }
+            })
         }
         .onAppear {
             checkPermissionStatus()
+            hasCalledCompletion = false
         }
         .alert("Error", isPresented: $showError) {
             Button("OK", role: .cancel) { }

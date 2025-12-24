@@ -48,7 +48,10 @@ struct LocationEnrichmentInfoScreen: View {
         .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToEnrichment) {
-            LocationEnrichmentScreen(onFlowComplete: onFlowComplete)
+            LocationEnrichmentScreen(onFlowComplete: {
+                print("LocationEnrichmentInfoScreen: onFlowComplete called")
+                onFlowComplete()
+            })
         }
     }
     
