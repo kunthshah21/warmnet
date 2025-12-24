@@ -317,6 +317,8 @@ struct SuccessSheet: View {
             Text("Are there multiple people who share the same location?")
                 .font(.headline)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
                 .padding(.top, 8)
             
             Spacer()
