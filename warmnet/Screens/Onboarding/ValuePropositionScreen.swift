@@ -12,77 +12,63 @@ struct ValuePropositionScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.green.opacity(0.15), Color.blue.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Background - Black
+            Color.black
+                .ignoresSafeArea()
             
-            VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 Spacer()
-                    .frame(height: 60)
+                    .frame(minHeight: 120, maxHeight: 180)
                 
-                // Heading
-                Text("Imagine if...")
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.green, .blue],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                
-                // Benefits list
-                VStack(alignment: .leading, spacing: 20) {
-                    BenefitRow(text: "You never forgot an important person again")
-                    BenefitRow(text: "Every conversation felt natural, never forced")
-                    BenefitRow(text: "People thought: \"When you reach out, it's always meaningful\"")
-                    BenefitRow(text: "Your network became your greatest asset")
-                }
-                .padding(.horizontal, 40)
-                .padding(.vertical, 32)
+                // Image
+                Image("onboarding-3")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 0)
+                    .scaleEffect(1.2)
                 
                 Spacer()
+                    .frame(height: 30)
                 
-                // Build my system button
-                Button(action: onBuildMySystem) {
-                    Text("Build my system")
-                        .font(.system(size: 18, weight: .semibold))
+                // Content Section
+                VStack(spacing: 20) {
+                    // Title
+                    Text("Imagine reaching out with nothing to ask")
+                        .font(Font.custom("WorkSans-Medium", size: 30))
+                        .lineSpacing(10)
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [.green, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 40)
+                    
+                    // Subtitle
+                    Text("Just value to give. Just genuine interest. That's how real networks are built.")
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .lineSpacing(4)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 40)
+                    
+                    Spacer()
+                        .frame(height: 10)
+                    
+                    // Build my system button
+                    Button(action: onBuildMySystem) {
+                        Text("build my system")
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: 253)
+                            .frame(height: 48)
+                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .cornerRadius(20)
+                    }
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 40)
+                
+                Spacer()
+                    .frame(minHeight: 100, maxHeight: 150)
             }
-        }
-    }
-}
-
-// Helper view for benefit rows
-struct BenefitRow: View {
-    let text: String
-    
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            Text("✨")
-                .font(.system(size: 20))
-            
-            Text(text)
-                .font(.system(size: 17, weight: .medium))
-                .foregroundColor(.primary.opacity(0.9))
-                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
@@ -90,3 +76,4 @@ struct BenefitRow: View {
 #Preview {
     ValuePropositionScreen()
 }
+

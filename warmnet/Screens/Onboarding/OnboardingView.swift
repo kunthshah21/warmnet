@@ -103,40 +103,6 @@ struct OnboardingView: View {
                         ))
                     }
                 }
-                
-                // Debug navigation overlay (bottom)
-                if currentScreen != .personalisation && currentScreen != .contactImport {
-                    VStack {
-                        Spacer()
-                        
-                        HStack(spacing: 16) {
-                            // Screen indicator dots
-                            HStack(spacing: 8) {
-                                ForEach([OnboardingScreen.problem, .painfulTruth, .valueProposition], id: \.self) { screen in
-                                    Circle()
-                                        .fill(currentScreen == screen ? Color.primary : Color.gray.opacity(0.4))
-                                        .frame(width: 8, height: 8)
-                                }
-                            }
-                            
-                            Spacer()
-                            
-                            // Quick navigation buttons for testing
-                            Button("Reset") {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    currentScreen = .splash
-                                }
-                            }
-                            .font(.system(size: 12, weight: .medium))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(Color.gray.opacity(0.2))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                        .padding(.horizontal, 24)
-                        .padding(.bottom, 16)
-                    }
-                }
             }
             .navigationBarHidden(true)
         }

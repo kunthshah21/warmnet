@@ -12,64 +12,62 @@ struct ProblemScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.blue.opacity(0.1), Color.purple.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Background - Black
+            Color.black
+                .ignoresSafeArea()
             
-            VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 Spacer()
+                    .frame(minHeight: 120, maxHeight: 180)
                 
-                // Problem statement
-                VStack(spacing: 16) {
-                    Text("When was the last time you reached out to someone important?")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 32)
-                }
-                
-                // Frustrated person image placeholder
-                ZStack {
-                    Circle()
-                        .fill(Color.orange.opacity(0.2))
-                        .frame(width: 200, height: 200)
-                    
-                    Image(systemName: "person.crop.circle.badge.exclamationmark")
-                        .font(.system(size: 80))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.orange, .red],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                }
-                .padding(.vertical, 20)
+                // Image
+                Image("onboarding-1")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 0)
+                    .scaleEffect(1.2)
                 
                 Spacer()
+                    .frame(height: 30)
                 
-                // Continue button
-                Button(action: onContinue) {
-                    Text("Continue")
-                        .font(.system(size: 18, weight: .semibold))
+                // Content Section
+                VStack(spacing: 20) {
+                    // Title
+                    Text("Your relationships are slipping away")
+                        .font(Font.custom("WorkSans-Medium", size: 30))
+                        .lineSpacing(10)
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [.blue, .purple],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 24)
+                    
+                    // Subtitle
+                    Text("Important people fade from your life, not from lack of care, but from lack of system")
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .lineSpacing(4)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 32)
+                    
+                    Spacer()
+                        .frame(height: 10)
+                    
+                    // Continue button
+                    Button(action: onContinue) {
+                        Text("Continue")
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: 253)
+                            .frame(height: 48)
+                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .cornerRadius(20)
+                    }
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 40)
+                
+                Spacer()
+                    .frame(minHeight: 100, maxHeight: 150)
             }
         }
     }
