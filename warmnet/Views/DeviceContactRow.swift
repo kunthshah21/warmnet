@@ -14,7 +14,7 @@ struct DeviceContactRow: View {
                 // Avatar Circle
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color.accentColor.opacity(0.2) : Color.secondary.opacity(0.2))
+                        .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.2) : Color.white.opacity(0.1))
                         .frame(width: 50, height: 50)
                     
                     if let imageData = contact.imageData,
@@ -27,7 +27,7 @@ struct DeviceContactRow: View {
                     } else {
                         Text(contact.initials)
                             .font(.headline)
-                            .foregroundColor(isSelected ? .accentColor : .secondary)
+                            .foregroundColor(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : .white.opacity(0.7))
                     }
                 }
                 
@@ -35,16 +35,16 @@ struct DeviceContactRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.fullName)
                         .font(.headline)
-                        .foregroundColor(.primary)
+                        .foregroundColor(.white)
                     
                     if let phoneNumber = contact.phoneNumbers.first?.value.stringValue {
                         Text(phoneNumber)
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.6))
                     } else if !contact.emailAddresses.isEmpty {
                         Text(contact.emailAddresses.first?.value as String? ?? "")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.white.opacity(0.6))
                     }
                 }
                 
@@ -53,10 +53,10 @@ struct DeviceContactRow: View {
                 // Checkmark
                 ZStack {
                     Circle()
-                        .strokeBorder(isSelected ? Color.accentColor : Color.secondary.opacity(0.3), lineWidth: 2)
+                        .strokeBorder(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.white.opacity(0.3), lineWidth: 2)
                         .background(
                             Circle()
-                                .fill(isSelected ? Color.accentColor : Color.clear)
+                                .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.clear)
                         )
                         .frame(width: 24, height: 24)
                     
@@ -71,23 +71,14 @@ struct DeviceContactRow: View {
             .padding(.horizontal, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? glassBackgroundSelected : glassBackground)
+                    .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.15) : Color.white.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(isSelected ? Color.accentColor.opacity(0.5) : Color.clear, lineWidth: 1)
+                    .strokeBorder(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.5) : Color.white.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
-    }
-    
-    // Glass effect backgrounds
-    private var glassBackground: Color {
-        colorScheme == .dark ? Color.white.opacity(0.05) : Color.white.opacity(0.6)
-    }
-    
-    private var glassBackgroundSelected: Color {
-        colorScheme == .dark ? Color.accentColor.opacity(0.15) : Color.accentColor.opacity(0.1)
     }
 }
 

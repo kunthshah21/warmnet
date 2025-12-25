@@ -6,45 +6,65 @@ struct PriorityEnrichInfoScreen: View {
     @State private var navigateToEnrichment = false
     
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
             
-            Image(systemName: "list.number")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
-                .padding(.bottom, 20)
-            
-            Text("Select Priority")
-                .font(.largeTitle.weight(.bold))
-                .multilineTextAlignment(.center)
-            
-            Text("Categorize your contacts into three distinct priority levels to manage your interactions effectively.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 24) {
+                Spacer()
+                    .frame(minHeight: 80, maxHeight: 120)
+                
+                Image(systemName: "list.number")
+                    .font(.system(size: 60))
+                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .padding(.bottom, 20)
+                
+                Text("Select Priority")
+                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                Text("Categorize your contacts into three distinct priority levels to manage your interactions effectively.")
+                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.white.opacity(0.7))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal)
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    priorityRow(icon: "star.fill", color: .green, title: "High Priority", description: "Close friends and family you talk to often.")
+                    priorityRow(icon: "circle.fill", color: .blue, title: "Medium Priority", description: "Friends and colleagues you keep in touch with.")
+                    priorityRow(icon: "circle.fill", color: .yellow, title: "Low Priority", description: "Acquaintances and extended network.")
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.05))
+                )
                 .padding(.horizontal)
-            
-            VStack(alignment: .leading, spacing: 12) {
-                priorityRow(icon: "star.fill", color: .green, title: "High Priority", description: "Close friends and family you talk to often.")
-                priorityRow(icon: "circle.fill", color: .blue, title: "Medium Priority", description: "Friends and colleagues you keep in touch with.")
-                priorityRow(icon: "circle.fill", color: .yellow, title: "Low Priority", description: "Acquaintances and extended network.")
+                
+                Spacer()
+                    .frame(minHeight: 100, maxHeight: 150)
+                
+                Button(action: {
+                    navigateToEnrichment = true
+                    onEnrich()
+                }) {
+                    HStack(spacing: 8) {
+                        Text("Enrich Priorities")
+                        Image(systemName: "checkmark.circle")
+                    }
+                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: 253, minHeight: 48)
+                    .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .cornerRadius(20)
+                }
+                .padding(.horizontal)
+                .padding(.bottom)
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial)
-            )
-            .padding(.horizontal)
-            
-            Spacer()
-            
-            PrimaryButton("Enrich Priorities", icon: "checkmark.circle") {
-                navigateToEnrichment = true
-                onEnrich()
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
         }
-        .padding()
         .navigationTitle("Priority")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToEnrichment) {
@@ -68,10 +88,11 @@ struct PriorityEnrichInfoScreen: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.headline)
+                    .font(Font.custom("WorkSans-Medium", size: 16))
+                    .foregroundColor(.white)
                 Text(description)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .foregroundColor(.white.opacity(0.7))
             }
         }
     }

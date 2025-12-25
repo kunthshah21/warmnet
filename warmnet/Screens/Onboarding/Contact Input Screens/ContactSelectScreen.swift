@@ -38,13 +38,9 @@ struct ContactSelectScreen: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [backgroundTopColor, backgroundBottomColor],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            // Black background
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Header
@@ -108,12 +104,12 @@ struct ContactSelectScreen: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Select at least \(minimumSelection) contacts")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .foregroundColor(.white.opacity(0.7))
                     
                     Text("\(selectedContacts.count) selected")
-                        .font(.caption)
-                        .foregroundStyle(canProceed ? .green : .secondary)
+                        .font(Font.custom("Overpass-Medium", size: 12))
+                        .foregroundColor(canProceed ? Color(red: 0.32, green: 0.57, blue: 0.87) : .white.opacity(0.5))
                 }
                 
                 Spacer()
@@ -122,26 +118,28 @@ struct ContactSelectScreen: View {
                     Button("Clear All") {
                         selectedContacts.removeAll()
                     }
-                    .font(.subheadline)
-                    .foregroundStyle(.red)
+                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .foregroundColor(.red.opacity(0.8))
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
             
             Divider()
+                .background(Color.white.opacity(0.1))
         }
-        .background(Material.ultraThinMaterial)
+        .background(Color.white.opacity(0.05))
     }
     
     private var loadingView: some View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.5)
+                .tint(Color(red: 0.32, green: 0.57, blue: 0.87))
             
             Text("Loading contacts...")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(Font.custom("Overpass-Medium", size: 14))
+                .foregroundColor(.white.opacity(0.7))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -150,15 +148,17 @@ struct ContactSelectScreen: View {
         VStack(spacing: 24) {
             Image(systemName: "person.crop.circle.badge.xmark")
                 .font(.system(size: 60))
-                .foregroundStyle(.secondary)
+                .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             
             Text("No Contacts Found")
-                .font(.title2.weight(.semibold))
+                .font(Font.custom("WorkSans-Medium", size: 22))
+                .foregroundColor(.white)
             
             Text("Add contacts to your device and try again")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(Font.custom("Overpass-Medium", size: 14))
+                .foregroundColor(.white.opacity(0.7))
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
@@ -185,19 +185,29 @@ struct ContactSelectScreen: View {
     private var bottomActionView: some View {
         VStack(spacing: 0) {
             Divider()
+                .background(Color.white.opacity(0.1))
             
-            PrimaryButton(
-                isImporting ? "Importing..." : "Import \(selectedContacts.count) Contact\(selectedContacts.count == 1 ? "" : "s")",
-                icon: "square.and.arrow.down"
-            ) {
+            Button(action: {
                 importSelectedContacts()
+            }) {
+                HStack(spacing: 8) {
+                    Text(isImporting ? "Importing..." : "Import \(selectedContacts.count) Contact\(selectedContacts.count == 1 ? "" : "s")")
+                    if !isImporting {
+                        Image(systemName: "square.and.arrow.down")
+                    }
+                }
+                .font(Font.custom("Overpass-Medium", size: 16))
+                .foregroundColor(.white)
+                .frame(maxWidth: 253, minHeight: 48)
+                .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                .cornerRadius(20)
             }
             .disabled(!canProceed || isImporting)
             .opacity(canProceed && !isImporting ? 1.0 : 0.5)
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
         }
-        .background(Material.ultraThinMaterial)
+        .background(Color.white.opacity(0.05))
     }
     
     // MARK: - Methods
@@ -339,12 +349,5 @@ struct ContactSelectScreen: View {
         )
     }
     
-    // Background colors based on color scheme
-    private var backgroundTopColor: Color {
-        colorScheme == .dark ? Color(red: 0.05, green: 0.05, blue: 0.1) : Color(red: 0.95, green: 0.97, blue: 1.0)
-    }
-    
-    private var backgroundBottomColor: Color {
-        colorScheme == .dark ? Color(red: 0.1, green: 0.1, blue: 0.15) : Color(red: 0.85, green: 0.90, blue: 0.98)
-    }
+
 }

@@ -15,13 +15,9 @@ struct SocialProofScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.purple.opacity(0.15), Color.blue.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Black background
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 40) {
                 Spacer()
@@ -73,24 +69,26 @@ struct SocialProofScreen: View {
                 // Text content
                 VStack(spacing: 24) {
                     Text("You are 1 step away")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundColor(.primary.opacity(0.8))
+                        .font(Font.custom("WorkSans-Medium", size: 28))
+                        .foregroundColor(.white.opacity(0.8))
+                        .fixedSize(horizontal: false, vertical: true)
                         .opacity(showContent ? 1.0 : 0.0)
                         .offset(y: showContent ? 0 : 20)
                         .animation(.easeOut(duration: 0.6).delay(0.3), value: showContent)
                     
                     VStack(spacing: 12) {
                         Text("You have joined the")
-                            .font(.system(size: 20, weight: .medium))
-                            .foregroundColor(.primary.opacity(0.7))
+                            .font(Font.custom("Overpass-Medium", size: 18))
+                            .foregroundColor(.white.opacity(0.7))
+                            .fixedSize(horizontal: false, vertical: true)
                         
                         HStack(spacing: 8) {
                             Text("top")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.primary)
+                                .font(Font.custom("WorkSans-Medium", size: 24))
+                                .foregroundColor(.white)
                             
                             Text("1%")
-                                .font(.system(size: 36, weight: .bold))
+                                .font(Font.custom("WorkSans-Medium", size: 36))
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [.yellow, .orange],
@@ -100,13 +98,14 @@ struct SocialProofScreen: View {
                                 )
                             
                             Text("Club")
-                                .font(.system(size: 24, weight: .bold))
-                                .foregroundColor(.primary)
+                                .font(Font.custom("WorkSans-Medium", size: 24))
+                                .foregroundColor(.white)
                         }
                         
                         Text("of high social network interactions")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.primary.opacity(0.7))
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.white.opacity(0.7))
+                            .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.center)
                     }
                     .opacity(showContent ? 1.0 : 0.0)
@@ -120,18 +119,12 @@ struct SocialProofScreen: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text("Continue")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(Font.custom("Overpass-Medium", size: 16))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [.yellow, .orange],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .frame(maxWidth: 253)
+                        .frame(height: 48)
+                        .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
                 .opacity(showContent ? 1.0 : 0.0)
                 .offset(y: showContent ? 0 : 20)

@@ -11,16 +11,21 @@ struct PriorityEnrichmentScreen: View {
     var onFlowComplete: () -> Void
     
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(contacts) { contact in
-                        PriorityEnrichmentRow(contact: contact)
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        ForEach(contacts) { contact in
+                            PriorityEnrichmentRow(contact: contact)
+                        }
                     }
+                    .padding()
                 }
-                .padding()
+                .scrollContentBackground(.hidden)
             }
-            .scrollContentBackground(.hidden)
         }
         .navigationTitle("Priority Enrich")
         .navigationBarTitleDisplayMode(.large)
@@ -30,10 +35,11 @@ struct PriorityEnrichmentScreen: View {
                     navigateToLocation = true
                     onSave()
                 }
-                .fontWeight(.semibold)
+                .font(Font.custom("Overpass-Medium", size: 16))
+                .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(Color.black)
         .navigationDestination(isPresented: $navigateToLocation) {
             LocationEnrichmentInfoScreen(onEnrich: {
                 // TODO: Navigate to actual location enrichment screen
@@ -52,7 +58,8 @@ struct PriorityEnrichmentRow: View {
     var body: some View {
         HStack {
             Text(contact.name)
-                .font(.headline)
+                .font(Font.custom("WorkSans-Medium", size: 16))
+                .foregroundColor(.white)
                 .lineLimit(1)
             
             Spacer()
@@ -66,11 +73,11 @@ struct PriorityEnrichmentRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                .fill(Color.white.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.secondary.opacity(0.1), lineWidth: 1)
+                .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
         )
     }
     

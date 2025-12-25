@@ -23,20 +23,16 @@ struct CustomisingExperienceScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.blue.opacity(0.15), Color.purple.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Black background
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 40) {
                 Spacer()
                 
                 // Title
                 Text("Customising your experience")
-                    .font(.system(size: 32, weight: .bold, design: .rounded))
+                    .font(Font.custom("WorkSans-Medium", size: 32))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.blue, .purple],
@@ -45,6 +41,7 @@ struct CustomisingExperienceScreen: View {
                         )
                     )
                     .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal, 32)
                 
                 // Animated processing indicator
@@ -94,8 +91,9 @@ struct CustomisingExperienceScreen: View {
                 // Progress section
                 VStack(spacing: 16) {
                     Text(steps[currentStep])
-                        .font(.system(size: 17, weight: .medium))
-                        .foregroundColor(.primary)
+                        .font(Font.custom("Overpass-Medium", size: 16))
+                        .foregroundColor(.white)
+                        .fixedSize(horizontal: false, vertical: true)
                         .transition(.asymmetric(
                             insertion: .move(edge: .trailing).combined(with: .opacity),
                             removal: .move(edge: .leading).combined(with: .opacity)
@@ -106,17 +104,11 @@ struct CustomisingExperienceScreen: View {
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.2))
+                                .fill(Color.white.opacity(0.1))
                                 .frame(height: 8)
                             
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.blue, .purple],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
+                                .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
                                 .frame(width: geometry.size.width * progress, height: 8)
                         }
                     }
@@ -124,8 +116,8 @@ struct CustomisingExperienceScreen: View {
                     .padding(.horizontal, 50)
                     
                     Text("\(Int(progress * 100))%")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.primary.opacity(0.6))
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()

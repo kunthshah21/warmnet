@@ -15,13 +15,9 @@ struct PlanReadyScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.green.opacity(0.15), Color.teal.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Black background
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 40) {
                 Spacer()
@@ -71,7 +67,7 @@ struct PlanReadyScreen: View {
                 // Text content
                 VStack(spacing: 24) {
                     Text("Success!")
-                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                        .font(Font.custom("WorkSans-Medium", size: 42))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.green, .teal],
@@ -85,13 +81,15 @@ struct PlanReadyScreen: View {
                     
                     VStack(spacing: 12) {
                         Text("Your Plan is ready")
-                            .font(.system(size: 24, weight: .semibold))
-                            .foregroundColor(.primary)
+                            .font(Font.custom("WorkSans-Medium", size: 24))
+                            .foregroundColor(.white)
+                            .fixedSize(horizontal: false, vertical: true)
                         
                         Text("Everything is set up and ready for you to start building meaningful connections")
-                            .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.primary.opacity(0.7))
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.white.opacity(0.7))
                             .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, 40)
                     }
                     .opacity(showContent ? 1.0 : 0.0)
@@ -105,22 +103,16 @@ struct PlanReadyScreen: View {
                 Button(action: onContinue) {
                     HStack(spacing: 8) {
                         Text("Continue")
-                            .font(.system(size: 18, weight: .semibold))
+                            .font(Font.custom("Overpass-Medium", size: 16))
                         
                         Image(systemName: "arrow.right")
                             .font(.system(size: 16, weight: .semibold))
                     }
                     .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(
-                        LinearGradient(
-                            colors: [.green, .teal],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .frame(maxWidth: 253)
+                    .frame(height: 48)
+                    .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
                 .opacity(showContent ? 1.0 : 0.0)
                 .offset(y: showContent ? 0 : 20)

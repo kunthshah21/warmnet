@@ -15,13 +15,9 @@ struct FinalCongratulationsScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.green.opacity(0.15), Color.blue.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Black background
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 40) {
                 Spacer()
@@ -56,7 +52,7 @@ struct FinalCongratulationsScreen: View {
                 // Congratulations text
                 VStack(spacing: 20) {
                     Text("Congratulations! 🎉")
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
+                        .font(Font.custom("WorkSans-Medium", size: 44))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.green, .blue],
@@ -65,14 +61,16 @@ struct FinalCongratulationsScreen: View {
                             )
                         )
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                         .scaleEffect(showContent ? 1.0 : 0.8)
                         .opacity(showContent ? 1.0 : 0.0)
                         .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showContent)
                     
                     Text("You're all set to use your system!")
-                        .font(.system(size: 22, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .font(Font.custom("Overpass-Medium", size: 18))
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 40)
                         .opacity(showContent ? 1.0 : 0.0)
                         .offset(y: showContent ? 0 : 20)
@@ -95,18 +93,12 @@ struct FinalCongratulationsScreen: View {
                 // Get Started button
                 Button(action: onComplete) {
                     Text("Get Started")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(Font.custom("Overpass-Medium", size: 16))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [.green, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .frame(maxWidth: 253)
+                        .frame(height: 48)
+                        .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                 }
                 .opacity(showContent ? 1.0 : 0.0)
                 .offset(y: showContent ? 0 : 20)
@@ -153,23 +145,23 @@ struct FeatureCheckRow: View {
         HStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(Color.green.opacity(0.2))
+                    .fill(Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.2))
                     .frame(width: 32, height: 32)
                 
                 Image(systemName: icon)
                     .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.green)
+                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
             
             Text(text)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(.primary)
+                .font(Font.custom("Overpass-Medium", size: 16))
+                .foregroundColor(.white)
             
             Spacer()
             
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 20))
-                .foregroundColor(.green)
+                .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
         }
         .padding(.horizontal, 32)
     }

@@ -56,42 +56,47 @@ struct LocationEnrichmentScreen: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    if !contactsWithoutLocation.isEmpty {
-                        Section {
-                            ForEach(contactsWithoutLocation) { contact in
-                                LocationEnrichmentRow(
-                                    contact: contact,
-                                    onTap: {
-                                        selectedContact = contact
-                                    }
-                                )
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
+                ScrollView {
+                    LazyVStack(spacing: 16) {
+                        if !contactsWithoutLocation.isEmpty {
+                            Section {
+                                ForEach(contactsWithoutLocation) { contact in
+                                    LocationEnrichmentRow(
+                                        contact: contact,
+                                        onTap: {
+                                            selectedContact = contact
+                                        }
+                                    )
+                                }
+                            } header: {
+                                sectionHeader("Needs Location", count: contactsWithoutLocation.count)
                             }
-                        } header: {
-                            sectionHeader("Needs Location", count: contactsWithoutLocation.count)
+                        }
+                        
+                        if !contactsWithLocation.isEmpty {
+                            Section {
+                                ForEach(contactsWithLocation) { contact in
+                                    LocationEnrichmentRow(
+                                        contact: contact,
+                                        onTap: {
+                                            selectedContact = contact
+                                        }
+                                    )
+                                }
+                            } header: {
+                                sectionHeader("Has Location", count: contactsWithLocation.count)
+                            }
                         }
                     }
-                    
-                    if !contactsWithLocation.isEmpty {
-                        Section {
-                            ForEach(contactsWithLocation) { contact in
-                                LocationEnrichmentRow(
-                                    contact: contact,
-                                    onTap: {
-                                        selectedContact = contact
-                                    }
-                                )
-                            }
-                        } header: {
-                            sectionHeader("Has Location", count: contactsWithLocation.count)
-                        }
-                    }
+                    .padding()
                 }
-                .padding()
+                .scrollContentBackground(.hidden)
             }
-            .scrollContentBackground(.hidden)
         }
         .navigationTitle("Location Enrich")
         .navigationBarTitleDisplayMode(.large)
@@ -101,10 +106,11 @@ struct LocationEnrichmentScreen: View {
                     print("LocationEnrichmentScreen: Done pressed, calling onFlowComplete")
                     onFlowComplete()
                 }
-                .fontWeight(.semibold)
+                .font(Font.custom("Overpass-Medium", size: 16))
+                .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(Color(uiColor: .systemGroupedBackground))
+        .background(Color.black)
         .sheet(item: $selectedContact) { contact in
             LocationInputSheet(
                 contact: contact,
@@ -156,17 +162,17 @@ struct LocationEnrichmentScreen: View {
     private func sectionHeader(_ title: String, count: Int) -> some View {
         HStack {
             Text(title)
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .font(Font.custom("WorkSans-Medium", size: 14))
+                .foregroundColor(.white.opacity(0.7))
             
             Spacer()
             
             Text("\(count)")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(Font.custom("Overpass-Medium", size: 12))
+                .foregroundColor(.white.opacity(0.7))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Capsule().fill(Color.secondary.opacity(0.2)))
+                .background(Capsule().fill(Color.white.opacity(0.1)))
         }
         .padding(.horizontal, 4)
     }
@@ -200,19 +206,19 @@ struct LocationEnrichmentRow: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.name)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                        .font(Font.custom("WorkSans-Medium", size: 16))
+                        .foregroundColor(.white)
                         .lineLimit(1)
                     
                     if hasLocation {
                         Text(contact.fullLocation)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .foregroundColor(.white.opacity(0.7))
                             .lineLimit(1)
                     } else {
                         Text("Tap to add location")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
+                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
                     }
                 }
                 
@@ -220,16 +226,16 @@ struct LocationEnrichmentRow: View {
                 
                 Image(systemName: hasLocation ? "checkmark.circle.fill" : "plus.circle")
                     .font(.title3)
-                    .foregroundStyle(hasLocation ? .green : .blue)
+                    .foregroundStyle(hasLocation ? .green : Color(red: 0.32, green: 0.57, blue: 0.87))
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .fill(Color.white.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(Color.secondary.opacity(0.1), lineWidth: 1)
+                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

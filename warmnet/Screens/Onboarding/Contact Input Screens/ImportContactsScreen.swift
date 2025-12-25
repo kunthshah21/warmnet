@@ -13,43 +13,53 @@ struct ImportContactsScreen: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [backgroundTopColor, backgroundBottomColor],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            // Black background
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 24) {
                 Spacer()
+                    .frame(minHeight: 80, maxHeight: 120)
                 
                 Text("Import Contacts")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .foregroundColor(.white)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Import your contacts for the application to work properly. We respect your privacy and only use contacts locally.")
-                    .font(.body)
+                    .font(Font.custom("Overpass-Medium", size: 16))
                     .multilineTextAlignment(.center)
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.white.opacity(0.7))
+                    .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 
                 // Image Placeholder
                 RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(Color.secondary.opacity(0.3), lineWidth: 2)
+                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 2)
                     .background(Color.clear)
                     .frame(height: 200)
                     .overlay {
                         Image(systemName: "person.crop.circle.badge.plus")
                             .font(.system(size: 60))
-                            .foregroundStyle(.secondary.opacity(0.5))
+                            .foregroundStyle(Color(red: 0.32, green: 0.57, blue: 0.87))
                     }
                     .padding(.horizontal)
                 
                 Spacer()
+                    .frame(minHeight: 100, maxHeight: 150)
                 
-                PrimaryButton("Import Contacts", icon: "square.and.arrow.down") {
+                Button(action: {
                     requestContactsAccess()
+                }) {
+                    HStack(spacing: 8) {
+                        Text("Import Contacts")
+                        Image(systemName: "square.and.arrow.down")
+                    }
+                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: 253, minHeight: 48)
+                    .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .cornerRadius(20)
                 }
                 .padding(.horizontal, 16)
                 .padding(.bottom, 20)
@@ -110,14 +120,7 @@ struct ImportContactsScreen: View {
         }
     }
     
-    // Background colors based on color scheme
-    private var backgroundTopColor: Color {
-        colorScheme == .dark ? Color(red: 0.05, green: 0.05, blue: 0.1) : Color(red: 0.95, green: 0.97, blue: 1.0)
-    }
-    
-    private var backgroundBottomColor: Color {
-        colorScheme == .dark ? Color(red: 0.1, green: 0.1, blue: 0.15) : Color(red: 0.85, green: 0.90, blue: 0.98)
-    }
+
 }
 
 #Preview {

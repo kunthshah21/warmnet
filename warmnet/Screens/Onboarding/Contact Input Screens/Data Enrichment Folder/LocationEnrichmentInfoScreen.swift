@@ -6,45 +6,65 @@ struct LocationEnrichmentInfoScreen: View {
     @State private var navigateToEnrichment = false
     
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
+        ZStack {
+            Color.black
+                .ignoresSafeArea()
             
-            Image(systemName: "location.circle.fill")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
-                .padding(.bottom, 20)
-            
-            Text("Enrich Location")
-                .font(.largeTitle.weight(.bold))
-                .multilineTextAlignment(.center)
-            
-            Text("Add location data to your contacts to visualize your network on a map and plan meetups when you travel.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+            VStack(spacing: 24) {
+                Spacer()
+                    .frame(minHeight: 80, maxHeight: 120)
+                
+                Image(systemName: "location.circle.fill")
+                    .font(.system(size: 60))
+                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .padding(.bottom, 20)
+                
+                Text("Enrich Location")
+                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                Text("Add location data to your contacts to visualize your network on a map and plan meetups when you travel.")
+                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.white.opacity(0.7))
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal)
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    infoRow(icon: "map.fill", color: .blue, title: "Visualize Network", description: "See where your friends and connections are located globally.")
+                    infoRow(icon: "airplane", color: .orange, title: "Travel Planning", description: "Easily find who to meet when you visit a new city.")
+                    infoRow(icon: "mappin.and.ellipse", color: .red, title: "Smart Suggestions", description: "Get reminders to connect when you are nearby.")
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white.opacity(0.05))
+                )
                 .padding(.horizontal)
-            
-            VStack(alignment: .leading, spacing: 12) {
-                infoRow(icon: "map.fill", color: .blue, title: "Visualize Network", description: "See where your friends and connections are located globally.")
-                infoRow(icon: "airplane", color: .orange, title: "Travel Planning", description: "Easily find who to meet when you visit a new city.")
-                infoRow(icon: "mappin.and.ellipse", color: .red, title: "Smart Suggestions", description: "Get reminders to connect when you are nearby.")
+                
+                Spacer()
+                    .frame(minHeight: 100, maxHeight: 150)
+                
+                Button(action: {
+                    navigateToEnrichment = true
+                    onEnrich()
+                }) {
+                    HStack(spacing: 8) {
+                        Text("Enrich Locations")
+                        Image(systemName: "location.fill")
+                    }
+                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: 253, minHeight: 48)
+                    .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .cornerRadius(20)
+                }
+                .padding(.horizontal)
+                .padding(.bottom)
             }
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial)
-            )
-            .padding(.horizontal)
-            
-            Spacer()
-            
-            PrimaryButton("Enrich Locations", icon: "location.fill") {
-                navigateToEnrichment = true
-                onEnrich()
-            }
-            .padding(.horizontal)
-            .padding(.bottom)
         }
-        .padding()
         .navigationTitle("Location")
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToEnrichment) {
@@ -64,10 +84,11 @@ struct LocationEnrichmentInfoScreen: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.headline)
+                    .font(Font.custom("WorkSans-Medium", size: 16))
+                    .foregroundColor(.white)
                 Text(description)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .foregroundColor(.white.opacity(0.7))
             }
         }
     }
