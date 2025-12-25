@@ -12,24 +12,14 @@ struct SplashScreen: View {
     
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                colors: [Color.blue.opacity(0.6), Color.purple.opacity(0.4)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Background - Black
+            Color.black
+                .ignoresSafeArea()
             
             // App name
             Text("WarmNet")
-                .font(.system(size: 56, weight: .bold, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.white, .white.opacity(0.9)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
+                .font(Font.custom("WorkSans-Medium", size: 56))
+                .foregroundColor(.white)
             
             // Skip button in top right
             VStack {
@@ -38,18 +28,12 @@ struct SplashScreen: View {
                     
                     Button(action: onSkip) {
                         Text("Skip")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.9))
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(
-                                Capsule()
-                                    .fill(Color.white.opacity(0.2))
-                                    .background(
-                                        Capsule()
-                                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                                    )
-                            )
+                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .cornerRadius(20)
                     }
                     .padding(.top, 60)
                     .padding(.trailing, 24)

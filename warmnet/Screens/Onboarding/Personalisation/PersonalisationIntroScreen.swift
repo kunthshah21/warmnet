@@ -12,13 +12,9 @@ struct PersonalisationIntroScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.purple.opacity(0.15), Color.blue.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Background - Black
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 40) {
                 Spacer()
@@ -26,46 +22,28 @@ struct PersonalisationIntroScreen: View {
                 
                 // Small text at top
                 Text("Let's personalise your experience ⚡")
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(.primary.opacity(0.7))
+                    .font(Font.custom("Overpass-Medium", size: 18))
+                    .foregroundColor(.white.opacity(0.9))
                 
                 Text("(Takes 45 seconds)")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.primary.opacity(0.5))
+                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .foregroundColor(.white.opacity(0.7))
                 
                 // Visual element
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.2)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 180, height: 180)
-                    
-                    Image(systemName: "person.crop.circle.fill.badge.checkmark")
-                        .font(.system(size: 80))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.purple, .blue],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                }
-                .padding(.vertical, 40)
+                Image(systemName: "person.crop.circle.fill.badge.checkmark")
+                    .font(.system(size: 80))
+                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .padding(.vertical, 40)
                 
                 // Description
                 VStack(spacing: 12) {
                     Text("We'll ask you 4 quick questions")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .font(Font.custom("WorkSans-Medium", size: 20))
+                        .foregroundColor(.white)
                     
                     Text("This helps us personalize WarmNet to match YOUR relationship style")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.primary.opacity(0.7))
+                        .font(Font.custom("Overpass-Medium", size: 16))
+                        .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }
@@ -75,20 +53,13 @@ struct PersonalisationIntroScreen: View {
                 // Start button
                 Button(action: onStart) {
                     Text("Let's Start")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(Font.custom("Overpass-Medium", size: 16))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
-                        .background(
-                            LinearGradient(
-                                colors: [.purple, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .frame(maxWidth: 253)
+                        .frame(height: 48)
+                        .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                        .cornerRadius(20)
                 }
-                .padding(.horizontal, 32)
                 .padding(.bottom, 40)
             }
         }

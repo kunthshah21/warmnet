@@ -13,8 +13,8 @@ struct CommunicationStyleQuestionScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            Color(.systemGroupedBackground)
+            // Background - Black
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -22,14 +22,14 @@ struct CommunicationStyleQuestionScreen: View {
                 VStack(spacing: 8) {
                     HStack {
                         Text("Question 4 of 4")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.primary.opacity(0.6))
+                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .foregroundColor(.white.opacity(0.7))
                         
                         Spacer()
                         
                         Text("80% complete")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.purple)
+                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
                     }
                     .padding(.horizontal, 32)
                     .padding(.top, 60)
@@ -38,17 +38,11 @@ struct CommunicationStyleQuestionScreen: View {
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.gray.opacity(0.2))
+                                .fill(Color.white.opacity(0.2))
                                 .frame(height: 4)
                             
                             RoundedRectangle(cornerRadius: 4)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.purple, .blue],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
+                                .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
                                 .frame(width: geometry.size.width * 0.8, height: 4)
                         }
                     }
@@ -59,8 +53,8 @@ struct CommunicationStyleQuestionScreen: View {
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your natural communication style?")
-                        .font(.system(size: 26, weight: .bold))
-                        .foregroundColor(.primary)
+                        .font(Font.custom("WorkSans-Medium", size: 26))
+                        .foregroundColor(.white)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                 }
@@ -85,8 +79,8 @@ struct CommunicationStyleQuestionScreen: View {
                     
                     // Micro-copy
                     Text("We'll suggest outreach styles that match YOUR personality")
-                        .font(.system(size: 14, weight: .regular))
-                        .foregroundColor(.primary.opacity(0.6))
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                         .padding(.top, 16)
@@ -97,24 +91,16 @@ struct CommunicationStyleQuestionScreen: View {
                 // Complete button
                 Button(action: onComplete) {
                     Text("Continue")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(Font.custom("Overpass-Medium", size: 16))
                         .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .frame(maxWidth: 253)
+                        .frame(height: 48)
                         .background(
                             selectedStyle != nil ?
-                            LinearGradient(
-                                colors: [.purple, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ) :
-                            LinearGradient(
-                                colors: [.gray.opacity(0.5), .gray.opacity(0.5)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
+                            Color(red: 0.32, green: 0.57, blue: 0.87) :
+                            Color.gray.opacity(0.5)
                         )
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                        .cornerRadius(20)
                 }
                 .disabled(selectedStyle == nil)
                 .padding(.horizontal, 32)
@@ -140,20 +126,14 @@ struct CommunicationStyleButton: View {
                     ZStack {
                         Circle()
                             .strokeBorder(
-                                isSelected ? Color.purple : Color.gray.opacity(0.4),
+                                isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.white.opacity(0.3),
                                 lineWidth: 2
                             )
                             .frame(width: 24, height: 24)
                         
                         if isSelected {
                             Circle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.purple, .blue],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
+                                .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
                                 .frame(width: 12, height: 12)
                         }
                     }
@@ -164,8 +144,8 @@ struct CommunicationStyleButton: View {
                             .font(.system(size: 24))
                         
                         Text(title)
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundColor(.primary)
+                            .font(Font.custom("WorkSans-Medium", size: 18))
+                            .foregroundColor(.white)
                     }
                     
                     Spacer()
@@ -173,21 +153,20 @@ struct CommunicationStyleButton: View {
                 
                 // Description
                 Text(description)
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.primary.opacity(0.7))
+                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .foregroundColor(.white.opacity(0.7))
                     .multilineTextAlignment(.leading)
                     .padding(.leading, 40)
             }
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.systemBackground))
-                    .shadow(color: isSelected ? Color.purple.opacity(0.2) : Color.clear, radius: 8)
+                    .fill(Color.white.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(
-                        isSelected ? Color.purple.opacity(0.5) : Color.clear,
+                        isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.white.opacity(0.1),
                         lineWidth: 2
                     )
             )

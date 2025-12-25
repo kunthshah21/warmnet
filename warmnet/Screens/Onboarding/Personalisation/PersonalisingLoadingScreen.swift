@@ -24,27 +24,17 @@ struct PersonalisingLoadingScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.purple.opacity(0.15), Color.blue.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Background - Black
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 40) {
                 Spacer()
                 
                 // Main title
                 Text("WarmNet")
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.purple, .blue],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                    .font(Font.custom("WorkSans-Medium", size: 36))
+                    .foregroundColor(.white)
                     .padding(.bottom, 8)
                 
                 // Animated processing indicator
@@ -53,11 +43,7 @@ struct PersonalisingLoadingScreen: View {
                     ForEach(0..<3) { index in
                         Circle()
                             .stroke(
-                                LinearGradient(
-                                    colors: [.purple.opacity(0.6), .blue.opacity(0.3)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
+                                Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.6),
                                 lineWidth: 3
                             )
                             .frame(width: 120 + CGFloat(index * 30), height: 120 + CGFloat(index * 30))
@@ -66,36 +52,18 @@ struct PersonalisingLoadingScreen: View {
                     }
                     
                     // Center pulsing icon
-                    ZStack {
-                        Circle()
-                            .fill(
-                                LinearGradient(
-                                    colors: [.purple.opacity(0.3), .blue.opacity(0.2)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .frame(width: 80, height: 80)
-                            .scaleEffect(pulseScale)
-                        
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 36))
-                            .foregroundStyle(
-                                LinearGradient(
-                                    colors: [.purple, .blue],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                    }
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 36))
+                        .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                        .scaleEffect(pulseScale)
                 }
                 .frame(height: 200)
                 
                 // Progress text
                 VStack(spacing: 12) {
                     Text(steps[currentStep])
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.primary)
+                        .font(Font.custom("Overpass-Medium", size: 18))
+                        .foregroundColor(.white)
                         .transition(.asymmetric(
                             insertion: .move(edge: .trailing).combined(with: .opacity),
                             removal: .move(edge: .leading).combined(with: .opacity)
@@ -106,17 +74,11 @@ struct PersonalisingLoadingScreen: View {
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(Color.gray.opacity(0.2))
+                                .fill(Color.white.opacity(0.2))
                                 .frame(height: 8)
                             
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(
-                                    LinearGradient(
-                                        colors: [.purple, .blue],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
+                                .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
                                 .frame(width: geometry.size.width * progress, height: 8)
                         }
                     }
@@ -124,8 +86,8 @@ struct PersonalisingLoadingScreen: View {
                     .padding(.horizontal, 60)
                     
                     Text("\(Int(progress * 100))%")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.primary.opacity(0.6))
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()

@@ -115,32 +115,6 @@ struct PersonalisationView: View {
                     .transition(.opacity)
                 }
             }
-            
-            // Debug navigation overlay (bottom) - for testing only
-            if currentScreen != .intro && currentScreen != .success && currentScreen != .personalising {
-                VStack {
-                    Spacer()
-                    
-                    HStack(spacing: 16) {
-                        Spacer()
-                        
-                        // Quick navigation button for testing
-                        Button("Reset to Intro") {
-                            withAnimation(.easeInOut(duration: 0.5)) {
-                                resetData()
-                                currentScreen = .intro
-                            }
-                        }
-                        .font(.system(size: 11, weight: .medium))
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(Color.gray.opacity(0.2))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.bottom, 8)
-                }
-            }
         }
     }
     

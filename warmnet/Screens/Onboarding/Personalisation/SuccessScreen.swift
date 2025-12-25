@@ -15,62 +15,32 @@ struct SuccessScreen: View {
     
     var body: some View {
         ZStack {
-            // Background
-            LinearGradient(
-                colors: [Color.green.opacity(0.15), Color.blue.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            // Background - Black
+            Color.black
+                .ignoresSafeArea()
             
             VStack(spacing: 32) {
                 Spacer()
                 
                 // Success icon with animation
-                ZStack {
-                    Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.green.opacity(0.3), Color.blue.opacity(0.2)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 140, height: 140)
-                        .scaleEffect(showConfetti ? 1.0 : 0.5)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.6), value: showConfetti)
-                    
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 80))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.green, .blue],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .scaleEffect(showConfetti ? 1.0 : 0.5)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.6).delay(0.1), value: showConfetti)
-                }
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 80))
+                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                    .scaleEffect(showConfetti ? 1.0 : 0.5)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.6), value: showConfetti)
                 
                 // Hooray text
                 VStack(spacing: 16) {
                     Text("Hooray! 🎉")
-                        .font(.system(size: 42, weight: .bold, design: .rounded))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [.green, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
+                        .font(Font.custom("WorkSans-Medium", size: 42))
+                        .foregroundColor(.white)
                         .scaleEffect(showConfetti ? 1.0 : 0.8)
                         .opacity(showConfetti ? 1.0 : 0.0)
                         .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showConfetti)
                     
                     Text("Congratulations on taking your first steps!")
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .font(Font.custom("Overpass-Medium", size: 20))
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                         .opacity(showConfetti ? 1.0 : 0.0)
@@ -78,8 +48,8 @@ struct SuccessScreen: View {
                         .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.3), value: showConfetti)
                     
                     Text("You're on your way to building meaningful, lasting relationships.")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundColor(.primary.opacity(0.7))
+                        .font(Font.custom("Overpass-Medium", size: 16))
+                        .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                         .opacity(showConfetti ? 1.0 : 0.0)
