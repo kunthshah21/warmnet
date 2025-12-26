@@ -7,6 +7,7 @@ struct warmnetApp: App {
         let schema = Schema([
             Contact.self,
             PersonalisationData.self,
+            Interaction.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

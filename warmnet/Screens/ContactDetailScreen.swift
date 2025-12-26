@@ -4,6 +4,7 @@ import SwiftData
 struct ContactDetailScreen: View {
     @Bindable var contact: Contact
     @State private var showEditSheet = false
+    @State private var showHistory = false
     
     var body: some View {
         ScrollView {
@@ -35,6 +36,9 @@ struct ContactDetailScreen: View {
                 if !contact.reference.isEmpty {
                     referenceSection
                 }
+                
+                // Interaction History
+                interactionHistorySection
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 20)
@@ -197,7 +201,103 @@ struct ContactDetailScreen: View {
         }
     }
     
+    private var interactionHistorySection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                sectionHeader("Interaction History")
+                
+                Spacer()
+                
+                Button {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        showHistory.toggle()
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(showHistory ? "Hide" : "Show")
+                            .font(.subheadline.weight(.medium))
+                        Image(systemName: showHistory ? "chevron.up" : "chevron.down")
+                            .font(.caption.weight(.semibold))
+                    }
+                    .foregroundStyle(.blue)
+                }
+            }
+            
+            if showHistory {
+                VStack(spacing: 0) {
+                    if contact.interactions.isEmpty {
+                        HStack(spacing: 12) {
+                            Image(systemName: "clock.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 24)
+                            
+                            Text("No interactions logged yet")
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                            
+                            Spacer()
+                        }
+                        .padding(16)
+                    } else {
+                        ForEach(contact.interactions.sorted(by: { $0.date > $1.date }), id: \.id) { interaction in
+                            VStack(spacing: 0) {
+                                HStack(alignment: .top, spacing: 12) {
+                                    Image(systemName: interaction.interactionType.icon)
+                                        .font(.system(size: 18))
+                                        .foregroundStyle(colorForType(interaction.interactionType.color))
+                                        .frame(width: 24)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text(interaction.interactionType.rawValue)
+                                                .font(.subheadline.weight(.medium))
+                                                .foregroundStyle(.primary)
+                                            
+                                            Spacer()
+                                            
+                                            Text(interaction.date, style: .date)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        
+                                        if !interaction.notes.isEmpty {
+                                            Text(interaction.notes)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(3)
+                                                .padding(.top, 2)
+                                        }
+                                    }
+                                }
+                                .padding(16)
+                                
+                                if interaction.id != contact.interactions.sorted(by: { $0.date > $1.date }).last?.id {
+                                    Divider()
+                                        .padding(.leading, 52)
+                                }
+                            }
+                        }
+                    }
+                }
+                .background(cardBackground)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+    }
+    
     // MARK: - Helpers
+    
+    private func colorForType(_ colorName: String) -> Color {
+        switch colorName {
+        case "blue": return .blue
+        case "green": return .green
+        case "purple": return .purple
+        case "orange": return .orange
+        case "mint": return .mint
+        default: return .blue
+        }
+    }
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)

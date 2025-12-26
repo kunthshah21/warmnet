@@ -21,9 +21,12 @@ final class Contact {
     var notes: String
     var priority: Priority?
     
-    var lastInteractionDate: Date?
+    var lastInteractionDate: Date? // Deprecated: Use interactions array instead
     var createdAt: Date
     var updatedAt: Date
+    
+    @Relationship(deleteRule: .cascade, inverse: \Interaction.contact)
+    var interactions: [Interaction] = []
     
     init(
         name: String = "",
@@ -79,8 +82,12 @@ final class Contact {
         }
     }
     
+    var mostRecentInteraction: Interaction? {
+        interactions.sorted { $0.date > $1.date }.first
+    }
+    
     var nextReminderDate: Date {
-        let baseDate = lastInteractionDate ?? createdAt
+        let baseDate = mostRecentInteraction?.date ?? lastInteractionDate ?? createdAt
         return Calendar.current.date(byAdding: .day, value: reminderInterval, to: baseDate) ?? baseDate
     }
     

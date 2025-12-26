@@ -10,7 +10,9 @@ import SwiftData
 
 struct RootView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @Environment(\.modelContext) private var modelContext
     @State private var showOnboarding = false
+    @State private var hasMigrated = false
     
     var body: some View {
         Group {
@@ -29,6 +31,12 @@ struct RootView: View {
         .onAppear {
             // For testing: Show onboarding if not completed
             showOnboarding = !hasCompletedOnboarding
+            
+            // Perform one-time migration
+            if !hasMigrated && MigrationHelper.needsMigration(modelContext: modelContext) {
+                MigrationHelper.migrateContactInteractions(modelContext: modelContext)
+                hasMigrated = true
+            }
         }
     }
 }
