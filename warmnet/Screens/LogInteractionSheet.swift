@@ -13,7 +13,20 @@ struct LogInteractionSheet: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            listContent
+                .navigationTitle("Log Interaction")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel") {
+                            dismiss()
+                        }
+                    }
+                }
+        }
+    }
+    
+    private var listContent: some View {
+        List {
                 if let selected = selectedContact {
                     Section("Log Interaction") {
                         HStack {
@@ -55,7 +68,7 @@ struct LogInteractionSheet: View {
                                         HStack {
                                             Text(contact.name)
                                             Spacer()
-                                            if let date = contact.lastInteractionDate {
+                                            if let date = contact.lastContacted {
                                                 Text(date, style: .date)
                                                     .font(.caption)
                                                     .foregroundStyle(.secondary)
@@ -78,7 +91,7 @@ struct LogInteractionSheet: View {
                                     HStack {
                                         Text(contact.name)
                                         Spacer()
-                                        if let date = contact.lastInteractionDate {
+                                        if let date = contact.lastContacted {
                                             Text(date, style: .date)
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
@@ -91,15 +104,6 @@ struct LogInteractionSheet: View {
                     }
                 }
             }
-            .navigationTitle("Log Interaction")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-        }
     }
     
     private func saveInteraction() {
@@ -115,9 +119,8 @@ struct LogInteractionSheet: View {
         
         modelContext.insert(interaction)
         
-        // Update lastInteractionDate for backward compatibility
-        contact.lastInteractionDate = interactionDate
-        contact.updatedAt = Date()
+        // Reschedule contact using reminder system
+        ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: interactionDate)
         
         dismiss()
     }
