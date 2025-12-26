@@ -21,12 +21,18 @@ final class Contact {
     var notes: String
     var priority: Priority?
     
-    var lastInteractionDate: Date? // Deprecated: Use interactions array instead
+    // Reminder System properties
+    var nextTouchDate: Date?
+    var lastContacted: Date?
+    
     var createdAt: Date
     var updatedAt: Date
     
     @Relationship(deleteRule: .cascade, inverse: \Interaction.contact)
     var interactions: [Interaction] = []
+    
+    @Relationship(deleteRule: .cascade, inverse: \Milestone.contact)
+    var milestones: [Milestone] = []
     
     init(
         name: String = "",
@@ -42,7 +48,8 @@ final class Contact {
         jobTitle: String = "",
         notes: String = "",
         priority: Priority = .broaderNetwork,
-        lastInteractionDate: Date? = nil
+        nextTouchDate: Date? = nil,
+        lastContacted: Date? = nil
     ) {
         self.id = UUID()
         self.name = name
@@ -58,7 +65,8 @@ final class Contact {
         self.jobTitle = jobTitle
         self.notes = notes
         self.priority = priority
-        self.lastInteractionDate = lastInteractionDate ?? Date()
+        self.nextTouchDate = nextTouchDate
+        self.lastContacted = lastContacted
         self.createdAt = Date()
         self.updatedAt = Date()
     }
@@ -75,8 +83,8 @@ final class Contact {
     
     var reminderInterval: Int {
         switch priority {
-        case .innerCircle: return 7
-        case .keyRelationships: return 30
+        case .innerCircle: return 14
+        case .keyRelationships: return 60
         case .broaderNetwork: return 180
         case .none: return 180
         }
@@ -86,8 +94,13 @@ final class Contact {
         interactions.sorted { $0.date > $1.date }.first
     }
     
+    // Legacy support - returns nextTouchDate if set, otherwise calculates from old logic
     var nextReminderDate: Date {
-        let baseDate = mostRecentInteraction?.date ?? lastInteractionDate ?? createdAt
+        if let nextTouch = nextTouchDate {
+            return nextTouch
+        }
+        // Fallback for legacy data
+        let baseDate = mostRecentInteraction?.date ?? lastContacted ?? createdAt
         return Calendar.current.date(byAdding: .day, value: reminderInterval, to: baseDate) ?? baseDate
     }
     

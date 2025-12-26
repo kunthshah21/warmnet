@@ -1,0 +1,424 @@
+# Contact Reminder System - Technical Specification
+
+## Executive Summary
+
+**Problem:** When all contacts in a tier are added at the same time, their reminder dates synchronize, creating overwhelming "due date cliffs" where 20+ people need contact on the same day.
+
+**Solution:** Implement staggered scheduling with randomized distribution to spread contacts naturally across time, combined with a smart daily queue system that presents a manageable number of contacts each day.
+
+---
+
+## Core Concept
+
+### The Three-Part Solution
+
+1. **Initial Random Distribution**: When contacts are first added, distribute their next touch dates randomly within the first cycle period
+2. **Variance on Recalculation**: After each interaction, add randomness (±15%) to prevent re-synchronization
+3. **Smart Daily Queue**: Show only the top N highest-priority contacts per day, not all overdue contacts
+
+### Why This Works
+
+- **Prevents clustering**: Random distribution means contacts naturally spread across days
+- **Maintains spread over time**: Variance prevents contacts from gradually syncing back up
+- **Reduces cognitive load**: Daily queue limits ensure users see 3-10 contacts per day, not 50
+- **Feels natural**: Small variances make the system feel less robotic and more human
+
+---
+
+## Detailed Implementation
+
+### 1. Contact Tier Configuration
+
+Each tier should have the following properties:
+
+```javascript
+const TIER_CONFIG = {
+  INNER_CIRCLE: {
+    name: "Inner Circle",
+    frequency_days: 14,        // Contact every 2 weeks
+    tier_weight: 3,            // Priority multiplier
+    variance_percent: 0.15     // ±15% variance (±2 days)
+  },
+  MEDIUM_CONNECTION: {
+    name: "Medium Connection",
+    frequency_days: 60,        // Contact every 2 months
+    tier_weight: 2,
+    variance_percent: 0.15     // ±15% variance (±9 days)
+  },
+  BROADER_NETWORK: {
+    name: "Broader Network",
+    frequency_days: 180,       // Contact every 6 months
+    tier_weight: 1,
+    variance_percent: 0.15     // ±15% variance (±27 days)
+  }
+};
+```
+
+### 2. Algorithm: Adding a New Contact
+
+When a user adds or imports a contact:
+
+```
+INPUT: 
+  - contact (the contact object)
+  - tier (INNER_CIRCLE, MEDIUM_CONNECTION, or BROADER_NETWORK)
+  - current_date (today's date)
+
+PROCESS:
+  1. Get frequency_days from tier configuration
+  2. Generate random_offset = random_integer(0, frequency_days)
+  3. Calculate next_touch_date = current_date + random_offset
+  4. Set contact.next_touch_date = next_touch_date
+  5. Set contact.last_contacted = null
+  6. Save contact
+
+OUTPUT: Contact with next_touch_date spread randomly within the first cycle
+```
+
+**Mathematical Formula:**
+```
+next_touch_date = current_date + RANDOM(0, frequency_days)
+```
+
+### 3. Algorithm: Bulk Import Distribution
+
+When importing multiple contacts at once, use even distribution to prevent clustering:
+
+```
+INPUT:
+  - contacts[] (array of contacts)
+  - tier (their tier assignment)
+  - current_date (today's date)
+
+PROCESS:
+  1. Get frequency_days from tier configuration
+  2. FOR each contact at index i:
+       a. Calculate offset = (i * frequency_days) / total_contacts
+       b. Set contact.next_touch_date = current_date + offset
+       c. Save contact
+
+OUTPUT: Contacts evenly distributed across the frequency window
+```
+
+**Mathematical Formula:**
+```
+For contact at index i out of N contacts:
+next_touch_date = current_date + (i * frequency_days / N)
+```
+
+**Example:** Importing 28 Inner Circle contacts (14-day frequency) spreads them at roughly 0.5-day intervals across 2 weeks.
+
+### 4. Algorithm: Logging an Interaction
+
+When a user contacts someone:
+
+```
+INPUT:
+  - contact (the contact being interacted with)
+  - current_date (today's date)
+
+PROCESS:
+  1. Set contact.last_contacted = current_date
+  2. Get frequency_days from contact's tier configuration
+  3. Get variance_percent from tier configuration
+  4. Calculate buffer = frequency_days * variance_percent
+  5. Generate random_adjustment = random_integer(-buffer, +buffer)
+  6. Calculate next_touch_date = current_date + frequency_days + random_adjustment
+  7. Set contact.next_touch_date = next_touch_date
+  8. Save contact
+
+OUTPUT: Contact rescheduled with variance to prevent synchronization
+```
+
+**Mathematical Formula:**
+```
+buffer = frequency_days × variance_percent
+random_adjustment = RANDOM(-buffer, +buffer)
+next_touch_date = current_date + frequency_days + random_adjustment
+```
+
+### 5. Algorithm: Generating Daily Queue
+
+The most important algorithm - what the user sees each day:
+
+```
+INPUT:
+  - current_date (today's date)
+  - max_queue_size (default: 5, user-configurable 3-10)
+
+PROCESS:
+  1. Get all contacts where next_touch_date <= current_date
+  2. FOR each candidate contact:
+       a. Calculate days_overdue = max(0, current_date - next_touch_date)
+       b. Get tier_weight from contact's tier
+       c. Calculate urgency_bonus (see Urgency Bonus section)
+       d. Calculate priority_score = (days_overdue * tier_weight) + urgency_bonus
+  
+  3. Initialize empty queue[]
+  
+  4. Get all Inner Circle contacts from candidates
+     Sort by priority_score descending
+     Add top 2 to queue (or fewer if less than 2 available)
+  
+  5. Get remaining candidates not yet in queue
+     Sort by priority_score descending
+     Add to queue until queue.length = max_queue_size
+  
+  6. Return queue
+
+OUTPUT: Array of top-priority contacts (max length = max_queue_size)
+```
+
+**Priority Score Formula:**
+```
+priority_score = (days_overdue × tier_weight) + urgency_bonus
+
+Where:
+- days_overdue = max(0, current_date - next_touch_date)
+- tier_weight = 3 (Inner), 2 (Medium), 1 (Broader)
+- urgency_bonus = calculated based on upcoming events
+```
+
+### 6. Urgency Bonus Calculation
+
+Boost priority for time-sensitive events:
+
+```javascript
+function calculateUrgencyBonus(contact, current_date) {
+  let bonus = 0;
+  
+  // Check for upcoming birthday
+  if (contact.birthday) {
+    const days_until_birthday = getDaysUntil(contact.birthday, current_date);
+    if (days_until_birthday >= 0 && days_until_birthday <= 7) {
+      bonus += 15;  // Birthday within 7 days
+    }
+  }
+  
+  // Check for upcoming milestones
+  if (contact.milestones) {
+    for (const milestone of contact.milestones) {
+      const days_until = getDaysUntil(milestone.date, current_date);
+      if (days_until >= 0 && days_until <= 14) {
+        bonus += 10;  // Milestone within 14 days
+      }
+    }
+  }
+  
+  // Check for very overdue contacts (intervention needed)
+  const days_overdue = current_date - contact.next_touch_date;
+  if (days_overdue > contact.tier.frequency_days * 2) {
+    bonus += 20;  // Severely overdue (2x past frequency)
+  }
+  
+  return bonus;
+}
+
+---
+
+## Example Walkthrough
+
+### Scenario: User Adds 10 Inner Circle Contacts on December 26, 2025
+
+**Step 1: Initial Distribution**
+
+| Contact | Random Offset | Next Touch Date |
+|---------|---------------|-----------------|
+| Sarah   | 0 days        | Dec 26          |
+| Mike    | 2 days        | Dec 28          |
+| John    | 4 days        | Dec 30          |
+| Emma    | 6 days        | Jan 1           |
+| Lisa    | 7 days        | Jan 2           |
+| Tom     | 9 days        | Jan 4           |
+| Alex    | 10 days       | Jan 5           |
+| Chris   | 12 days       | Jan 7           |
+| Maya    | 13 days       | Jan 8           |
+| Sam     | 14 days       | Jan 9           |
+
+**Result:** Instead of all 10 due on January 9, they're spread across 2 weeks.
+
+---
+
+### Step 2: Daily Queue Generation (December 27)
+
+**Candidates:**
+- Sarah (1 day overdue, Inner Circle)
+
+**Priority Calculation:**
+```
+Sarah:
+  days_overdue = 1
+  tier_weight = 3
+  urgency_bonus = 0
+  priority_score = (1 × 3) + 0 = 3
+```
+
+**Daily Queue:** [Sarah]
+
+---
+
+### Step 3: User Contacts Sarah on December 27
+
+**Recalculation:**
+```
+current_date = Dec 27
+frequency_days = 14
+variance_percent = 0.15
+buffer = 14 × 0.15 = 2.1 days
+random_adjustment = random(-2, +2) = +1 day
+next_touch_date = Dec 27 + 14 + 1 = January 11
+```
+
+**Result:** Sarah's next touch is January 11 (not January 10), preventing perfect sync with others.
+
+---
+
+### Step 4: Daily Queue on January 2 (With Events)
+
+**Candidates:**
+- Sarah (no - next touch Jan 11)
+- Mike (5 days overdue)
+- John (3 days overdue)  
+- Emma (1 day overdue)
+- Lisa (0 days overdue - due today)
+- Tom (upcoming birthday on Jan 5)
+
+**Priority Calculations:**
+```
+Mike:   (5 × 3) + 0 = 15
+John:   (3 × 3) + 0 = 9
+Emma:   (1 × 3) + 0 = 3
+Lisa:   (0 × 3) + 0 = 0
+Tom:    (0 × 3) + 15 = 15  (birthday bonus)
+```
+
+**Daily Queue (max 5):**
+1. Mike (priority 15)
+2. Tom (priority 15, birthday coming)
+3. John (priority 9)
+4. Emma (priority 3)
+5. Lisa (priority 0)
+
+---
+
+### Step 5: Long-term Effect (After 3 Months)
+
+Due to variance in recalculation, contacts gradually drift apart even further:
+
+**Without variance:**
+- All 10 contacts sync back up every 14 days forever
+
+**With variance (±2 days):**
+- After 6 cycles, contacts are spread across 7-10 days
+- System naturally maintains healthy distribution
+- No manual intervention needed
+
+---
+
+## Configuration & Tuning
+
+### User-Configurable Settings
+
+```javascript
+USER_SETTINGS = {
+  daily_queue_size: 5,           // How many contacts to show per day (3-10)
+  enable_urgency_bonus: true,    // Boost priority for birthdays/milestones
+  snooze_days: 3,                // Default snooze duration
+  batch_mode_enabled: true       // Allow viewing all overdue at once
+}
+```
+
+### System Tunables (Admin/Config)
+
+```javascript
+SYSTEM_CONFIG = {
+  variance_percent: 0.15,        // Global variance (can be per-tier)
+  priority_weight_inner: 3,      // Inner Circle multiplier
+  priority_weight_medium: 2,     // Medium Connection multiplier
+  priority_weight_broader: 1,    // Broader Network multiplier
+  birthday_bonus: 15,            // Priority boost for birthdays
+  milestone_bonus: 10,           // Priority boost for milestones
+  severe_overdue_multiplier: 2   // How many cycles = severely overdue
+}
+```
+
+---
+
+## Testing Checklist
+
+### Unit Tests
+- [ ] Random distribution generates values within [0, frequency_days]
+- [ ] Variance calculation produces values within ±buffer range
+- [ ] Priority score calculation handles all tier weights correctly
+- [ ] Urgency bonus correctly identifies upcoming events
+- [ ] Daily queue respects max_queue_size limit
+- [ ] Daily queue prioritizes Inner Circle contacts
+
+### Integration Tests
+- [ ] Bulk import distributes contacts evenly
+- [ ] Logging interaction updates next_touch_date correctly
+- [ ] Daily queue excludes contacts already contacted today
+- [ ] System handles users with no overdue contacts gracefully
+- [ ] Timezone handling for date calculations
+
+### Load Tests
+- [ ] Performance with 1,000+ contacts
+- [ ] Daily queue generation time < 100ms
+- [ ] Bulk import of 500 contacts completes within acceptable time
+
+---
+
+## Edge Cases to Handle
+
+1. **User adds contact with past date**: Treat as overdue immediately
+2. **User manually changes next_touch_date**: Respect manual override, resume variance on next interaction
+3. **User has 0 contacts in a tier**: Daily queue shows contacts from other tiers
+4. **All contacts are severely overdue (100+ days)**: Cap priority scores to prevent overflow, show intervention message
+5. **User contacts someone before their due date**: Still apply variance to next_touch_date (reward proactive behavior)
+6. **User changes contact's tier**: Recalculate next_touch_date based on new tier's frequency
+
+---
+
+## Success Metrics
+
+Track these to validate the algorithm is working:
+
+1. **Distribution Variance**: Standard deviation of next_touch_dates within a tier
+   - Target: >= 20% of frequency_days
+2. **Daily Queue Stability**: Average queue size over 30 days
+   - Target: Within 1 standard deviation of max_queue_size
+3. **User Completion Rate**: % of queued contacts actually contacted
+   - Target: >= 60%
+4. **Overdue Accumulation**: Growth rate of overdue contacts
+   - Target: < 5% monthly growth (indicates system is sustainable)
+
+---
+
+## Implementation Priority
+
+### Phase 1 (MVP)
+1. Basic random distribution on contact creation
+2. Variance on interaction logging
+3. Simple daily queue (no urgency bonus)
+
+### Phase 2 (Enhancement)
+4. Urgency bonus for birthdays/milestones
+5. Bulk import even distribution
+6. User-configurable queue size
+
+### Phase 3 (Optimization)
+7. Advanced priority scoring
+8. Analytics dashboard
+9. Adaptive frequency suggestions
+
+---
+
+## Summary
+
+This algorithm solves the "due date cliff" problem through three mechanisms:
+
+1. **Random initial distribution** spreads contacts naturally from day one
+2. **Variance on recalculation** prevents gradual re-synchronization
+3. **Smart daily queue** ensures users never feel overwhelmed
+
+The result is a system that feels natural, maintains relationship rhythms without rigid deadlines, and scales gracefully from 10 contacts to 1,000+.

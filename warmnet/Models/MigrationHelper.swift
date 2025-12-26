@@ -10,7 +10,7 @@ import SwiftData
 
 @MainActor
 class MigrationHelper {
-    /// Migrates existing contacts with lastInteractionDate to create initial Interaction records
+    /// Migrates existing contacts with lastContacted to create initial Interaction records
     static func migrateContactInteractions(modelContext: ModelContext) {
         let descriptor = FetchDescriptor<Contact>()
         
@@ -19,8 +19,8 @@ class MigrationHelper {
             var migratedCount = 0
             
             for contact in contacts {
-                // Check if contact has lastInteractionDate but no interactions
-                if let lastDate = contact.lastInteractionDate,
+                // Check if contact has lastContacted but no interactions
+                if let lastDate = contact.lastContacted,
                    contact.interactions.isEmpty {
                     
                     // Create initial interaction from lastInteractionDate
@@ -52,9 +52,9 @@ class MigrationHelper {
         do {
             let contacts = try modelContext.fetch(descriptor)
             
-            // Check if any contact has lastInteractionDate but no interactions
-            return contacts.contains { contact in
-                contact.lastInteractionDate != nil && contact.interactions.isEmpty
+            // Check if any contact has lastContacted but no interactions
+            return contacts.contains { (contact: Contact) in
+                contact.lastContacted != nil && contact.interactions.isEmpty
             }
         } catch {
             print("❌ Error checking migration status: \(error)")

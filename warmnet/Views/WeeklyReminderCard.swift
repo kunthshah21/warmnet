@@ -51,7 +51,7 @@ struct WeeklyReminderCard: View {
             // Contact is completed if:
             // 1. They were due this week or earlier
             // 2. They've been contacted this week
-            guard let lastInteraction = contact.lastInteractionDate else { return false }
+            guard let lastInteraction = contact.lastContacted else { return false }
             let wasDue = contact.nextReminderDate <= endOfWeek
             let contactedThisWeek = lastInteraction >= startOfWeek && lastInteraction <= endOfWeek
             return wasDue && contactedThisWeek

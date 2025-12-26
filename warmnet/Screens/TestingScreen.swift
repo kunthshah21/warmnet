@@ -7,6 +7,7 @@ struct TestingScreen: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var showImportFlow = false
     @State private var showOnboarding = false
+    @State private var showReminderDebug = false
     
     var body: some View {
         NavigationStack {
@@ -29,6 +30,14 @@ struct TestingScreen: View {
                     .padding(.horizontal, 16)
                     
                     PrimaryButton(
+                        "Reminder System Debug",
+                        action: {
+                            showReminderDebug = true
+                        }
+                    )
+                    .padding(.horizontal, 16)
+                    
+                    PrimaryButton(
                         "Test Onboarding",
                         action: resetOnboarding
                     )
@@ -44,6 +53,9 @@ struct TestingScreen: View {
             .navigationTitle("Testing")
             .navigationDestination(isPresented: $showImportFlow) {
                 ImportContactsScreen()
+            }
+            .navigationDestination(isPresented: $showReminderDebug) {
+                ReminderQueueDebugView()
             }
         }
     }
