@@ -14,8 +14,10 @@ struct ReminderQueueDebugView: View {
     
     @State private var queueContacts: [DailyQueueGenerator.QueueContact] = []
     @State private var allOverdueContacts: [DailyQueueGenerator.QueueContact] = []
+    @State private var allContactsSchedule: [(contact: Contact, daysUntil: Int)] = []
     @State private var settings: UserSettings?
     @State private var showingAllOverdue = false
+    @State private var showingAllScheduled = false
     @State private var selectedContact: DailyQueueGenerator.QueueContact?
     
     var body: some View {
@@ -38,6 +40,9 @@ struct ReminderQueueDebugView: View {
                     
                     // All Overdue Section
                     allOverdueSection
+                    
+                    // All Contacts Schedule Section
+                    allContactsScheduleSection
                     
                     Spacer(minLength: 40)
                 }
@@ -159,6 +164,50 @@ struct ReminderQueueDebugView: View {
         }
     }
     
+    // MARK: - All Contacts Schedule Section
+    
+    private var allContactsScheduleSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("All Contacts Schedule")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                Button(action: { showingAllScheduled.toggle() }) {
+                    HStack(spacing: 4) {
+                        Text("\(allContactsSchedule.count)")
+                            .font(.subheadline)
+                        Image(systemName: showingAllScheduled ? "chevron.up" : "chevron.down")
+                            .font(.caption)
+                    }
+                    .foregroundColor(.secondary)
+                }
+            }
+            
+            if showingAllScheduled {
+                if allContactsSchedule.isEmpty {
+                    Text("No contacts with scheduled reminders")
+                        .foregroundColor(.secondary)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(.ultraThinMaterial)
+                        )
+                } else {
+                    ForEach(allContactsSchedule, id: \.contact.id) { item in
+                        ContactScheduleCard(
+                            contact: item.contact,
+                            daysUntil: item.daysUntil
+                        )
+                    }
+                }
+            }
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func loadData() {
@@ -205,6 +254,17 @@ struct ReminderQueueDebugView: View {
                 )
             }
             .sorted { $0.priorityScore > $1.priorityScore }
+            
+            // Load all contacts schedule
+            allContactsSchedule = allContacts.compactMap { contact -> (Contact, Int)? in
+                guard let nextTouch = contact.nextTouchDate else { return nil }
+                
+                let calendar = Calendar.current
+                let days = calendar.dateComponents([.day], from: Date(), to: nextTouch).day ?? 0
+                
+                return (contact, days)
+            }
+            .sorted { $0.1 < $1.1 } // Sort by days until (soonest first)
             
         } catch {
             print("Failed to load reminder data: \(error)")
@@ -355,6 +415,136 @@ struct SettingRow: View {
                 .fontWeight(.medium)
                 .foregroundColor(.primary)
         }
+    }
+}
+
+struct ContactScheduleCard: View {
+    let contact: Contact
+    let daysUntil: Int
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Name and status
+            HStack {
+                Text(contact.name)
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Spacer()
+                
+                statusBadge
+            }
+            
+            // Priority tier
+            if let priority = contact.priority {
+                HStack(spacing: 8) {
+                    Circle()
+                        .fill(priority.color)
+                        .frame(width: 8, height: 8)
+                    
+                    Text(priority.rawValue)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Next touch date
+            if let nextTouch = contact.nextTouchDate {
+                HStack(spacing: 12) {
+                    Label(
+                        formatDate(nextTouch),
+                        systemImage: "calendar"
+                    )
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                    
+                    if daysUntil < 0 {
+                        Text("\(abs(daysUntil)) days overdue")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    } else if daysUntil == 0 {
+                        Text("Due today")
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    } else {
+                        Text("In \(daysUntil) day\(daysUntil == 1 ? "" : "s")")
+                            .font(.caption)
+                            .foregroundColor(.green)
+                    }
+                }
+            }
+            
+            // Last contacted
+            if let lastContact = contact.lastContacted {
+                Label(
+                    "Last: \(formatDate(lastContact))",
+                    systemImage: "clock.fill"
+                )
+                .font(.caption)
+                .foregroundColor(.secondary)
+            } else {
+                Label(
+                    "Never contacted",
+                    systemImage: "clock.fill"
+                )
+                .font(.caption)
+                .foregroundColor(.orange)
+            }
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+        )
+    }
+    
+    private var statusBadge: some View {
+        Group {
+            if daysUntil < 0 {
+                Text("OVERDUE")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.red)
+                    .cornerRadius(6)
+            } else if daysUntil == 0 {
+                Text("TODAY")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.orange)
+                    .cornerRadius(6)
+            } else if daysUntil <= 3 {
+                Text("SOON")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.yellow)
+                    .cornerRadius(6)
+            } else {
+                Text("SCHEDULED")
+                    .font(.caption2)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.green)
+                    .cornerRadius(6)
+            }
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter.string(from: date)
     }
 }
 
