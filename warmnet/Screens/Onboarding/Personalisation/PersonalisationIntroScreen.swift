@@ -12,45 +12,42 @@ struct PersonalisationIntroScreen: View {
     
     var body: some View {
         ZStack {
-            // Background - Black
+            // Background - White
             Color.white
                 .ignoresSafeArea()
             
-            VStack(spacing: 40) {
+            VStack(spacing: 0) {
                 Spacer()
-                    .frame(height: 60)
+                    .frame(minHeight: 60, maxHeight: 100)
                 
-                // Small text at top
-                Text("Let's personalise your experience ⚡")
-                    .font(Font.custom("Overpass-Medium", size: 18))
-                    .foregroundColor(.black.opacity(0.9))
+                Spacer()
                 
-                Text("(Takes 45 seconds)")
-                    .font(Font.custom("Overpass-Medium", size: 14))
-                    .foregroundColor(.black.opacity(0.7))
-                
-                // Visual element
-                Image(systemName: "person.crop.circle.fill.badge.checkmark")
-                    .font(.system(size: 80))
-                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
-                    .padding(.vertical, 40)
-                
-                // Description
-                VStack(spacing: 12) {
-                    Text("We'll ask you 4 quick questions")
-                        .font(Font.custom("WorkSans-Medium", size: 20))
+                // Content Section
+                VStack(spacing: 20) {
+                    // Title
+                    Text("Lets personalise your\nexperience")
+                        .font(Font.custom("WorkSans-Regular", size: 30))
+                        .lineSpacing(6)
                         .foregroundColor(.black)
-                    
-                    Text("This helps us personalize WarmNet to match YOUR relationship style")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.black.opacity(0.8))
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 16)
+
+                    
+                    // Subtitle
+                    Text("Personalize how you nurture every important relationship effortlessly")
+                        .font(Font.custom("Overpass", size: 14))
+                        .lineSpacing(4)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .padding(.horizontal, 70)
                 }
                 
                 Spacer()
+                    .frame(height: 40)
                 
-                // Start button
+                // Button
                 Button(action: onStart) {
                     Text("Let's Start")
                         .font(Font.custom("Overpass-Medium", size: 16))
@@ -60,7 +57,8 @@ struct PersonalisationIntroScreen: View {
                         .background(Color(red: 0.32, green: 0.57, blue: 0.87))
                         .cornerRadius(20)
                 }
-                .padding(.bottom, 40)
+                
+                Spacer()
             }
         }
     }
