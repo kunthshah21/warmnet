@@ -12,7 +12,7 @@ struct PriorityEnrichmentScreen: View {
     
     var body: some View {
         ZStack {
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -39,7 +39,7 @@ struct PriorityEnrichmentScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(Color.black)
+        .background(Color.white)
         .navigationDestination(isPresented: $navigateToLocation) {
             LocationEnrichmentInfoScreen(onEnrich: {
                 // TODO: Navigate to actual location enrichment screen
@@ -59,7 +59,7 @@ struct PriorityEnrichmentRow: View {
         HStack {
             Text(contact.name)
                 .font(Font.custom("WorkSans-Medium", size: 16))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .lineLimit(1)
             
             Spacer()

@@ -16,7 +16,7 @@ struct SuccessScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 32) {
@@ -33,14 +33,14 @@ struct SuccessScreen: View {
                 VStack(spacing: 16) {
                     Text("Hooray! 🎉")
                         .font(Font.custom("WorkSans-Medium", size: 42))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .scaleEffect(showConfetti ? 1.0 : 0.8)
                         .opacity(showConfetti ? 1.0 : 0.0)
                         .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showConfetti)
                     
                     Text("Congratulations on taking your first steps!")
                         .font(Font.custom("Overpass-Medium", size: 20))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                         .opacity(showConfetti ? 1.0 : 0.0)
@@ -49,7 +49,7 @@ struct SuccessScreen: View {
                     
                     Text("You're on your way to building meaningful, lasting relationships.")
                         .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(.black.opacity(0.8))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                         .opacity(showConfetti ? 1.0 : 0.0)

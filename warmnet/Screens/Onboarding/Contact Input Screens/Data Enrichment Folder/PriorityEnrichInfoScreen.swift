@@ -7,7 +7,7 @@ struct PriorityEnrichInfoScreen: View {
     
     var body: some View {
         ZStack {
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -21,14 +21,14 @@ struct PriorityEnrichInfoScreen: View {
                 
                 Text("Select Priority")
                     .font(Font.custom("WorkSans-Medium", size: 32))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Categorize your contacts into three distinct priority levels to manage your interactions effectively.")
                     .font(Font.custom("Overpass-Medium", size: 16))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 
@@ -89,10 +89,10 @@ struct PriorityEnrichInfoScreen: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(Font.custom("WorkSans-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                 Text(description)
                     .font(Font.custom("Overpass-Medium", size: 14))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
             }
         }
     }

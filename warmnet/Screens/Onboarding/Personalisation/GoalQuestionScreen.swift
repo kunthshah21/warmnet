@@ -14,7 +14,7 @@ struct GoalQuestionScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -23,7 +23,7 @@ struct GoalQuestionScreen: View {
                     HStack {
                         Text("Question 1 of 4")
                             .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.black.opacity(0.7))
                         
                         Spacer()
                     }
@@ -50,7 +50,7 @@ struct GoalQuestionScreen: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your main goal with relationships?")
                         .font(Font.custom("WorkSans-Medium", size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                 }
@@ -124,7 +124,7 @@ struct RadioButton: View {
                 // Text
                 Text(text)
                     .font(Font.custom("Overpass-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()

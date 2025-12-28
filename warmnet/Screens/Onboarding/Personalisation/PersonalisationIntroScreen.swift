@@ -13,7 +13,7 @@ struct PersonalisationIntroScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
@@ -23,11 +23,11 @@ struct PersonalisationIntroScreen: View {
                 // Small text at top
                 Text("Let's personalise your experience ⚡")
                     .font(Font.custom("Overpass-Medium", size: 18))
-                    .foregroundColor(.white.opacity(0.9))
+                    .foregroundColor(.black.opacity(0.9))
                 
                 Text("(Takes 45 seconds)")
                     .font(Font.custom("Overpass-Medium", size: 14))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                 
                 // Visual element
                 Image(systemName: "person.crop.circle.fill.badge.checkmark")
@@ -39,11 +39,11 @@ struct PersonalisationIntroScreen: View {
                 VStack(spacing: 12) {
                     Text("We'll ask you 4 quick questions")
                         .font(Font.custom("WorkSans-Medium", size: 20))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                     
                     Text("This helps us personalize WarmNet to match YOUR relationship style")
                         .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(.black.opacity(0.8))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
                 }

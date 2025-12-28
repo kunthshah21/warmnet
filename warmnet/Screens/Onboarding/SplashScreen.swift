@@ -13,13 +13,13 @@ struct SplashScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             // App name
             Text("WarmNet")
                 .font(Font.custom("WorkSans-Medium", size: 56))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
             
             // Skip button in top right
             VStack {

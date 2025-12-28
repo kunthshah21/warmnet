@@ -14,7 +14,7 @@ struct ImportContactsScreen: View {
     var body: some View {
         ZStack {
             // Black background
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -23,13 +23,13 @@ struct ImportContactsScreen: View {
                 
                 Text("Import Contacts")
                     .font(Font.custom("WorkSans-Medium", size: 32))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Import your contacts for the application to work properly. We respect your privacy and only use contacts locally.")
                     .font(Font.custom("Overpass-Medium", size: 16))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 

@@ -14,7 +14,7 @@ struct ConnectionSizeQuestionScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -23,7 +23,7 @@ struct ConnectionSizeQuestionScreen: View {
                     HStack {
                         Text("Question 3 of 4")
                             .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.black.opacity(0.7))
                         
                         Spacer()
                     }
@@ -50,7 +50,7 @@ struct ConnectionSizeQuestionScreen: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("How many people do you want to stay meaningfully connected with?")
                         .font(Font.custom("WorkSans-Medium", size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                 }
@@ -75,7 +75,7 @@ struct ConnectionSizeQuestionScreen: View {
                     // Micro-copy
                     Text("Don't worry - we'll help you manage whatever you choose")
                         .font(Font.custom("Overpass-Medium", size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.black.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                         .padding(.top, 16)
@@ -135,11 +135,11 @@ struct ConnectionSizeButton: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(range)
                             .font(Font.custom("WorkSans-Medium", size: 18))
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                         
                         Text(description)
                             .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.black.opacity(0.7))
                     }
                     
                     Spacer()

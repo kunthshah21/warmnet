@@ -39,7 +39,7 @@ struct ContactSelectScreen: View {
     var body: some View {
         ZStack {
             // Black background
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -105,7 +105,7 @@ struct ContactSelectScreen: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Select at least \(minimumSelection) contacts")
                         .font(Font.custom("Overpass-Medium", size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.black.opacity(0.7))
                     
                     Text("\(selectedContacts.count) selected")
                         .font(Font.custom("Overpass-Medium", size: 12))
@@ -139,7 +139,7 @@ struct ContactSelectScreen: View {
             
             Text("Loading contacts...")
                 .font(Font.custom("Overpass-Medium", size: 14))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.black.opacity(0.7))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -152,11 +152,11 @@ struct ContactSelectScreen: View {
             
             Text("No Contacts Found")
                 .font(Font.custom("WorkSans-Medium", size: 22))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
             
             Text("Add contacts to your device and try again")
                 .font(Font.custom("Overpass-Medium", size: 14))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.black.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
         }

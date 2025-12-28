@@ -57,7 +57,7 @@ struct LocationEnrichmentScreen: View {
     
     var body: some View {
         ZStack {
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -110,7 +110,7 @@ struct LocationEnrichmentScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(Color.black)
+        .background(Color.white)
         .sheet(item: $selectedContact) { contact in
             LocationInputSheet(
                 contact: contact,
@@ -163,13 +163,13 @@ struct LocationEnrichmentScreen: View {
         HStack {
             Text(title)
                 .font(Font.custom("WorkSans-Medium", size: 14))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.black.opacity(0.7))
             
             Spacer()
             
             Text("\(count)")
                 .font(Font.custom("Overpass-Medium", size: 12))
-                .foregroundColor(.white.opacity(0.7))
+                .foregroundColor(.black.opacity(0.7))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(Capsule().fill(Color.white.opacity(0.1)))
@@ -207,13 +207,13 @@ struct LocationEnrichmentRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.name)
                         .font(Font.custom("WorkSans-Medium", size: 16))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .lineLimit(1)
                     
                     if hasLocation {
                         Text(contact.fullLocation)
                             .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.black.opacity(0.7))
                             .lineLimit(1)
                     } else {
                         Text("Tap to add location")

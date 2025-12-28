@@ -14,7 +14,7 @@ struct CommunicationStyleQuestionScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -23,7 +23,7 @@ struct CommunicationStyleQuestionScreen: View {
                     HStack {
                         Text("Question 4 of 4")
                             .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.black.opacity(0.7))
                         
                         Spacer()
                         
@@ -54,7 +54,7 @@ struct CommunicationStyleQuestionScreen: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your natural communication style?")
                         .font(Font.custom("WorkSans-Medium", size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                 }
@@ -80,7 +80,7 @@ struct CommunicationStyleQuestionScreen: View {
                     // Micro-copy
                     Text("We'll suggest outreach styles that match YOUR personality")
                         .font(Font.custom("Overpass-Medium", size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.black.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                         .padding(.top, 16)
@@ -145,7 +145,7 @@ struct CommunicationStyleButton: View {
                         
                         Text(title)
                             .font(Font.custom("WorkSans-Medium", size: 18))
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                     }
                     
                     Spacer()
@@ -154,7 +154,7 @@ struct CommunicationStyleButton: View {
                 // Description
                 Text(description)
                     .font(Font.custom("Overpass-Medium", size: 14))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                     .multilineTextAlignment(.leading)
                     .padding(.leading, 40)
             }

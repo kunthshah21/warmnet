@@ -25,7 +25,7 @@ struct PersonalisingLoadingScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
@@ -34,7 +34,7 @@ struct PersonalisingLoadingScreen: View {
                 // Main title
                 Text("WarmNet")
                     .font(Font.custom("WorkSans-Medium", size: 36))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .padding(.bottom, 8)
                 
                 // Animated processing indicator
@@ -63,7 +63,7 @@ struct PersonalisingLoadingScreen: View {
                 VStack(spacing: 12) {
                     Text(steps[currentStep])
                         .font(Font.custom("Overpass-Medium", size: 18))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .transition(.asymmetric(
                             insertion: .move(edge: .trailing).combined(with: .opacity),
                             removal: .move(edge: .leading).combined(with: .opacity)
@@ -87,7 +87,7 @@ struct PersonalisingLoadingScreen: View {
                     
                     Text("\(Int(progress * 100))%")
                         .font(Font.custom("Overpass-Medium", size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.black.opacity(0.7))
                 }
                 
                 Spacer()

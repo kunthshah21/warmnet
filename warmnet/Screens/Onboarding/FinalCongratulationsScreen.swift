@@ -16,7 +16,7 @@ struct FinalCongratulationsScreen: View {
     var body: some View {
         ZStack {
             // Black background
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
@@ -68,7 +68,7 @@ struct FinalCongratulationsScreen: View {
                     
                     Text("You're all set to use your system!")
                         .font(Font.custom("Overpass-Medium", size: 18))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 40)
@@ -155,7 +155,7 @@ struct FeatureCheckRow: View {
             
             Text(text)
                 .font(Font.custom("Overpass-Medium", size: 16))
-                .foregroundColor(.white)
+                .foregroundColor(.black)
             
             Spacer()
             

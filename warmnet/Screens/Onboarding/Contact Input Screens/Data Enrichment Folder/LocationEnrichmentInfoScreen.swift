@@ -7,7 +7,7 @@ struct LocationEnrichmentInfoScreen: View {
     
     var body: some View {
         ZStack {
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -21,14 +21,14 @@ struct LocationEnrichmentInfoScreen: View {
                 
                 Text("Enrich Location")
                     .font(Font.custom("WorkSans-Medium", size: 32))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Add location data to your contacts to visualize your network on a map and plan meetups when you travel.")
                     .font(Font.custom("Overpass-Medium", size: 16))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 
@@ -85,10 +85,10 @@ struct LocationEnrichmentInfoScreen: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(Font.custom("WorkSans-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                 Text(description)
                     .font(Font.custom("Overpass-Medium", size: 14))
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
             }
         }
     }

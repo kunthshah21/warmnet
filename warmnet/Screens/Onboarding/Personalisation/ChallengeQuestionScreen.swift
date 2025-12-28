@@ -14,7 +14,7 @@ struct ChallengeQuestionScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.black
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -23,7 +23,7 @@ struct ChallengeQuestionScreen: View {
                     HStack {
                         Text("Question 2 of 4")
                             .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.black.opacity(0.7))
                         
                         Spacer()
                     }
@@ -50,13 +50,13 @@ struct ChallengeQuestionScreen: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your biggest challenge?")
                         .font(Font.custom("WorkSans-Medium", size: 26))
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                     
                     Text("Select all that apply")
                         .font(Font.custom("Overpass-Medium", size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(.black.opacity(0.7))
                         .padding(.horizontal, 32)
                 }
                 
@@ -137,7 +137,7 @@ struct CheckboxButton: View {
                 // Text
                 Text(text)
                     .font(Font.custom("Overpass-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
