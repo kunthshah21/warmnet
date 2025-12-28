@@ -7,73 +7,82 @@
 
 import SwiftUI
 
-struct PainfulTruthScreen: View {
+struct Onboarding2PainfulTruthScreen: View {
     var onShowMeHow: () -> Void = {}
     
     var body: some View {
         ZStack {
-            // Background - Black
-            Color.black
+            // Background - White
+            Color.white
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 Spacer()
-                    .frame(minHeight: 120, maxHeight: 180)
+                    .frame(minHeight: 60, maxHeight: 100)
                 
                 // Image
                 Image("onboarding-2")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal, 0)
-                    .scaleEffect(1.2)
+                    .frame(height: 280)
+                    .padding(.horizontal, 20)
                 
                 Spacer()
                     .frame(height: 30)
                 
                 // Content Section
-                VStack(spacing: 20) {
+                VStack(spacing: 12) {
                     // Title
                     Text("You reach out. They help. You vanish.")
-                        .font(Font.custom("WorkSans-Medium", size: 30))
-                        .lineSpacing(10)
-                        .foregroundColor(.white)
+                        .font(Font.custom("WorkSans-Regular", size: 30))
+                        .lineSpacing(6)
+                        .foregroundColor(.black)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, 40)
+                        .frame(height: 80)
+                        .padding(.horizontal, 24)
                     
                     // Subtitle
                     Text("This pattern is killing your best relationships, one ghost at a time.")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom("Overpass", size: 14))
                         .lineSpacing(4)
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, 70)
-                    
-                    Spacer()
-                        .frame(height: 10)
-                    
-                    // Continue button
-                    Button(action: onShowMeHow) {
-                        Text("Continue")
-                            .font(Font.custom("Overpass-Medium", size: 16))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: 253)
-                            .frame(height: 48)
-                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
-                            .cornerRadius(20)
-                    }
+                        .frame(height: 60)
+                        .padding(.horizontal, 45)
                 }
                 
                 Spacer()
-                    .frame(minHeight: 100, maxHeight: 150)
+                
+                // Buttons Section at Bottom
+                VStack(spacing: 16) {
+                    // Primary Button - Start Fresh
+                    Button(action: onShowMeHow) {
+                        Text("Start Fresh")
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 48)
+                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .cornerRadius(15)
+                    }
+                    .padding(.horizontal, 20)
+                    
+                    // Secondary Button - Login
+                    SecondaryButton(title: "Login to my Account") {
+                        // Login action
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .padding(.bottom, 10)
             }
         }
     }
 }
 
 #Preview {
-    PainfulTruthScreen()
+    Onboarding2PainfulTruthScreen()
 }
 

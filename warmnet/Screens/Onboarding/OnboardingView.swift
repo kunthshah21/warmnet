@@ -48,7 +48,7 @@ struct OnboardingView: View {
                         }
                         
                     case .problem:
-                        ProblemScreen(onContinue: {
+                        Onboarding1ProblemScreen(onContinue: {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 currentScreen = .painfulTruth
                             }
@@ -59,7 +59,7 @@ struct OnboardingView: View {
                         ))
                         
                     case .painfulTruth:
-                        PainfulTruthScreen(onShowMeHow: {
+                        Onboarding2PainfulTruthScreen(onShowMeHow: {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 currentScreen = .valueProposition
                             }
@@ -70,7 +70,7 @@ struct OnboardingView: View {
                         ))
                         
                     case .valueProposition:
-                        ValuePropositionScreen(onBuildMySystem: {
+                        Onboarding3ValuePropositionScreen(onBuildMySystem: {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 currentScreen = .personalisation
                             }
