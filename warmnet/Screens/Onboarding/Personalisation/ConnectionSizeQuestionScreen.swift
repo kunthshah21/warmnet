@@ -38,7 +38,7 @@ struct ConnectionSizeQuestionScreen: View {
                     .frame(height: 4)
                 }
                 .padding(.horizontal, 32)
-                .padding(.top, 60)
+                .padding(.top, 20)
                 
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
@@ -74,8 +74,6 @@ struct ConnectionSizeQuestionScreen: View {
                         .padding(.horizontal, 32)
                         .padding(.top, 16)
                 }
-                
-                Spacer()
                 
                 // Continue button
                 Button(action: onContinue) {

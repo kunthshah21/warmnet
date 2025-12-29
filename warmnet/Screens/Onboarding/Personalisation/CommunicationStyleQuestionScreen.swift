@@ -38,7 +38,7 @@ struct CommunicationStyleQuestionScreen: View {
                     .frame(height: 4)
                 }
                 .padding(.horizontal, 32)
-                .padding(.top, 60)
+                .padding(.top, 20)
                 
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
@@ -76,8 +76,6 @@ struct CommunicationStyleQuestionScreen: View {
                         .padding(.top, 16)
                 }
                 
-                Spacer()
-                
                 // Complete button
                 Button(action: onComplete) {
                     Text("Continue")
@@ -94,7 +92,7 @@ struct CommunicationStyleQuestionScreen: View {
                 }
                 .disabled(selectedStyle == nil)
                 .padding(.horizontal, 32)
-                .padding(.bottom, 40)
+                .padding(.bottom, 20)
             }
         }
     }
@@ -110,45 +108,43 @@ struct CommunicationStyleButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 16) {
-                    // Radio circle
-                    ZStack {
+            HStack(alignment: .center, spacing: 12) {
+                // Radio circle
+                ZStack {
+                    Circle()
+                        .strokeBorder(
+                            isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.gray.opacity(0.3),
+                            lineWidth: 2
+                        )
+                        .frame(width: 24, height: 24)
+                    
+                    if isSelected {
                         Circle()
-                            .strokeBorder(
-                                isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.gray.opacity(0.3),
-                                lineWidth: 2
-                            )
-                            .frame(width: 24, height: 24)
-                        
-                        if isSelected {
-                            Circle()
-                                .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
-                                .frame(width: 12, height: 12)
-                        }
+                            .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .frame(width: 12, height: 12)
                     }
-                    
-                    // Emoji and title
-                    HStack(spacing: 8) {
-                        Text(emoji)
-                            .font(.system(size: 24))
-                        
-                        Text(title)
-                            .font(Font.custom("WorkSans-Medium", size: 18))
-                            .foregroundColor(.black)
-                    }
-                    
-                    Spacer()
                 }
                 
-                // Description
-                Text(description)
-                    .font(Font.custom("Overpass-Medium", size: 14))
-                    .foregroundColor(.black.opacity(0.7))
-                    .multilineTextAlignment(.leading)
-                    .padding(.leading, 40)
+                // Emoji
+                Text(emoji)
+                    .font(.system(size: 20))
+                
+                // Title and description container
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(Font.custom("WorkSans-Medium", size: 18))
+                        .foregroundColor(.black)
+                    
+                    Text(description)
+                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .foregroundColor(.black.opacity(0.7))
+                        .multilineTextAlignment(.leading)
+                }
+                
+                Spacer()
             }
-            .padding(16)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.gray.opacity(0.05))
