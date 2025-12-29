@@ -114,7 +114,7 @@ struct ConnectionSizeButton: View {
                     ZStack {
                         Circle()
                             .strokeBorder(
-                                isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.white.opacity(0.3),
+                                isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.gray.opacity(0.3),
                                 lineWidth: 2
                             )
                             .frame(width: 24, height: 24)
@@ -142,12 +142,12 @@ struct ConnectionSizeButton: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white.opacity(0.05))
+                    .fill(Color.gray.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(
-                        isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.white.opacity(0.1),
+                        isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.gray.opacity(0.25),
                         lineWidth: 2
                     )
             )
