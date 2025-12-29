@@ -18,23 +18,12 @@ struct CommunicationStyleQuestionScreen: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
-                // Progress and header
-                VStack(spacing: 8) {
-                    HStack {
-                        Text("Question 4 of 4")
-                            .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(.black.opacity(0.7))
-                        
-                        Spacer()
-                        
-                        Text("80% complete")
-                            .font(Font.custom("Overpass-Medium", size: 14))
-                            .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
-                    }
-                    .padding(.horizontal, 32)
-                    .padding(.top, 60)
+                // Progress bar at the very top
+                HStack(spacing: 12) {
+                    Text("4/4")
+                        .font(Font.custom("Overpass-SemiBold", size: 14))
+                        .foregroundColor(.black.opacity(0.7))
                     
-                    // Progress bar
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
                             RoundedRectangle(cornerRadius: 4)
@@ -43,12 +32,13 @@ struct CommunicationStyleQuestionScreen: View {
                             
                             RoundedRectangle(cornerRadius: 4)
                                 .fill(Color(red: 0.32, green: 0.57, blue: 0.87))
-                                .frame(width: geometry.size.width * 0.8, height: 4)
+                                .frame(width: geometry.size.width * 1.0, height: 4)
                         }
                     }
                     .frame(height: 4)
-                    .padding(.horizontal, 32)
                 }
+                .padding(.horizontal, 32)
+                .padding(.top, 60)
                 
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
