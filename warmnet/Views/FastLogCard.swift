@@ -13,12 +13,14 @@ struct FastLogCard: View {
         FastLogItem(name: "Charlie Brown")
     ]
     
+    @State private var completedItemId: UUID?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Image(systemName: "bolt.fill")
                     .foregroundStyle(Color("Primary"))
-                Text("Quick Log")
+                Text("Today's Network Goals")
                     .font(.headline)
                 Spacer()
             }
@@ -32,24 +34,43 @@ struct FastLogCard: View {
                     .padding(.vertical, 8)
             } else {
                 ForEach(items) { item in
-                    HStack(spacing: 8) {
+                    HStack(spacing: 12) {
                         Button {
                             let generator = UIImpactFeedbackGenerator(style: .medium)
                             generator.impactOccurred()
                             
-                            withAnimation(.easeInOut(duration: 0.4)) {
-                                markAsDone(item)
+                            withAnimation(.spring(duration: 0.3)) {
+                                completedItemId = item.id
+                            }
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    markAsDone(item)
+                                    if completedItemId == item.id {
+                                        completedItemId = nil
+                                    }
+                                }
                             }
                         } label: {
-                            Circle()
-                                .strokeBorder(Color.secondary.opacity(0.6), lineWidth: 1)
-                                .background(Circle().fill(Color.clear))
-                                .frame(width: 12, height: 12)
+                            ZStack {
+                                if completedItemId == item.id {
+                                    Circle()
+                                        .fill(Color("Primary"))
+                                    Image(systemName: "checkmark")
+                                        .font(.system(size: 12, weight: .bold))
+                                        .foregroundStyle(.white)
+                                } else {
+                                    Circle()
+                                        .strokeBorder(Color.secondary.opacity(0.6), lineWidth: 1.5)
+                                        .background(Circle().fill(Color.clear))
+                                }
+                            }
+                            .frame(width: 20, height: 20)
                         }
 
                         Text(item.name)
-                            .font(.caption)
-                            .fontWeight(.regular)
+                            .font(.body)
+                            .fontWeight(.medium)
                         
                         Spacer()
                     }
