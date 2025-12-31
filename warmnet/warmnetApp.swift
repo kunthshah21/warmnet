@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct warmnetApp: App {
+    @AppStorage("userTheme") private var userTheme: String = "System"
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Contact.self,
@@ -21,7 +23,19 @@ struct warmnetApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .preferredColorScheme(selectedScheme)
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    private var selectedScheme: ColorScheme? {
+        switch userTheme {
+        case "Light":
+            return .light
+        case "Dark":
+            return .dark
+        default:
+            return nil
+        }
     }
 }
