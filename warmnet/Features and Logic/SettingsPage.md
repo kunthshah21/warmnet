@@ -5,23 +5,20 @@ The Settings Page serves as the central hub for user configuration, legal inform
 
 ## Features
 
-### 1. Personal Information Management
-Users can view and update their personalisation profile directly from the settings.
-- **Data Source**: `PersonalisationData` model (SwiftData).
-- **Editable Fields**:
-  - Relationship Goal
-  - Network Size
-  - Communication Style
-- **Behavior**: Changes are automatically saved to the local database via SwiftData bindings.
+### 1. Profile Management
+- **Profile Header**: Displays user avatar, name, and email.
+- **Manage Profile**: Dedicated screen (`ProfileEditScreen`) to edit personal details.
+  - Currently uses dummy data for UI visualization.
 
-### 2. Legal & Privacy
-- **Privacy Policy**: A dedicated view (`PrivacyPolicyView`) outlining data handling practices.
-- **Key Privacy Principles**:
-  - Local-first architecture.
-  - No external server transmission.
-  - User ownership of data.
+### 2. Customisation
+- **Appearance**: Dedicated screen (`AppearanceScreen`) to toggle between Light, Dark, and System themes.
 
-### 3. Testing & Debugging
+### 3. Support & Legal
+- **Report a Bug**: Screen (`ReportBugScreen`) for user feedback.
+- **Manage Subscription**: Screen (`SubscriptionScreen`) for premium features.
+- **Privacy Policy**: View (`PrivacyPolicyView`) outlining data handling practices.
+
+### 4. Testing & Debugging
 Consolidates developer tools and testing functions:
 - **Test Contact Input**: Launches the contact import flow.
 - **Reminder System Debug**: Opens the reminder queue debugger.
@@ -30,19 +27,30 @@ Consolidates developer tools and testing functions:
 
 ## Architecture
 
+### Folder Structure
+- `Screens/Settings/`: Contains all settings-related screens.
+  - `SettingsScreen.swift`: Main entry point.
+  - `ProfileEditScreen.swift`
+  - `AppearanceScreen.swift`
+  - `NotificationsSettingsScreen.swift`
+  - `ReportBugScreen.swift`
+  - `SubscriptionScreen.swift`
+  - `PrivacyPolicyView.swift`
+
 ### View Structure
 - **Container**: `NavigationStack` wrapping a `List`.
 - **Sections**:
-  1. **Personal Information**: Uses `Picker` components bound to the `PersonalisationData` model.
-  2. **Legal**: Navigation links to static information views.
-  3. **Testing & Debug**: Action buttons for developer tools.
+  1. **Profile Header**: Custom view with avatar and text.
+  2. **Manage Profile**: Navigation link.
+  3. **Customise Experience**: Navigation link.
+  4. **Notifications**: Navigation link.
+  5. **Support & Legal**: Navigation links.
+  6. **Testing & Debug**: Action buttons.
 
 ### Data Flow
-- **Read**: Uses `@Query` to fetch the `PersonalisationData` object.
-- **Write**: Uses direct bindings to the model properties. SwiftData handles the persistence automatically when the view updates.
-- **Actions**: Uses `@Environment(\.modelContext)` for destructive actions like deleting data.
+- **Profile Data**: Currently using dummy data strings. Future integration with `PersonalisationData` or a dedicated `UserProfile` model is planned.
+- **Theme**: Uses `@AppStorage("userTheme")` to persist theme preference.
 
 ## Future Improvements
-- Add "Export Data" functionality.
-- Add "Import Data" functionality.
-- Add app-wide appearance settings (Dark/Light mode toggle).
+- Connect Profile UI to real `PersonalisationData` or `UserProfile` model.
+- Implement actual logic for Notifications, Bug Reporting, and Subscriptions.
