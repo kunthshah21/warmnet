@@ -40,7 +40,7 @@ struct PriorityEnrichInfoScreen: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(Color.black.opacity(0.05))
                 )
                 .padding(.horizontal)
                 

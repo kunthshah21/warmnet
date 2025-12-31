@@ -73,11 +73,11 @@ struct PriorityEnrichmentRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.white.opacity(0.05))
+                .fill(Color.black.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                .strokeBorder(Color.black.opacity(0.1), lineWidth: 1)
         )
     }
     

@@ -35,7 +35,7 @@ struct ImportContactsScreen: View {
                 
                 // Image Placeholder
                 RoundedRectangle(cornerRadius: 16)
-                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 2)
+                    .strokeBorder(Color.black.opacity(0.1), lineWidth: 2)
                     .background(Color.clear)
                     .frame(height: 200)
                     .overlay {

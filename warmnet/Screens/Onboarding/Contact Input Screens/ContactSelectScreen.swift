@@ -15,6 +15,7 @@ struct ContactSelectScreen: View {
     @State private var errorMessage = ""
     @State private var isImporting = false
     @State private var navigateToEnrichment = false
+    @State private var currentDragIndex: Int? = nil
     
     var onFlowComplete: (() -> Void)? = nil
     
@@ -36,6 +37,18 @@ struct ContactSelectScreen: View {
         selectedContacts.count >= minimumSelection
     }
     
+    private var groupedContacts: [(key: String, value: [CNContact])] {
+        let grouped = Dictionary(grouping: filteredContacts) { contact in
+            let firstLetter = String(contact.fullName.prefix(1)).uppercased()
+            return firstLetter.isEmpty ? "#" : firstLetter
+        }
+        return grouped.sorted { $0.key < $1.key }
+    }
+    
+    private var sectionIndexTitles: [String] {
+        groupedContacts.map { $0.key }
+    }
+
     var body: some View {
         ZStack {
             // Black background
@@ -62,7 +75,9 @@ struct ContactSelectScreen: View {
         }
         .navigationTitle("Select Contacts")
         .navigationBarTitleDisplayMode(.inline)
-        .searchable(text: $searchText, prompt: "Search contacts")
+        .toolbarBackground(.visible, for: .navigationBar)
+        .toolbarColorScheme(.light, for: .navigationBar)
+        .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search contacts")
         .onAppear {
             loadDeviceContacts()
         }
@@ -126,9 +141,9 @@ struct ContactSelectScreen: View {
             .padding(.vertical, 12)
             
             Divider()
-                .background(Color.white.opacity(0.1))
+                .background(Color.black.opacity(0.1))
         }
-        .background(Color.white.opacity(0.05))
+        .background(Color.black.opacity(0.05))
     }
     
     private var loadingView: some View {
@@ -165,27 +180,102 @@ struct ContactSelectScreen: View {
     }
     
     private var contactsListView: some View {
-        ScrollView {
-            LazyVStack(spacing: 8) {
-                ForEach(filteredContacts, id: \.identifier) { contact in
-                    DeviceContactRow(
-                        contact: contact,
-                        isSelected: selectedContacts.contains(contact.identifier)
-                    ) {
-                        toggleSelection(for: contact)
+        ScrollViewReader { proxy in
+            ZStack {
+                ScrollView {
+                    LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
+                        ForEach(groupedContacts, id: \.key) { section in
+                            Section(header: sectionHeader(title: section.key)) {
+                                ForEach(section.value, id: \.identifier) { contact in
+                                    DeviceContactRow(
+                                        contact: contact,
+                                        isSelected: selectedContacts.contains(contact.identifier)
+                                    ) {
+                                        toggleSelection(for: contact)
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 4)
+                                }
+                            }
+                            .id(section.key)
+                        }
+                    }
+                    .padding(.vertical, 12)
+                    .padding(.trailing, 20) // Prevent overlap with index
+                }
+                .scrollContentBackground(.hidden)
+                
+                // A-Z Index Slider
+                if !sectionIndexTitles.isEmpty {
+                    HStack {
+                        Spacer()
+                        VStack {
+                            Spacer()
+                            GeometryReader { geometry in
+                                VStack(spacing: 0) {
+                                    ForEach(0..<sectionIndexTitles.count, id: \.self) { i in
+                                        Text(sectionIndexTitles[i])
+                                            .font(.system(size: 10, weight: .bold))
+                                            .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    }
+                                }
+                                .background(Color.white.opacity(0.5))
+                                .cornerRadius(8)
+                                .gesture(
+                                    DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                                        .onChanged { value in
+                                            scrollToSection(at: value.location, geometry: geometry, proxy: proxy)
+                                        }
+                                        .onEnded { _ in
+                                            currentDragIndex = nil
+                                        }
+                                )
+                            }
+                            .frame(width: 20)
+                            .frame(maxHeight: CGFloat(min(sectionIndexTitles.count * 16, 400))) // Limit height
+                            .padding(.trailing, 4)
+                            Spacer()
+                        }
                     }
                 }
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
         }
-        .scrollContentBackground(.hidden)
+    }
+    
+    private func scrollToSection(at point: CGPoint, geometry: GeometryProxy, proxy: ScrollViewProxy) {
+        let count = sectionIndexTitles.count
+        guard count > 0 else { return }
+        
+        let height = geometry.size.height
+        let itemHeight = height / CGFloat(count)
+        let index = Int(point.y / itemHeight)
+        
+        if index >= 0 && index < count && index != currentDragIndex {
+            currentDragIndex = index
+            let title = sectionIndexTitles[index]
+            proxy.scrollTo(title, anchor: .top)
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
+        }
+    }
+    
+    private func sectionHeader(title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.black)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+            Spacer()
+        }
+        .background(Color.white.opacity(0.95))
     }
     
     private var bottomActionView: some View {
         VStack(spacing: 0) {
             Divider()
-                .background(Color.white.opacity(0.1))
+                .background(Color.black.opacity(0.1))
             
             Button(action: {
                 importSelectedContacts()
@@ -213,6 +303,9 @@ struct ContactSelectScreen: View {
     // MARK: - Methods
     
     private func toggleSelection(for contact: CNContact) {
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+        
         if selectedContacts.contains(contact.identifier) {
             selectedContacts.remove(contact.identifier)
         } else {

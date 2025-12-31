@@ -172,7 +172,7 @@ struct LocationEnrichmentScreen: View {
                 .foregroundColor(.black.opacity(0.7))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Capsule().fill(Color.white.opacity(0.1)))
+                .background(Capsule().fill(Color.black.opacity(0.1)))
         }
         .padding(.horizontal, 4)
     }
@@ -231,11 +231,11 @@ struct LocationEnrichmentRow: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.white.opacity(0.05))
+                    .fill(Color.black.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1)
+                    .strokeBorder(Color.black.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
