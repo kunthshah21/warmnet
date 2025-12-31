@@ -385,6 +385,8 @@ struct AddContactSheet: View {
     
     private func saveContact() {
         if let contact = contactToEdit {
+            let priorityChanged = contact.priority != priority
+            
             contact.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
             contact.phoneCountryCode = selectedCountryCode.code
             contact.phoneNumber = phoneNumber
@@ -399,6 +401,14 @@ struct AddContactSheet: View {
             contact.notes = notes
             contact.priority = priority
             contact.updatedAt = Date()
+            
+            if priorityChanged {
+                if let lastContacted = contact.lastContacted {
+                    ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: lastContacted)
+                } else {
+                    ReminderScheduler.scheduleNewContact(contact)
+                }
+            }
         } else {
             let contact = Contact(
                 name: name.trimmingCharacters(in: .whitespacesAndNewlines),

@@ -85,6 +85,7 @@ struct PriorityEnrichmentRow: View {
         Button {
             withAnimation(.snappy) {
                 contact.priority = priority
+                ReminderScheduler.scheduleNewContact(contact)
             }
         } label: {
             RoundedRectangle(cornerRadius: 6)
