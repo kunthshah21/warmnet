@@ -8,6 +8,7 @@ struct HomeScreen: View {
     @State private var showAddContact = false
     @State private var showMapSheet = false
     @State private var showLogInteraction = false
+    @State private var showSettings = false
     
     private var innerCircleCount: Int {
         contacts.filter { $0.priority == .innerCircle }.count
@@ -38,6 +39,25 @@ struct HomeScreen: View {
                 
                 ScrollView {
                     VStack(spacing: 16) {
+                        // Custom Header
+                        HStack {
+                            Text("Home")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                            
+                            Spacer()
+                            
+                            Button {
+                                showSettings = true
+                            } label: {
+                                Image(systemName: "person.crop.circle")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                        .padding(.horizontal)
+                        .padding(.top, 20)
+                        
                         if !overdueContacts.isEmpty {
                             VStack(alignment: .leading) {
                                 Text("Reach Out")
@@ -96,7 +116,7 @@ struct HomeScreen: View {
                 .padding(.trailing, 20)
                 .padding(.bottom, 24)
             }
-            .navigationTitle("Home")
+            .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showAddContact) {
                 AddContactSheet()
             }
@@ -107,6 +127,9 @@ struct HomeScreen: View {
                 MapScreen(showsDismissButton: true)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsScreen()
             }
         }
     }
