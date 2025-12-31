@@ -76,8 +76,6 @@ struct FastLogCard: View {
                     }
                     .padding(.vertical, 6)
                     .padding(.horizontal, 8)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .cornerRadius(8)
                     .transition(.asymmetric(
                         insertion: .identity,
                         removal: .opacity.combined(with: .move(edge: .trailing))
@@ -86,7 +84,7 @@ struct FastLogCard: View {
             }
         }
         .padding()
-        .background(Color(uiColor: .systemBackground))
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
