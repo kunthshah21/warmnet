@@ -87,6 +87,8 @@ struct HomeScreen: View {
                             }
                         }
                         
+                        FastLogCard()
+                        
                         WeeklyReminderCard(contacts: contacts)
                         
                         KPICard(
