@@ -269,6 +269,8 @@ struct ContactSelectScreen: View {
             for cnContact in contactsToImport {
                 let contact = self.convertToContact(cnContact)
                 
+                ReminderScheduler.scheduleNewContact(contact)
+                
                 DispatchQueue.main.async {
                     modelContext.insert(contact)
                 }

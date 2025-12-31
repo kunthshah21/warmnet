@@ -416,6 +416,7 @@ struct AddContactSheet: View {
                 priority: priority
             )
             
+            ReminderScheduler.scheduleNewContact(contact)
             modelContext.insert(contact)
         }
         dismiss()
