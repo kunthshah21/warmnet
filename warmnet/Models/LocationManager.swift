@@ -77,25 +77,29 @@ final class LocationManager: NSObject {
     /// - Returns: The current CLLocation
     /// - Throws: LocationError if location cannot be determined
     func getCurrentLocation() async throws -> CLLocation {
+        // Check location services availability (non-blocking static check)
         guard CLLocationManager.locationServicesEnabled() else {
             throw LocationError.serviceUnavailable
         }
 
-        // Ensure we have authorization without blocking the main thread
-        switch authorizationStatus {
-        case .notDetermined:
+        // Check authorization status once and handle accordingly
+        // If not determined, wait for delegate callback to avoid blocking main thread
+        let initialStatus = locationManager.authorizationStatus
+        
+        if initialStatus == .notDetermined {
             requestPermission()
-            // Await delegate-driven authorization change instead of sleeping
+            // Wait for delegate callback to update authorization status
+            // This avoids synchronous authorization checks that can block the main thread
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 self.authorizationContinuation = continuation
             }
-            if authorizationStatus == .denied {
+            // Check final status after delegate callback
+            let finalStatus = locationManager.authorizationStatus
+            if finalStatus == .denied || finalStatus == .restricted {
                 throw LocationError.permissionDenied
             }
-        case .denied:
+        } else if initialStatus == .denied || initialStatus == .restricted {
             throw LocationError.permissionDenied
-        case .authorized:
-            break
         }
 
         return try await withCheckedThrowingContinuation { continuation in

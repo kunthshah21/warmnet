@@ -4,5 +4,29 @@
 <dict>
 	<key>CFBundleIdentifier</key>
 	<string></string>
+	
+	<!-- Location Permissions -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>WarmNet uses your location to show you contacts nearby and on the map.</string>
+	
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>WarmNet uses your location to notify you when you're near contacts you haven't connected with recently. This helps you maintain your relationships while traveling.</string>
+	
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>WarmNet uses your location in the background to notify you about nearby contacts, even when the app is closed.</string>
+	
+	<!-- Background Modes -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
+	
+	<!-- Custom Fonts -->
+	<key>UIAppFonts</key>
+	<array>
+		<string>Overpass-VariableFont_wght.ttf</string>
+		<string>WorkSans-Medium.ttf</string>
+		<string>WorkSans-Regular.ttf</string>
+	</array>
 </dict>
 </plist>
