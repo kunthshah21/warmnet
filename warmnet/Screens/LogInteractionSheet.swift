@@ -11,6 +11,10 @@ struct LogInteractionSheet: View {
     @State private var interactionType: InteractionType = .inPerson
     @State private var notes: String = ""
     
+    init(preSelectedContact: Contact? = nil) {
+        _selectedContact = State(initialValue: preSelectedContact)
+    }
+    
     var body: some View {
         NavigationStack {
             listContent

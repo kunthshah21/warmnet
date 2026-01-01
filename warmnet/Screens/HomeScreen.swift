@@ -9,6 +9,7 @@ struct HomeScreen: View {
     @State private var showMapSheet = false
     @State private var showLogInteraction = false
     @State private var showSettings = false
+    @State private var preSelectedContact: Contact?
     
     private var innerCircleCount: Int {
         contacts.filter { $0.priority == .innerCircle }.count
@@ -24,6 +25,14 @@ struct HomeScreen: View {
     
     private var overdueContacts: [Contact] {
         contacts.filter { $0.isOverdue }.sorted { $0.nextReminderDate < $1.nextReminderDate }
+    }
+    
+    private var todaysGoals: [Contact] {
+        let today = Calendar.current.startOfDay(for: Date())
+        return contacts.filter { contact in
+            let due = Calendar.current.startOfDay(for: contact.nextReminderDate)
+            return due <= today
+        }.sorted { $0.nextReminderDate < $1.nextReminderDate }
     }
     
     var body: some View {
@@ -87,7 +96,10 @@ struct HomeScreen: View {
                             }
                         }
                         
-                        FastLogCard()
+                        FastLogCard(contacts: todaysGoals) { contact in
+                            preSelectedContact = contact
+                            showLogInteraction = true
+                        }
                         
                         WeeklyReminderCard(contacts: contacts)
                         
@@ -123,7 +135,7 @@ struct HomeScreen: View {
                 AddContactSheet()
             }
             .sheet(isPresented: $showLogInteraction) {
-                LogInteractionSheet()
+                LogInteractionSheet(preSelectedContact: preSelectedContact)
             }
             .sheet(isPresented: $showMapSheet) {
                 MapScreen(showsDismissButton: true)
@@ -155,6 +167,7 @@ struct HomeScreen: View {
             }
             
             Button {
+                preSelectedContact = nil
                 showLogInteraction = true
             } label: {
                 Label("Log Interaction", systemImage: "calendar.badge.plus")
