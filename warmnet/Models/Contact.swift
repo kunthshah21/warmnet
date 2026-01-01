@@ -21,6 +21,12 @@ final class Contact {
     var notes: String
     var priority: Priority?
     
+    // Custom Schedule
+    var useCustomSchedule: Bool = false
+    var scheduleFrequency: String? // "Day(s)", "Week(s)", etc.
+    var scheduleInterval: Int?
+    var scheduleDays: [String]? // ["Monday", "Tuesday"]
+    
     // Reminder System properties
     var nextTouchDate: Date?
     var lastContacted: Date?
@@ -48,6 +54,10 @@ final class Contact {
         jobTitle: String = "",
         notes: String = "",
         priority: Priority = .broaderNetwork,
+        useCustomSchedule: Bool = false,
+        scheduleFrequency: String? = nil,
+        scheduleInterval: Int? = nil,
+        scheduleDays: [String]? = nil,
         nextTouchDate: Date? = nil,
         lastContacted: Date? = nil
     ) {
@@ -65,6 +75,10 @@ final class Contact {
         self.jobTitle = jobTitle
         self.notes = notes
         self.priority = priority
+        self.useCustomSchedule = useCustomSchedule
+        self.scheduleFrequency = scheduleFrequency
+        self.scheduleInterval = scheduleInterval
+        self.scheduleDays = scheduleDays
         self.nextTouchDate = nextTouchDate
         self.lastContacted = lastContacted
         self.createdAt = Date()

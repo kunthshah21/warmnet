@@ -31,6 +31,29 @@ next_touch_date = current_date + frequency_days + random_adjustment
 ```
 Variance prevents contacts from re-synchronizing over time.
 
+#### **Custom Schedule Override**
+For "Inner Circle" contacts, users can override the default tier-based frequency with a custom schedule.
+
+**Configuration:**
+- **Frequency**: Day(s) or Week(s)
+- **Interval**: Number of units (e.g., every 2 weeks)
+- **Specific Days**: For weekly schedules, specific days (e.g., Mon, Wed) can be selected.
+
+**Logic:**
+If `useCustomSchedule` is enabled, the standard variance logic is bypassed:
+1. **Day-based**: 
+   ```
+   next_touch_date = current_date + interval_days
+   ```
+2. **Week-based (Simple)**: 
+   ```
+   next_touch_date = current_date + (interval_weeks * 7)
+   ```
+3. **Week-based (Specific Days)**:
+   - Finds the next matching weekday from the selected set.
+   - If the next match is later in the *current* week, schedule for that day.
+   - If not, jump `interval_weeks` ahead and schedule for the first available matching day in that future week.
+
 ### 3. DailyQueueGenerator
 Generates the daily list of contacts to reach out to:
 

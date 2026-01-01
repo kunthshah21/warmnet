@@ -54,9 +54,26 @@ struct AddContactSheet: View {
             _notes = State(initialValue: contact.notes)
             
             // Initialize schedule defaults based on existing priority
-            let (interval, freq) = Self.getDefaultSchedule(for: contact.priority ?? .broaderNetwork)
-            _scheduleInterval = State(initialValue: interval)
-            _scheduleFrequency = State(initialValue: freq)
+            _useCustomSchedule = State(initialValue: contact.useCustomSchedule)
+            
+            if contact.useCustomSchedule {
+                if let freqRaw = contact.scheduleFrequency, let freq = ScheduleFrequency(rawValue: freqRaw) {
+                    _scheduleFrequency = State(initialValue: freq)
+                }
+                if let interval = contact.scheduleInterval {
+                    _scheduleInterval = State(initialValue: interval)
+                }
+                if let daysRaw = contact.scheduleDays {
+                    let days = daysRaw.compactMap { raw -> Weekday? in
+                        Weekday.allCases.first { $0.rawValue == raw }
+                    }
+                    _selectedDays = State(initialValue: Set(days))
+                }
+            } else {
+                let (interval, freq) = Self.getDefaultSchedule(for: contact.priority ?? .broaderNetwork)
+                _scheduleInterval = State(initialValue: interval)
+                _scheduleFrequency = State(initialValue: freq)
+            }
         }
     }
     
@@ -518,6 +535,7 @@ struct AddContactSheet: View {
     private func saveContact() {
         if let contact = contactToEdit {
             let priorityChanged = contact.priority != priority
+            let scheduleChanged = contact.useCustomSchedule != useCustomSchedule
             
             contact.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
             contact.phoneCountryCode = selectedCountryCode.code
@@ -532,9 +550,16 @@ struct AddContactSheet: View {
             contact.jobTitle = jobTitle
             contact.notes = notes
             contact.priority = priority
+            
+            // Save custom schedule
+            contact.useCustomSchedule = useCustomSchedule
+            contact.scheduleFrequency = scheduleFrequency.rawValue
+            contact.scheduleInterval = scheduleInterval
+            contact.scheduleDays = selectedDays.map { $0.rawValue }
+            
             contact.updatedAt = Date()
             
-            if priorityChanged {
+            if priorityChanged || scheduleChanged || useCustomSchedule {
                 if let lastContacted = contact.lastContacted {
                     ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: lastContacted)
                 } else {
@@ -555,7 +580,11 @@ struct AddContactSheet: View {
                 company: company,
                 jobTitle: jobTitle,
                 notes: notes,
-                priority: priority
+                priority: priority,
+                useCustomSchedule: useCustomSchedule,
+                scheduleFrequency: scheduleFrequency.rawValue,
+                scheduleInterval: scheduleInterval,
+                scheduleDays: selectedDays.map { $0.rawValue }
             )
             
             ReminderScheduler.scheduleNewContact(contact)
