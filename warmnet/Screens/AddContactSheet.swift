@@ -25,6 +25,12 @@ struct AddContactSheet: View {
     @State private var jobTitle = ""
     @State private var notes = ""
     
+    // Schedule Override
+    @State private var useCustomSchedule = false
+    @State private var scheduleFrequency: ScheduleFrequency = .month
+    @State private var scheduleInterval: Int = 6
+    @State private var selectedDays: Set<Weekday> = []
+    
     init(contactToEdit: Contact? = nil) {
         self.contactToEdit = contactToEdit
         
@@ -46,6 +52,11 @@ struct AddContactSheet: View {
             _company = State(initialValue: contact.company)
             _jobTitle = State(initialValue: contact.jobTitle)
             _notes = State(initialValue: contact.notes)
+            
+            // Initialize schedule defaults based on existing priority
+            let (interval, freq) = Self.getDefaultSchedule(for: contact.priority ?? .broaderNetwork)
+            _scheduleInterval = State(initialValue: interval)
+            _scheduleFrequency = State(initialValue: freq)
         }
     }
     
@@ -134,14 +145,19 @@ struct AddContactSheet: View {
     
     private var prioritySection: some View {
         VStack(spacing: 16) {
-            sectionHeader("Priority")
+            sectionHeader("Priority & Schedule")
             
-            VStack(spacing: 12) {
+            VStack(spacing: 16) {
+                // Priority Picker
                 HStack(spacing: 0) {
                     ForEach(Priority.allCases, id: \.self) { option in
                         Button {
                             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                 priority = option
+                                // Update schedule defaults when priority changes
+                                let (interval, freq) = Self.getDefaultSchedule(for: option)
+                                scheduleInterval = interval
+                                scheduleFrequency = freq
                             }
                         } label: {
                             Text(option.rawValue.replacingOccurrences(of: " ", with: "\n"))
@@ -180,9 +196,125 @@ struct AddContactSheet: View {
                     Spacer()
                 }
                 .padding(.horizontal, 4)
+                
+                if priority == .innerCircle {
+                    Divider()
+                    
+                    // Schedule Override
+                    VStack(alignment: .leading, spacing: 12) {
+                        Toggle("Custom Schedule", isOn: $useCustomSchedule.animation())
+                            .tint(.blue)
+                        
+                        if useCustomSchedule {
+                            VStack(alignment: .leading, spacing: 16) {
+                                // Frequency Picker
+                                HStack {
+                                    Text("Repeat every")
+                                        .foregroundStyle(.secondary)
+                                    
+                                    if scheduleFrequency == .week {
+                                        Menu {
+                                            ForEach(1...3, id: \.self) { num in
+                                                Button {
+                                                    scheduleInterval = num
+                                                } label: {
+                                                    if scheduleInterval == num {
+                                                        Label("\(num)", systemImage: "checkmark")
+                                                    } else {
+                                                        Text("\(num)")
+                                                    }
+                                                }
+                                            }
+                                        } label: {
+                                            Text("\(scheduleInterval)")
+                                                .multilineTextAlignment(.center)
+                                                .frame(width: 50)
+                                                .padding(.vertical, 6)
+                                                .background(Color(.systemGray6))
+                                                .cornerRadius(8)
+                                                .foregroundStyle(.primary)
+                                        }
+                                    } else {
+                                        TextField("1", value: $scheduleInterval, format: .number)
+                                            .keyboardType(.numberPad)
+                                            .multilineTextAlignment(.center)
+                                            .frame(width: 50)
+                                            .padding(.vertical, 6)
+                                            .background(Color(.systemGray6))
+                                            .cornerRadius(8)
+                                    }
+                                    
+                                    Picker("", selection: $scheduleFrequency) {
+                                        ForEach([ScheduleFrequency.day, ScheduleFrequency.week], id: \.self) { freq in
+                                            Text(freq.rawValue).tag(freq)
+                                        }
+                                    }
+                                    .labelsHidden()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .onChange(of: scheduleFrequency) { newValue in
+                                        if newValue == .week && scheduleInterval > 3 {
+                                            scheduleInterval = 2
+                                        }
+                                    }
+                                }
+                                
+                                // Days of week picker (if weekly)
+                                if scheduleFrequency == .week {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("On these days")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        
+                                        HStack(spacing: 0) {
+                                            ForEach(Weekday.allCases) { day in
+                                                DayToggle(day: day.shortName, isSelected: selectedDays.contains(day)) {
+                                                    if selectedDays.contains(day) {
+                                                        selectedDays.remove(day)
+                                                    } else {
+                                                        selectedDays.insert(day)
+                                                    }
+                                                }
+                                                .frame(maxWidth: .infinity)
+                                            }
+                                        }
+                                    }
+                                    .transition(.move(edge: .top).combined(with: .opacity))
+                                }
+                            }
+                            .padding(.top, 4)
+                        } else {
+                            // Default Schedule Info
+                            HStack {
+                                Image(systemName: "calendar.badge.clock")
+                                    .foregroundStyle(.secondary)
+                                Text("Default: Every \(defaultDaysForPriority) days")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                            }
+                            .padding(.top, 4)
+                        }
+                    }
+                }
             }
             .padding(16)
             .background(cardBackground)
+        }
+    }
+    
+    private var defaultDaysForPriority: Int {
+        switch priority {
+        case .innerCircle: return 14
+        case .keyRelationships: return 60
+        case .broaderNetwork: return 180
+        }
+    }
+    
+    private static func getDefaultSchedule(for priority: Priority) -> (Int, ScheduleFrequency) {
+        switch priority {
+        case .innerCircle: return (2, .week)
+        case .keyRelationships: return (2, .month)
+        case .broaderNetwork: return (6, .month)
         }
     }
     
@@ -430,6 +562,56 @@ struct AddContactSheet: View {
             modelContext.insert(contact)
         }
         dismiss()
+    }
+}
+
+enum ScheduleFrequency: String, CaseIterable {
+    case day = "Day(s)"
+    case week = "Week(s)"
+    case month = "Month(s)"
+    case year = "Year(s)"
+}
+
+enum Weekday: String, CaseIterable, Identifiable {
+    case monday = "Monday"
+    case tuesday = "Tuesday"
+    case wednesday = "Wednesday"
+    case thursday = "Thursday"
+    case friday = "Friday"
+    case saturday = "Saturday"
+    case sunday = "Sunday"
+    
+    var id: String { rawValue }
+    
+    var shortName: String {
+        switch self {
+        case .monday: return "M"
+        case .tuesday: return "T"
+        case .wednesday: return "W"
+        case .thursday: return "T"
+        case .friday: return "F"
+        case .saturday: return "S"
+        case .sunday: return "S"
+        }
+    }
+}
+
+struct DayToggle: View {
+    let day: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(day)
+                .font(.caption2)
+                .fontWeight(.bold)
+                .frame(width: 32, height: 32)
+                .background(isSelected ? Color.blue : Color(.systemGray6))
+                .foregroundStyle(isSelected ? .white : .primary)
+                .clipShape(Circle())
+        }
+        .buttonStyle(.plain)
     }
 }
 
