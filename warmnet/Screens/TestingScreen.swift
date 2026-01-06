@@ -8,6 +8,7 @@ struct TestingScreen: View {
     @State private var showImportFlow = false
     @State private var showOnboarding = false
     @State private var showReminderDebug = false
+    @State private var showLocationNotificationTest = false
     
     var body: some View {
         NavigationStack {
@@ -38,6 +39,14 @@ struct TestingScreen: View {
                     .padding(.horizontal, 16)
                     
                     PrimaryButton(
+                        "Test Location Notifications",
+                        action: {
+                            showLocationNotificationTest = true
+                        }
+                    )
+                    .padding(.horizontal, 16)
+                    
+                    PrimaryButton(
                         "Test Onboarding",
                         action: resetOnboarding
                     )
@@ -56,6 +65,9 @@ struct TestingScreen: View {
             }
             .navigationDestination(isPresented: $showReminderDebug) {
                 ReminderQueueDebugView()
+            }
+            .navigationDestination(isPresented: $showLocationNotificationTest) {
+                LocationNotificationTestScreen()
             }
         }
     }

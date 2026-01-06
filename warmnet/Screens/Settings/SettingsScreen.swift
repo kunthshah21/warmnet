@@ -10,6 +10,7 @@ struct SettingsScreen: View {
     
     @State private var showImportFlow = false
     @State private var showReminderDebug = false
+    @State private var showLocationNotificationTest = false
     
     // Dummy Data for now
     private let dummyName = "Kunth Shah"
@@ -80,6 +81,10 @@ struct SettingsScreen: View {
                 
                 // MARK: - Testing & Debug
                 Section("Testing & Debug") {
+                    Button("Test Location Notifications") {
+                        showLocationNotificationTest = true
+                    }
+                    
                     Button("Test Contact Input") {
                         showImportFlow = true
                     }
@@ -100,6 +105,9 @@ struct SettingsScreen: View {
                 }
             }
             .navigationTitle("Profile")
+            .navigationDestination(isPresented: $showLocationNotificationTest) {
+                LocationNotificationTestScreen()
+            }
             .navigationDestination(isPresented: $showImportFlow) {
                 ImportContactsScreen()
             }

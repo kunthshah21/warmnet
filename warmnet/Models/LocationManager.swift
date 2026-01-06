@@ -82,31 +82,30 @@ final class LocationManager: NSObject {
             throw LocationError.serviceUnavailable
         }
 
-        // Check authorization status once and handle accordingly
-        // If not determined, wait for delegate callback to avoid blocking main thread
-        let initialStatus = locationManager.authorizationStatus
-        
-        if initialStatus == .notDetermined {
+        // Determine current authorization without invoking any synchronous, UI-blocking checks
+        var status = locationManager.authorizationStatus
+
+        // If status is not determined, request and await delegate callback before proceeding
+        if status == .notDetermined {
             requestPermission()
-            // Wait for delegate callback to update authorization status
-            // This avoids synchronous authorization checks that can block the main thread
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 self.authorizationContinuation = continuation
             }
-            // Check final status after delegate callback
-            let finalStatus = locationManager.authorizationStatus
-            if finalStatus == .denied || finalStatus == .restricted {
-                throw LocationError.permissionDenied
-            }
-        } else if initialStatus == .denied || initialStatus == .restricted {
+            // Update status after delegate callback
+            status = locationManager.authorizationStatus
+        }
+
+        // Validate final status
+        if status == .denied || status == .restricted {
             throw LocationError.permissionDenied
         }
 
+        // Request a single location update and await result with timeout protection
         return try await withCheckedThrowingContinuation { continuation in
             self.locationContinuation = continuation
-            locationManager.requestLocation()
+            self.locationManager.requestLocation()
 
-            // Timeout after 10 seconds
+            // Timeout after 10 seconds to avoid hanging if no callback arrives
             Task { [weak self] in
                 try? await Task.sleep(nanoseconds: 10_000_000_000)
                 guard let self, self.locationContinuation != nil else { return }
