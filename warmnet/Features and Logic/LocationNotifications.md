@@ -210,12 +210,27 @@ Sections:
 
 ## Testing
 
+### Testing Interface
+
+A comprehensive testing screen (`LocationNotificationTestScreen`) is available for testing location notifications without physical travel:
+
+**Access**: Settings → Testing & Debug → "Test Location Notifications"
+
+**Features**:
+- System status verification (permissions, settings, monitored cities)
+- Permission request buttons
+- Individual city testing (tap "Test" next to any monitored city)
+- Random city testing
+- System-wide diagnostic checks
+
+For detailed testing documentation, see **TestingFeatures.md**.
+
 ### Simulator Limitations
 
 Geofencing cannot be tested in the iOS Simulator. Use:
-- Physical device testing
+- Physical device testing for real geofencing
 - GPX files for location simulation in Xcode
-- `simulateRegionEntry(city:)` method for unit testing
+- `simulateRegionEntry(city:)` method via testing screen (bypasses geofencing)
 
 ### Test Scenarios
 
@@ -225,6 +240,19 @@ Geofencing cannot be tested in the iOS Simulator. Use:
 4. **Quiet hours** - Verify timing respects settings
 5. **20+ cities** - Verify prioritization works correctly
 6. **Background state** - Verify notifications arrive when app is killed
+
+### Testing Methods
+
+**Via Testing Screen** (Recommended):
+1. Navigate to Settings → Testing & Debug → "Test Location Notifications"
+2. Verify system status is ready
+3. Tap "Test" next to any monitored city
+4. Notification appears within 1 second
+
+**Programmatic Testing**:
+```swift
+LocationNotificationService.shared.simulateRegionEntry(city: "San Francisco")
+```
 
 ## Future Enhancements
 

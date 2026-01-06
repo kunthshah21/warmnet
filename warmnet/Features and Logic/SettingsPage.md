@@ -20,10 +20,18 @@ The Settings Page serves as the central hub for user configuration, legal inform
 
 ### 4. Testing & Debugging
 Consolidates developer tools and testing functions:
+- **Test Location Notifications**: Opens comprehensive location notification testing interface (`LocationNotificationTestScreen`)
+  - System status verification
+  - Permission management
+  - Individual city testing
+  - Random city testing
+  - System diagnostics
 - **Test Contact Input**: Launches the contact import flow.
 - **Reminder System Debug**: Opens the reminder queue debugger.
 - **Test Onboarding**: Resets the `hasCompletedOnboarding` flag and restarts the app.
 - **Reset All Data**: Wipes all `Contact` data from the local database.
+
+For detailed testing documentation, see **TestingFeatures.md**.
 
 ## Architecture
 
@@ -36,6 +44,9 @@ Consolidates developer tools and testing functions:
   - `ReportBugScreen.swift`
   - `SubscriptionScreen.swift`
   - `PrivacyPolicyView.swift`
+- `Screens/`: Contains testing screens.
+  - `LocationNotificationTestScreen.swift`: Location notification testing interface.
+  - `TestingScreen.swift`: Consolidated testing tools (if accessible).
 
 ### View Structure
 - **Container**: `NavigationStack` wrapping a `List`.
