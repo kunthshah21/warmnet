@@ -103,6 +103,8 @@ struct HomeScreen: View {
                         
                         WeeklyReminderCard(contacts: contacts)
                         
+                        NetworkProgressCard()
+                        
                         KPICard(
                             innerCircleCount: innerCircleCount,
                             keyRelationshipsCount: keyRelationshipsCount,

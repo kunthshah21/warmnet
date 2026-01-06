@@ -20,7 +20,7 @@ Coding Rules:
 Make sure to write clean code which is readable and scallable
 Make sure to breakdown views, when they start getting too complicated. Always limit yourself to writing both easy to understand and efficient code. 
 Make sure to follow all rules in this document when making either any code updates, changes or adding new features.
-When adding a new feature, or making a big update to some flow or architecture, make sure to update the readme file exising in Features and logic folder. If the readme does not exist, create one. Only create a readme, if its a big change, otherwise ignore this rule. 
+When adding a new feature, or making a big update to some flow or architecture, make sure to update the readme file exising in Features and logic folder. If the readme does not exist, create one. Only create a readme, if its a big change, otherwise ignore this rule. You may also update the readme in the current folder, if you are building a new feature or screen which deals with a folder with a readme file.
 
 SwiftUI best practices
 
