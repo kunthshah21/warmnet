@@ -42,10 +42,18 @@ struct BirthdayNotificationTestScreen: View {
             
             // MARK: - Actions
             Section {
-                Button("Simulate Birthday Notification (5s Delay)") {
+                Button("Simulate 'Day Of' Notification (5s)") {
                     Task {
-                        await notificationManager.testBirthdayNotification(contactName: "Test User")
-                        testResult = "Notification scheduled in 5 seconds"
+                        await notificationManager.testBirthdayNotification(contactName: "Test User", isWeekBefore: false)
+                        testResult = "Day Of notification scheduled in 5 seconds"
+                        showTestAlert = true
+                    }
+                }
+                
+                Button("Simulate 'Week Before' Notification (5s)") {
+                    Task {
+                        await notificationManager.testBirthdayNotification(contactName: "Test User", isWeekBefore: true)
+                        testResult = "Week Before notification scheduled in 5 seconds"
                         showTestAlert = true
                     }
                 }

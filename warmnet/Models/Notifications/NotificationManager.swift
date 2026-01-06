@@ -290,12 +290,22 @@ final class NotificationManager: NSObject {
     }
 
     /// Trigger an immediate birthday notification for testing purposes
-    func testBirthdayNotification(contactName: String) async {
+    /// - Parameters:
+    ///   - contactName: The name to display
+    ///   - isWeekBefore: If true, shows the "Upcoming Birthday" message. If false, shows "Happy Birthday".
+    func testBirthdayNotification(contactName: String, isWeekBefore: Bool = false) async {
         guard authorizationStatus.canSendNotifications else { return }
         
         let content = UNMutableNotificationContent()
-        content.title = "Test Birthday: \(contactName)"
-        content.body = "This is a test notification for the birthday feature."
+        
+        if isWeekBefore {
+            content.title = "Upcoming Birthday: \(contactName)"
+            content.body = "\(contactName)'s birthday is in one week. Plan something special!"
+        } else {
+            content.title = "Happy Birthday \(contactName)! 🎂"
+            content.body = "It's \(contactName)'s birthday today. Don't forget to wish them!"
+        }
+        
         content.sound = .default
         content.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
         
