@@ -62,7 +62,9 @@ final class GeocodingService: NSObject {
     
     // MARK: - Properties
     
-    private let geocoder = CLGeocoder()
+    // Legacy geocoder for iOS < 26 fallback paths
+    @available(iOS, deprecated: 26.0, message: "Use MKGeocodingRequest or MKReverseGeocodingRequest on iOS 26+")
+    private let legacyGeocoder = CLGeocoder()
     private let searchCompleter = MKLocalSearchCompleter()
     
     var suggestions: [SearchSuggestion] = []
@@ -123,12 +125,15 @@ final class GeocodingService: NSObject {
         
         do {
             let response = try await search.start()
-            guard let mapItem = response.mapItems.first,
-                  let placemark = mapItem.placemark as? MKPlacemark else {
+            guard let mapItem = response.mapItems.first else {
                 throw GeocodingError.notFound
             }
-            
-            return parseLocationResult(from: placemark)
+
+            if #available(iOS 26, *) {
+                return parseLocationResult(from: mapItem)
+            } else {
+                return parseLocationResult(from: mapItem.placemark)
+            }
         } catch let error as GeocodingError {
             throw error
         } catch {
@@ -145,26 +150,41 @@ final class GeocodingService: NSObject {
             throw GeocodingError.notFound
         }
         
-        do {
-            let placemarks = try await geocoder.geocodeAddressString(trimmedText)
-            guard let placemark = placemarks.first else {
+        if #available(iOS 26, *) {
+            guard let request = MKGeocodingRequest(addressString: trimmedText) else {
                 throw GeocodingError.notFound
             }
-            
-            return parseLocationResult(from: placemark)
-        } catch let error as GeocodingError {
-            throw error
-        } catch let error as CLError {
-            switch error.code {
-            case .network:
+            do {
+                let mapItems = try await request.mapItems
+                guard let mapItem = mapItems.first else {
+                    throw GeocodingError.notFound
+                }
+                return parseLocationResult(from: mapItem)
+            } catch {
                 throw GeocodingError.networkError
-            case .geocodeFoundNoResult, .geocodeFoundPartialResult:
-                throw GeocodingError.notFound
-            default:
-                throw GeocodingError.serviceUnavailable
             }
-        } catch {
-            throw GeocodingError.networkError
+        } else {
+            do {
+                let placemarks = try await legacyGeocoder.geocodeAddressString(trimmedText)
+                guard let placemark = placemarks.first else {
+                    throw GeocodingError.notFound
+                }
+                
+                return parseLocationResult(from: placemark)
+            } catch let error as GeocodingError {
+                throw error
+            } catch let error as CLError {
+                switch error.code {
+                case .network:
+                    throw GeocodingError.networkError
+                case .geocodeFoundNoResult, .geocodeFoundPartialResult:
+                    throw GeocodingError.notFound
+                default:
+                    throw GeocodingError.serviceUnavailable
+                }
+            } catch {
+                throw GeocodingError.networkError
+            }
         }
     }
     
@@ -172,26 +192,41 @@ final class GeocodingService: NSObject {
     /// - Parameter location: The CLLocation to reverse geocode
     /// - Returns: LocationResult with city, state, country
     func reverseGeocode(location: CLLocation) async throws -> LocationResult {
-        do {
-            let placemarks = try await geocoder.reverseGeocodeLocation(location)
-            guard let placemark = placemarks.first else {
+        if #available(iOS 26, *) {
+            guard let request = MKReverseGeocodingRequest(location: location) else {
                 throw GeocodingError.notFound
             }
-            
-            return parseLocationResult(from: placemark)
-        } catch let error as GeocodingError {
-            throw error
-        } catch let error as CLError {
-            switch error.code {
-            case .network:
+            do {
+                let mapItems = try await request.mapItems
+                guard let mapItem = mapItems.first else {
+                    throw GeocodingError.notFound
+                }
+                return parseLocationResult(from: mapItem)
+            } catch {
                 throw GeocodingError.networkError
-            case .geocodeFoundNoResult, .geocodeFoundPartialResult:
-                throw GeocodingError.notFound
-            default:
-                throw GeocodingError.serviceUnavailable
             }
-        } catch {
-            throw GeocodingError.networkError
+        } else {
+            do {
+                let placemarks = try await legacyGeocoder.reverseGeocodeLocation(location)
+                guard let placemark = placemarks.first else {
+                    throw GeocodingError.notFound
+                }
+                
+                return parseLocationResult(from: placemark)
+            } catch let error as GeocodingError {
+                throw error
+            } catch let error as CLError {
+                switch error.code {
+                case .network:
+                    throw GeocodingError.networkError
+                case .geocodeFoundNoResult, .geocodeFoundPartialResult:
+                    throw GeocodingError.notFound
+                default:
+                    throw GeocodingError.serviceUnavailable
+                }
+            } catch {
+                throw GeocodingError.networkError
+            }
         }
     }
     
@@ -213,16 +248,24 @@ final class GeocodingService: NSObject {
             displayName: displayName
         )
     }
-    
-    private func parseLocationResult(from placemark: MKPlacemark) -> LocationResult {
-        let city = placemark.locality ?? ""
-        let state = placemark.administrativeArea ?? ""
-        let country = placemark.country ?? ""
-        
-        // Build display name from available components
-        let components = [city, state, country].filter { !$0.isEmpty }
-        let displayName = components.joined(separator: ", ")
-        
+
+    @available(iOS 26, *)
+    private func parseLocationResult(from mapItem: MKMapItem) -> LocationResult {
+        let addressText = mapItem.address?.fullAddress
+            ?? mapItem.address?.shortAddress
+            ?? mapItem.name
+            ?? ""
+
+        let components = addressText
+            .split(separator: ",")
+            .map { String($0).trimmingCharacters(in: CharacterSet.whitespacesAndNewlines) }
+
+        let country = components.last ?? ""
+        let state = components.dropLast().last ?? ""
+        let city = components.dropLast(2).last ?? ""
+
+        let displayName = addressText.isEmpty ? [city, state, country].filter { !$0.isEmpty }.joined(separator: ", ") : addressText
+
         return LocationResult(
             city: city,
             state: state,

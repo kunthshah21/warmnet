@@ -106,7 +106,7 @@ struct NetworkProgressCard: View {
         
         // Check for newly completed tiers and trigger haptic
         for newProgress in newProgresses {
-            let wasComplete = previousProgresses.first { $0.tier == newProgress.tier }?.isComplete ?? false
+            _ = previousProgresses.first { $0.tier == newProgress.tier }?.isComplete ?? false
             let isNowComplete = newProgress.isComplete
             let alreadyTriggeredThisSession = completedTiersThisSession.contains(newProgress.tier)
             

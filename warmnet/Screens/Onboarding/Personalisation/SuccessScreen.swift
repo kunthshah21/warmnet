@@ -14,63 +14,66 @@ struct SuccessScreen: View {
     var onContinue: () -> Void = {}
     
     var body: some View {
-        ZStack {
-            // Background - Black
-            Color.white
-                .ignoresSafeArea()
-            
-            VStack(spacing: 32) {
-                Spacer()
+        GeometryReader { proxy in
+            let size = proxy.size
+            ZStack {
+                // Background - Black
+                Color.white
+                    .ignoresSafeArea()
                 
-                // Success icon with animation
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.system(size: 80))
-                    .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
-                    .scaleEffect(showConfetti ? 1.0 : 0.5)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.6), value: showConfetti)
-                
-                // Hooray text
-                VStack(spacing: 16) {
-                    Text("Hooray! 🎉")
-                        .font(Font.custom("WorkSans-Medium", size: 42))
-                        .foregroundColor(.black)
-                        .scaleEffect(showConfetti ? 1.0 : 0.8)
-                        .opacity(showConfetti ? 1.0 : 0.0)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showConfetti)
+                VStack(spacing: 32) {
+                    Spacer()
                     
-                    Text("Congratulations on taking your first steps!")
-                        .font(Font.custom("Overpass-Medium", size: 20))
-                        .foregroundColor(.black)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                        .opacity(showConfetti ? 1.0 : 0.0)
-                        .offset(y: showConfetti ? 0 : 20)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.3), value: showConfetti)
+                    // Success icon with animation
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 80))
+                        .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
+                        .scaleEffect(showConfetti ? 1.0 : 0.5)
+                        .animation(.spring(response: 0.6, dampingFraction: 0.6), value: showConfetti)
                     
-                    Text("You're on your way to building meaningful, lasting relationships.")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.black.opacity(0.8))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                        .opacity(showConfetti ? 1.0 : 0.0)
-                        .offset(y: showConfetti ? 0 : 20)
-                        .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.4), value: showConfetti)
+                    // Hooray text
+                    VStack(spacing: 16) {
+                        Text("Hooray! 🎉")
+                            .font(Font.custom("WorkSans-Medium", size: 42))
+                            .foregroundColor(.black)
+                            .scaleEffect(showConfetti ? 1.0 : 0.8)
+                            .opacity(showConfetti ? 1.0 : 0.0)
+                            .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showConfetti)
+                        
+                        Text("Congratulations on taking your first steps!")
+                            .font(Font.custom("Overpass-Medium", size: 20))
+                            .foregroundColor(.black)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                            .opacity(showConfetti ? 1.0 : 0.0)
+                            .offset(y: showConfetti ? 0 : 20)
+                            .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.3), value: showConfetti)
+                        
+                        Text("You're on your way to building meaningful, lasting relationships.")
+                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .foregroundColor(.black.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                            .opacity(showConfetti ? 1.0 : 0.0)
+                            .offset(y: showConfetti ? 0 : 20)
+                            .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.4), value: showConfetti)
+                    }
+                    
+                    Spacer()
                 }
                 
-                Spacer()
+                // Confetti overlay
+                ForEach(confettiPieces) { piece in
+                    ConfettiView(piece: piece)
+                }
             }
-            
-            // Confetti overlay
-            ForEach(confettiPieces) { piece in
-                ConfettiView(piece: piece)
+            .onAppear {
+                triggerSuccess(containerSize: size)
             }
-        }
-        .onAppear {
-            triggerSuccess()
         }
     }
     
-    private func triggerSuccess() {
+    private func triggerSuccess(containerSize: CGSize) {
         // Trigger haptic feedback
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.success)
@@ -80,9 +83,9 @@ struct SuccessScreen: View {
             showConfetti = true
         }
         
-        // Generate confetti pieces
+        // Generate confetti pieces using container size rather than UIScreen.main
         confettiPieces = (0..<50).map { _ in
-            ConfettiPiece()
+            ConfettiPiece(containerSize: containerSize)
         }
         
         // Auto-advance after 2.5 seconds
@@ -102,13 +105,13 @@ struct ConfettiPiece: Identifiable {
     let endY: CGFloat
     let rotation: Double
     let scale: CGFloat
-    
-    init() {
+
+    init(containerSize: CGSize) {
         let colors: [Color] = [.red, .orange, .yellow, .green, .blue, .purple, .pink]
         self.color = colors.randomElement() ?? .blue
-        self.startX = CGFloat.random(in: 0...UIScreen.main.bounds.width)
+        self.startX = CGFloat.random(in: 0...max(containerSize.width, 0))
         self.startY = CGFloat.random(in: -100...0)
-        self.endY = UIScreen.main.bounds.height + 100
+        self.endY = containerSize.height + 100
         self.rotation = Double.random(in: 0...720)
         self.scale = CGFloat.random(in: 0.4...1.0)
     }
