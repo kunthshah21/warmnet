@@ -33,6 +33,7 @@ final class NotificationManager: NSObject {
     
     enum NotificationCategory: String {
         case locationReminder = "LOCATION_REMINDER"
+        case birthdayReminder = "BIRTHDAY_REMINDER"
         
         var identifier: String { rawValue }
     }
@@ -137,7 +138,15 @@ final class NotificationManager: NSObject {
             options: []
         )
         
-        notificationCenter.setNotificationCategories([locationCategory])
+        // Birthday Reminder Category
+        let birthdayCategory = UNNotificationCategory(
+            identifier: NotificationCategory.birthdayReminder.identifier,
+            actions: [viewAction, snoozeAction, dismissAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        
+        notificationCenter.setNotificationCategories([locationCategory, birthdayCategory])
     }
     
     // MARK: - Schedule Notifications
@@ -203,6 +212,99 @@ final class NotificationManager: NSObject {
         } catch {
             print("NotificationManager: Failed to schedule notification: \(error)")
         }
+    }
+
+    /// Schedule birthday notifications for a contact
+    func scheduleBirthdayNotifications(contact: Contact) async {
+        guard let birthday = contact.birthday, authorizationStatus.canSendNotifications else {
+            // No birthday set or permission denied
+            return
+        }
+        
+        let calendar = Calendar.current
+        
+        // --- Notification 1 (Day Of) ---
+        // Trigger: On the birthday month and day at 12:00 AM (00:00).
+        let dayOfComponents = calendar.dateComponents([.month, .day], from: birthday)
+        
+        var trigger1Components = DateComponents()
+        trigger1Components.month = dayOfComponents.month
+        trigger1Components.day = dayOfComponents.day
+        trigger1Components.hour = 0
+        trigger1Components.minute = 0
+        
+        let content1 = UNMutableNotificationContent()
+        content1.title = "Happy Birthday \(contact.name)! 🎂"
+        content1.body = "It's \(contact.name)'s birthday today. Don't forget to wish them!"
+        content1.sound = .default
+        content1.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
+        content1.userInfo = ["contactId": contact.id.uuidString]
+        
+        let trigger1 = UNCalendarNotificationTrigger(dateMatching: trigger1Components, repeats: true)
+        let id1 = "birthday_day_\(contact.id.uuidString)"
+        let request1 = UNNotificationRequest(identifier: id1, content: content1, trigger: trigger1)
+        
+        do {
+            try await notificationCenter.add(request1)
+            print("NotificationManager: Scheduled birthday (day of) notification for \(contact.name)")
+        } catch {
+            print("NotificationManager: Failed to schedule birthday (day of) notification: \(error)")
+        }
+        
+        // --- Notification 2 (1 Week Before) ---
+        // Trigger: 7 days before the birthday at 9:00 AM.
+        // We calculate the date 7 days before the supplied birthday using a fixed leap year (2024)
+        // to handle Feb 29 correctly, then subtract 7 days.
+        var tempComponents = dayOfComponents
+        tempComponents.year = 2024
+        
+        if let tempDate = calendar.date(from: tempComponents),
+           let weekBeforeDate = calendar.date(byAdding: .day, value: -7, to: tempDate) {
+            
+            let weekBeforeComponents = calendar.dateComponents([.month, .day], from: weekBeforeDate)
+            
+            var trigger2Components = DateComponents()
+            trigger2Components.month = weekBeforeComponents.month
+            trigger2Components.day = weekBeforeComponents.day
+            trigger2Components.hour = 9
+            trigger2Components.minute = 0
+            
+            let content2 = UNMutableNotificationContent()
+            content2.title = "Upcoming Birthday: \(contact.name)"
+            content2.body = "\(contact.name)'s birthday is in one week. Plan something special!"
+            content2.sound = .default
+            content2.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
+            content2.userInfo = ["contactId": contact.id.uuidString]
+            
+            let trigger2 = UNCalendarNotificationTrigger(dateMatching: trigger2Components, repeats: true)
+            let id2 = "birthday_week_\(contact.id.uuidString)"
+            let request2 = UNNotificationRequest(identifier: id2, content: content2, trigger: trigger2)
+            
+            do {
+                try await notificationCenter.add(request2)
+                print("NotificationManager: Scheduled birthday (1 week before) notification for \(contact.name)")
+            } catch {
+                print("NotificationManager: Failed to schedule birthday (1 week before) notification: \(error)")
+            }
+        }
+    }
+
+    /// Trigger an immediate birthday notification for testing purposes
+    func testBirthdayNotification(contactName: String) async {
+        guard authorizationStatus.canSendNotifications else { return }
+        
+        let content = UNMutableNotificationContent()
+        content.title = "Test Birthday: \(contactName)"
+        content.body = "This is a test notification for the birthday feature."
+        content.sound = .default
+        content.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
+        
+        // Trigger 5 seconds from now
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+        let identifier = UUID().uuidString
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        
+        try? await notificationCenter.add(request)
     }
     
     // MARK: - Pending Notifications
