@@ -52,6 +52,7 @@ The location notification system alerts users when they enter a city where their
 | `LocationNotificationService` | Core orchestrator for geofencing, region monitoring, and notification triggering |
 | `NotificationManager` | Handles UNUserNotificationCenter interactions, permissions, and notification scheduling |
 | `ContactLocationMatcher` | Utility for finding contacts by city and prioritizing cities for geofencing |
+| `NotificationContentProvider` | Centralized factory for generating notification strings (Title & Body) |
 
 ## Data Flow
 
@@ -91,6 +92,8 @@ Check UserSettings.isInQuietHours
 Check NotificationHistory.canNotify() (cooldown)
     ↓
 Fetch contacts in city from SwiftData
+    ↓
+NotificationContentProvider.content(for: .locationEntry)
     ↓
 NotificationManager.scheduleLocationNotification()
     ↓

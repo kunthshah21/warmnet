@@ -13,10 +13,26 @@ The Testing Features provide comprehensive tools for developers and testers to v
 ### Settings Screen Integration
 The Settings Screen (`SettingsScreen.swift`) includes a "Testing & Debug" section with the following options:
 - **Test Location Notifications**: Opens the location notification testing interface
+- **Test Birthday Notifications**: Opens the birthday notification testing interface
 - **Test Contact Input**: Launches the contact import flow
 - **Reminder System Debug**: Opens the reminder queue debugger
 - **Test Onboarding**: Resets onboarding state and restarts the app
 - **Reset All Data**: Wipes all contact data from the database
+
+## Birthday Notification Testing
+
+### BirthdayNotificationTestScreen
+
+A dedicated interface for verifying the birthday reminder system.
+
+#### Purpose
+Allows developers to simulate birthday alerts immediately without waiting for specific dates, and to verify permission states.
+
+#### Features
+1.  **Status Checks**: Verifies if notifications are authorized.
+2.  **Simulation - Day Of**: Schedules a test notification to fire in 5 seconds with the "Happy Birthday" copy.
+3.  **Simulation - Week Before**: Schedules a test notification to fire in 5 seconds with the "Upcoming Birthday" copy.
+4.  **Schedule All**: Batch processes all contacts in the database and registers their real `UNCalendarNotificationTrigger` events.
 
 ## Location Notification Testing
 

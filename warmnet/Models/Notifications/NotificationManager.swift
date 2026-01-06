@@ -168,23 +168,13 @@ final class NotificationManager: NSObject {
             return
         }
         
-        let content = UNMutableNotificationContent()
-        content.title = "You're in \(city)!"
+        let notifContent = NotificationContentProvider.content(
+            for: .locationEntry(city: city, contactNames: contactNames, totalCount: contactCount)
+        )
         
-        // Build body based on contact count
-        if contactCount == 1, let firstName = contactNames.first {
-            content.body = "Connect with \(firstName) while you're here."
-        } else if contactCount == 2 {
-            content.body = "Connect with \(contactNames.joined(separator: " and ")) while you're here."
-        } else if contactCount <= 4 {
-            let firstNames = contactNames.prefix(contactCount - 1).joined(separator: ", ")
-            let lastName = contactNames.last ?? ""
-            content.body = "Connect with \(firstNames), and \(lastName) while you're here."
-        } else {
-            let displayedNames = contactNames.prefix(2).joined(separator: ", ")
-            let remaining = contactCount - 2
-            content.body = "Connect with \(displayedNames), and \(remaining) others while you're here."
-        }
+        let content = UNMutableNotificationContent()
+        content.title = notifContent.title
+        content.body = notifContent.body
         
         content.sound = .default
         content.categoryIdentifier = NotificationCategory.locationReminder.identifier
@@ -233,9 +223,11 @@ final class NotificationManager: NSObject {
         trigger1Components.hour = 0
         trigger1Components.minute = 0
         
+        let dayOfContent = NotificationContentProvider.content(for: .birthdayDayOf(contactName: contact.name))
+        
         let content1 = UNMutableNotificationContent()
-        content1.title = "Happy Birthday \(contact.name)! 🎂"
-        content1.body = "It's \(contact.name)'s birthday today. Don't forget to wish them!"
+        content1.title = dayOfContent.title
+        content1.body = dayOfContent.body
         content1.sound = .default
         content1.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
         content1.userInfo = ["contactId": contact.id.uuidString]
@@ -269,9 +261,11 @@ final class NotificationManager: NSObject {
             trigger2Components.hour = 9
             trigger2Components.minute = 0
             
+            let weekBeforeContent = NotificationContentProvider.content(for: .birthdayWeekBefore(contactName: contact.name))
+            
             let content2 = UNMutableNotificationContent()
-            content2.title = "Upcoming Birthday: \(contact.name)"
-            content2.body = "\(contact.name)'s birthday is in one week. Plan something special!"
+            content2.title = weekBeforeContent.title
+            content2.body = weekBeforeContent.body
             content2.sound = .default
             content2.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
             content2.userInfo = ["contactId": contact.id.uuidString]
@@ -296,16 +290,16 @@ final class NotificationManager: NSObject {
     func testBirthdayNotification(contactName: String, isWeekBefore: Bool = false) async {
         guard authorizationStatus.canSendNotifications else { return }
         
-        let content = UNMutableNotificationContent()
-        
+        let notifContent: NotificationContent
         if isWeekBefore {
-            content.title = "Upcoming Birthday: \(contactName)"
-            content.body = "\(contactName)'s birthday is in one week. Plan something special!"
+            notifContent = NotificationContentProvider.content(for: .birthdayWeekBefore(contactName: contactName))
         } else {
-            content.title = "Happy Birthday \(contactName)! 🎂"
-            content.body = "It's \(contactName)'s birthday today. Don't forget to wish them!"
+            notifContent = NotificationContentProvider.content(for: .birthdayDayOf(contactName: contactName))
         }
         
+        let content = UNMutableNotificationContent()
+        content.title = notifContent.title
+        content.body = notifContent.body
         content.sound = .default
         content.categoryIdentifier = NotificationCategory.birthdayReminder.identifier
         
