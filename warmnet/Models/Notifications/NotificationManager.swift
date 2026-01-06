@@ -48,7 +48,7 @@ final class NotificationManager: NSObject {
     
     // MARK: - Properties
     
-    private let notificationCenter = UNUserNotificationCenter.current()
+    nonisolated private let notificationCenter = UNUserNotificationCenter.current()
     
     private(set) var authorizationStatus: AuthorizationStatus = .notDetermined
     
@@ -351,22 +351,31 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         let actionIdentifier = response.actionIdentifier
         let userInfo = response.notification.request.content.userInfo
         
+        // Wrapper to pass dictionary across actor boundary safely
+        // UNNotification userInfo contains plist types which are effectively thread-safe
+        struct SendableUserInfo: @unchecked Sendable {
+            let content: [AnyHashable: Any]
+        }
+        let safeUserInfo = SendableUserInfo(content: userInfo)
+        
         // Handle action on main actor
         await MainActor.run {
+            let info = safeUserInfo.content
+            
             switch actionIdentifier {
             case NotificationAction.viewContacts.identifier,
                  UNNotificationDefaultActionIdentifier:
                 // User tapped notification or View Contacts
-                onLocationNotificationAction?(NotificationAction.viewContacts.identifier, userInfo)
+                onLocationNotificationAction?(NotificationAction.viewContacts.identifier, info)
                 
             case NotificationAction.snooze.identifier:
                 // User snoozed
-                onLocationNotificationAction?(NotificationAction.snooze.identifier, userInfo)
+                onLocationNotificationAction?(NotificationAction.snooze.identifier, info)
                 
             case NotificationAction.dismiss.identifier,
                  UNNotificationDismissActionIdentifier:
                 // User dismissed
-                onLocationNotificationAction?(NotificationAction.dismiss.identifier, userInfo)
+                onLocationNotificationAction?(NotificationAction.dismiss.identifier, info)
                 
             default:
                 break

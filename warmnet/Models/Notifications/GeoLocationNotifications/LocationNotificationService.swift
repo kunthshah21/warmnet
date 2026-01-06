@@ -193,7 +193,7 @@ final class LocationNotificationService: NSObject {
     
     /// Handle entry into a monitored region
     private func handleRegionEntry(_ region: CLRegion) {
-        guard let circularRegion = region as? CLCircularRegion else { return }
+        guard region is CLCircularRegion else { return }
         
         // Find the monitored city for this region
         guard let monitoredCity = monitoredCities.first(where: { $0.regionIdentifier == region.identifier }) else {

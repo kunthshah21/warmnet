@@ -35,7 +35,7 @@ struct LocationInputView: View {
     // MARK: - Computed Properties
     
     private var showCurrentLocationButton: Bool {
-        (locationManager?.authorizationStatus != .denied) ?? false
+        (locationManager?.authorizationStatus != .denied)
     }
     
     private var displayText: String {

@@ -268,7 +268,7 @@ struct AddContactSheet: View {
                                     }
                                     .labelsHidden()
                                     .frame(maxWidth: .infinity, alignment: .leading)
-                                    .onChange(of: scheduleFrequency) { newValue in
+                                    .onChange(of: scheduleFrequency) { _, newValue in
                                         if newValue == .week && scheduleInterval > 3 {
                                             scheduleInterval = 2
                                         }
