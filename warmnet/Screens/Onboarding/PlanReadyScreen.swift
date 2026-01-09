@@ -67,7 +67,7 @@ struct PlanReadyScreen: View {
                 // Text content
                 VStack(spacing: 24) {
                     Text("Success!")
-                        .font(Font.custom("WorkSans-Medium", size: 42))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 42))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [.green, .teal],
@@ -81,12 +81,12 @@ struct PlanReadyScreen: View {
                     
                     VStack(spacing: 12) {
                         Text("Your Plan is ready")
-                            .font(Font.custom("WorkSans-Medium", size: 24))
+                            .font(Font.custom(AppFontName.workSansMedium, size: 24))
                             .foregroundColor(.black)
                             .fixedSize(horizontal: false, vertical: true)
                         
                         Text("Everything is set up and ready for you to start building meaningful connections")
-                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                             .foregroundColor(.black.opacity(0.7))
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
@@ -103,7 +103,7 @@ struct PlanReadyScreen: View {
                 Button(action: onContinue) {
                     HStack(spacing: 8) {
                         Text("Continue")
-                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .typography(\.primaryButton)
                         
                         Image(systemName: "arrow.right")
                             .font(.system(size: 16, weight: .semibold))

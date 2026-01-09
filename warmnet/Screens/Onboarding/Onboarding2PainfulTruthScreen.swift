@@ -35,7 +35,7 @@ struct Onboarding2PainfulTruthScreen: View {
                 VStack(spacing: 12) {
                     // Title
                     Text("You reach out. They help. You vanish.")
-                        .font(Font.custom("WorkSans-Regular", size: 30))
+                        .font(Font.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -45,7 +45,7 @@ struct Onboarding2PainfulTruthScreen: View {
                     
                     // Subtitle
                     Text("This pattern is killing your best relationships, one ghost at a time.")
-                        .font(Font.custom("Overpass", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14))
                         .lineSpacing(4)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -61,8 +61,7 @@ struct Onboarding2PainfulTruthScreen: View {
                     // Primary Button - Start Fresh
                     Button(action: onShowMeHow) {
                         Text("Start Fresh")
-                            .font(Font.custom("Overpass-Medium", size: 16))
-                            .foregroundColor(.white)
+                            .typography(\.primaryButton)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
                             .background(Color(red: 0.32, green: 0.57, blue: 0.87))

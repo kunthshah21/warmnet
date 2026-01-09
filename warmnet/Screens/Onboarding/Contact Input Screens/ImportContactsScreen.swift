@@ -22,12 +22,12 @@ struct ImportContactsScreen: View {
                     .frame(minHeight: 80, maxHeight: 120)
                 
                 Text("Import Contacts")
-                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .font(Font.custom(AppFontName.workSansMedium, size: 32))
                     .foregroundColor(.black)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Import your contacts for the application to work properly. We respect your privacy and only use contacts locally.")
-                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
@@ -55,8 +55,7 @@ struct ImportContactsScreen: View {
                         Text("Import Contacts")
                         Image(systemName: "square.and.arrow.down")
                     }
-                    .font(Font.custom("Overpass-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .typography(\.primaryButton)
                     .frame(maxWidth: 253, minHeight: 48)
                     .background(Color(red: 0.32, green: 0.57, blue: 0.87))
                     .cornerRadius(20)

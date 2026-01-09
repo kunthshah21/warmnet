@@ -19,7 +19,7 @@ struct PrimaryButton: View {
                         .font(.title2.weight(.semibold))
                 }
                 Text(title)
-                    .font(.headline)
+                    .typography(\.primaryButton)
             }
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)

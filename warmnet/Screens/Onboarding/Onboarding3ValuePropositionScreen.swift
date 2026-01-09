@@ -35,7 +35,7 @@ struct Onboarding3ValuePropositionScreen: View {
                 VStack(spacing: 12) {
                     // Title
                     Text("Imagine reaching out with nothing to ask")
-                        .font(Font.custom("WorkSans-Regular", size: 30))
+                        .font(Font.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -45,7 +45,7 @@ struct Onboarding3ValuePropositionScreen: View {
                     
                     // Subtitle
                     Text("Just value to give. Just genuine interest. That's how real networks are built.")
-                        .font(Font.custom("Overpass", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14))
                         .lineSpacing(4)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -61,8 +61,7 @@ struct Onboarding3ValuePropositionScreen: View {
                     // Primary Button - Start Fresh
                     Button(action: onBuildMySystem) {
                         Text("Start Fresh")
-                            .font(Font.custom("Overpass-Medium", size: 16))
-                            .foregroundColor(.white)
+                            .typography(\.primaryButton)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
                             .background(Color(red: 0.32, green: 0.57, blue: 0.87))

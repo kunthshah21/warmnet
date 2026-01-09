@@ -33,7 +33,7 @@ struct PersonalisingLoadingScreen: View {
                 
                 // Main title
                 Text("WarmNet")
-                    .font(Font.custom("WorkSans-Medium", size: 36))
+                    .font(Font.custom(AppFontName.workSansMedium, size: 36))
                     .foregroundColor(.black)
                     .padding(.bottom, 8)
                 
@@ -62,7 +62,7 @@ struct PersonalisingLoadingScreen: View {
                 // Progress text
                 VStack(spacing: 12) {
                     Text(steps[currentStep])
-                        .font(Font.custom("Overpass-Medium", size: 18))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 18).weight(.medium))
                         .foregroundColor(.black)
                         .transition(.asymmetric(
                             insertion: .move(edge: .trailing).combined(with: .opacity),
@@ -86,7 +86,7 @@ struct PersonalisingLoadingScreen: View {
                     .padding(.horizontal, 60)
                     
                     Text("\(Int(progress * 100))%")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                 }
                 

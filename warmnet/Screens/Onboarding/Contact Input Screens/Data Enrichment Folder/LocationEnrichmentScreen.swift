@@ -106,7 +106,7 @@ struct LocationEnrichmentScreen: View {
                     print("LocationEnrichmentScreen: Done pressed, calling onFlowComplete")
                     onFlowComplete()
                 }
-                .font(Font.custom("Overpass-Medium", size: 16))
+                .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
@@ -162,13 +162,13 @@ struct LocationEnrichmentScreen: View {
     private func sectionHeader(_ title: String, count: Int) -> some View {
         HStack {
             Text(title)
-                .font(Font.custom("WorkSans-Medium", size: 14))
+                .font(Font.custom(AppFontName.workSansMedium, size: 14))
                 .foregroundColor(.black.opacity(0.7))
             
             Spacer()
             
             Text("\(count)")
-                .font(Font.custom("Overpass-Medium", size: 12))
+                .font(Font.custom(AppFontName.overpassVariable, size: 12).weight(.medium))
                 .foregroundColor(.black.opacity(0.7))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
@@ -206,18 +206,18 @@ struct LocationEnrichmentRow: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.name)
-                        .font(Font.custom("WorkSans-Medium", size: 16))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 16))
                         .foregroundColor(.black)
                         .lineLimit(1)
                     
                     if hasLocation {
                         Text(contact.fullLocation)
-                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                             .foregroundColor(.black.opacity(0.7))
                             .lineLimit(1)
                     } else {
                         Text("Tap to add location")
-                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                             .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
                     }
                 }

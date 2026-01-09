@@ -35,7 +35,7 @@ struct Onboarding1ProblemScreen: View {
                 VStack(spacing: 12) {
                     // Title
                     Text("Your relationships are slipping away")
-                        .font(Font.custom("WorkSans-Regular", size: 30))
+                        .font(Font.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -45,7 +45,7 @@ struct Onboarding1ProblemScreen: View {
                     
                     // Subtitle
                     Text("Important people fade from your life, not from lack of care, but from lack of system")
-                        .font(Font.custom("Overpass", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14))
                         .lineSpacing(4)
                         .foregroundColor(.black)
                         .multilineTextAlignment(.center)
@@ -61,8 +61,7 @@ struct Onboarding1ProblemScreen: View {
                     // Primary Button - Start Fresh
                     Button(action: onContinue) {
                         Text("Start Fresh")
-                            .font(Font.custom("Overpass-Medium", size: 16))
-                            .foregroundColor(.white)
+                            .typography(\.primaryButton)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
                             .background(Color(red: 0.32, green: 0.57, blue: 0.87))

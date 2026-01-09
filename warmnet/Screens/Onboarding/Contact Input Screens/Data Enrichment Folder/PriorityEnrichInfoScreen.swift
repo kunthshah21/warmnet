@@ -20,13 +20,13 @@ struct PriorityEnrichInfoScreen: View {
                     .padding(.bottom, 20)
                 
                 Text("Select Priority")
-                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .font(Font.custom(AppFontName.workSansMedium, size: 32))
                     .foregroundColor(.black)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Categorize your contacts into three distinct priority levels to manage your interactions effectively.")
-                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                     .multilineTextAlignment(.center)
                     .foregroundColor(.black.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
@@ -55,8 +55,7 @@ struct PriorityEnrichInfoScreen: View {
                         Text("Enrich Priorities")
                         Image(systemName: "checkmark.circle")
                     }
-                    .font(Font.custom("Overpass-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .typography(\.primaryButton)
                     .frame(maxWidth: 253, minHeight: 48)
                     .background(Color(red: 0.32, green: 0.57, blue: 0.87))
                     .cornerRadius(20)
@@ -88,10 +87,10 @@ struct PriorityEnrichInfoScreen: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(Font.custom("WorkSans-Medium", size: 16))
+                    .font(Font.custom(AppFontName.workSansMedium, size: 16))
                     .foregroundColor(.black)
                 Text(description)
-                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                     .foregroundColor(.black.opacity(0.7))
             }
         }

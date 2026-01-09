@@ -20,20 +20,20 @@ struct EnrichInfoScreen: View {
                     .padding(.bottom, 20)
                 
                 Text("Enrich Data")
-                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .font(Font.custom(AppFontName.workSansMedium, size: 32))
                     .foregroundColor(.black)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 VStack(spacing: 16) {
                     Text("First, we'll help you organize your contacts by assigning priorities to ensure you stay in touch with who matters most.")
-                        .font(Font.custom("Overpass-Medium", size: 16))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black.opacity(0.7))
                         .fixedSize(horizontal: false, vertical: true)
                     
                     Text("Next, we'll enrich location data to help you visualize where your network is located around the world.")
-                        .font(Font.custom("Overpass-Medium", size: 16))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .multilineTextAlignment(.center)
                         .foregroundColor(.black.opacity(0.7))
                         .fixedSize(horizontal: false, vertical: true)
@@ -51,8 +51,7 @@ struct EnrichInfoScreen: View {
                         Text("Get Started")
                         Image(systemName: "arrow.right")
                     }
-                    .font(Font.custom("Overpass-Medium", size: 16))
-                    .foregroundColor(.white)
+                    .typography(\.primaryButton)
                     .frame(maxWidth: 253, minHeight: 48)
                     .background(Color(red: 0.32, green: 0.57, blue: 0.87))
                     .cornerRadius(20)

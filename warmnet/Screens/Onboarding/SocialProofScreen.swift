@@ -69,7 +69,7 @@ struct SocialProofScreen: View {
                 // Text content
                 VStack(spacing: 24) {
                     Text("You are 1 step away")
-                        .font(Font.custom("WorkSans-Medium", size: 28))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 28))
                         .foregroundColor(.black.opacity(0.8))
                         .fixedSize(horizontal: false, vertical: true)
                         .opacity(showContent ? 1.0 : 0.0)
@@ -78,17 +78,17 @@ struct SocialProofScreen: View {
                     
                     VStack(spacing: 12) {
                         Text("You have joined the")
-                            .font(Font.custom("Overpass-Medium", size: 18))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 18).weight(.medium))
                             .foregroundColor(.black.opacity(0.7))
                             .fixedSize(horizontal: false, vertical: true)
                         
                         HStack(spacing: 8) {
                             Text("top")
-                                .font(Font.custom("WorkSans-Medium", size: 24))
+                                .font(Font.custom(AppFontName.workSansMedium, size: 24))
                                 .foregroundColor(.black)
                             
                             Text("1%")
-                                .font(Font.custom("WorkSans-Medium", size: 36))
+                                .font(Font.custom(AppFontName.workSansMedium, size: 36))
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [.yellow, .orange],
@@ -98,12 +98,12 @@ struct SocialProofScreen: View {
                                 )
                             
                             Text("Club")
-                                .font(Font.custom("WorkSans-Medium", size: 24))
+                                .font(Font.custom(AppFontName.workSansMedium, size: 24))
                                 .foregroundColor(.black)
                         }
                         
                         Text("of high social network interactions")
-                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                             .foregroundColor(.black.opacity(0.7))
                             .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.center)
@@ -119,8 +119,7 @@ struct SocialProofScreen: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text("Continue")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white)
+                        .typography(\.primaryButton)
                         .frame(maxWidth: 253)
                         .frame(height: 48)
                         .background(Color(red: 0.32, green: 0.57, blue: 0.87))

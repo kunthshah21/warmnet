@@ -32,7 +32,7 @@ struct CustomisingExperienceScreen: View {
                 
                 // Title
                 Text("Customising your experience")
-                    .font(Font.custom("WorkSans-Medium", size: 32))
+                    .font(Font.custom(AppFontName.workSansMedium, size: 32))
                     .foregroundStyle(
                         LinearGradient(
                             colors: [.blue, .purple],
@@ -91,7 +91,7 @@ struct CustomisingExperienceScreen: View {
                 // Progress section
                 VStack(spacing: 16) {
                     Text(steps[currentStep])
-                        .font(Font.custom("Overpass-Medium", size: 16))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .foregroundColor(.black)
                         .fixedSize(horizontal: false, vertical: true)
                         .transition(.asymmetric(
@@ -116,7 +116,7 @@ struct CustomisingExperienceScreen: View {
                     .padding(.horizontal, 50)
                     
                     Text("\(Int(progress * 100))%")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                 }
                 

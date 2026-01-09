@@ -18,7 +18,7 @@ struct SplashScreen: View {
             
             // App name
             Text("WarmNet")
-                .font(Font.custom("WorkSans-Medium", size: 56))
+                .font(Font.custom(AppFontName.workSansMedium, size: 56))
                 .foregroundColor(.black)
             
             // Skip button in top right
@@ -28,8 +28,7 @@ struct SplashScreen: View {
                     
                     Button(action: onSkip) {
                         Text("Skip")
-                            .font(Font.custom("Overpass-Medium", size: 16))
-                            .foregroundColor(.white)
+                            .typography(\.primaryButton)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
                             .background(Color(red: 0.32, green: 0.57, blue: 0.87))

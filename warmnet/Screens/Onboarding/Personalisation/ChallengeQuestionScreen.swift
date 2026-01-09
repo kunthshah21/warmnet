@@ -21,7 +21,7 @@ struct ChallengeQuestionScreen: View {
                 // Progress bar at the very top
                 HStack(spacing: 12) {
                     Text("2/4")
-                        .font(Font.custom("Overpass-SemiBold", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.semibold))
                         .foregroundColor(.black.opacity(0.7))
                     
                     GeometryReader { geometry in
@@ -43,13 +43,13 @@ struct ChallengeQuestionScreen: View {
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your biggest challenge?")
-                        .font(Font.custom("WorkSans-Medium", size: 26))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 26))
                         .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                     
                     Text("Select all that apply")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                         .padding(.horizontal, 32)
                 }
@@ -80,8 +80,7 @@ struct ChallengeQuestionScreen: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text("Continue")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white)
+                        .typography(\.primaryButton)
                         .frame(maxWidth: 253)
                         .frame(height: 48)
                         .background(
@@ -130,7 +129,7 @@ struct CheckboxButton: View {
                 
                 // Text
                 Text(text)
-                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                     .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
                 

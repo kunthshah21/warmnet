@@ -21,7 +21,7 @@ struct CommunicationStyleQuestionScreen: View {
                 // Progress bar at the very top
                 HStack(spacing: 12) {
                     Text("4/4")
-                        .font(Font.custom("Overpass-SemiBold", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.semibold))
                         .foregroundColor(.black.opacity(0.7))
                     
                     GeometryReader { geometry in
@@ -43,7 +43,7 @@ struct CommunicationStyleQuestionScreen: View {
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your natural communication style?")
-                        .font(Font.custom("WorkSans-Medium", size: 26))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 26))
                         .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
@@ -69,7 +69,7 @@ struct CommunicationStyleQuestionScreen: View {
                     
                     // Micro-copy
                     Text("We'll suggest outreach styles that match YOUR personality")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -79,8 +79,7 @@ struct CommunicationStyleQuestionScreen: View {
                 // Complete button
                 Button(action: onComplete) {
                     Text("Continue")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white)
+                        .typography(\.primaryButton)
                         .frame(maxWidth: 253)
                         .frame(height: 48)
                         .background(
@@ -132,11 +131,11 @@ struct CommunicationStyleButton: View {
                 // Title and description container
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(Font.custom("WorkSans-Medium", size: 18))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 18))
                         .foregroundColor(.black)
                     
                     Text(description)
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                         .multilineTextAlignment(.leading)
                 }

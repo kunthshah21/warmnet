@@ -34,14 +34,14 @@ struct SuccessScreen: View {
                     // Hooray text
                     VStack(spacing: 16) {
                         Text("Hooray! 🎉")
-                            .font(Font.custom("WorkSans-Medium", size: 42))
+                            .font(Font.custom(AppFontName.workSansMedium, size: 42))
                             .foregroundColor(.black)
                             .scaleEffect(showConfetti ? 1.0 : 0.8)
                             .opacity(showConfetti ? 1.0 : 0.0)
                             .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showConfetti)
                         
                         Text("Congratulations on taking your first steps!")
-                            .font(Font.custom("Overpass-Medium", size: 20))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 20).weight(.medium))
                             .foregroundColor(.black)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 40)
@@ -50,7 +50,7 @@ struct SuccessScreen: View {
                             .animation(.spring(response: 0.6, dampingFraction: 0.8).delay(0.3), value: showConfetti)
                         
                         Text("You're on your way to building meaningful, lasting relationships.")
-                            .font(Font.custom("Overpass-Medium", size: 16))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                             .foregroundColor(.black.opacity(0.8))
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 40)

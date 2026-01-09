@@ -16,9 +16,7 @@ struct SecondaryButton: View {
             ZStack {
                 HStack(spacing: 10) {
                     Text(title)
-                        .font(Font.custom("Overpass", size: 16))
-                        .lineSpacing(21.60)
-                        .foregroundColor(Color(red: 0.34, green: 0.34, blue: 0.34))
+                        .typography(\.secondaryButton)
                 }
                 .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
                 .frame(maxWidth: .infinity)

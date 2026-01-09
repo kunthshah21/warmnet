@@ -54,7 +54,7 @@ struct FinalCongratulationsScreen: View {
                     // Congratulations text
                     VStack(spacing: 20) {
                         Text("Congratulations! 🎉")
-                            .font(Font.custom("WorkSans-Medium", size: 44))
+                            .font(Font.custom(AppFontName.workSansMedium, size: 44))
                             .foregroundStyle(
                                 LinearGradient(
                                     colors: [.green, .blue],
@@ -69,7 +69,7 @@ struct FinalCongratulationsScreen: View {
                             .animation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2), value: showContent)
                         
                         Text("You're all set to use your system!")
-                            .font(Font.custom("Overpass-Medium", size: 18))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 18).weight(.medium))
                             .foregroundColor(.black)
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
@@ -95,8 +95,7 @@ struct FinalCongratulationsScreen: View {
                     // Get Started button
                     Button(action: onComplete) {
                         Text("Get Started")
-                            .font(Font.custom("Overpass-Medium", size: 16))
-                            .foregroundColor(.white)
+                            .typography(\.primaryButton)
                             .frame(maxWidth: 253)
                             .frame(height: 48)
                             .background(Color(red: 0.32, green: 0.57, blue: 0.87))
@@ -161,7 +160,7 @@ struct FeatureCheckRow: View {
             }
             
             Text(text)
-                .font(Font.custom("Overpass-Medium", size: 16))
+                .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                 .foregroundColor(.black)
             
             Spacer()

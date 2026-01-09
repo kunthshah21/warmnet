@@ -21,7 +21,7 @@ struct ConnectionSizeQuestionScreen: View {
                 // Progress bar at the very top
                 HStack(spacing: 12) {
                     Text("3/4")
-                        .font(Font.custom("Overpass-SemiBold", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.semibold))
                         .foregroundColor(.black.opacity(0.7))
                     
                     GeometryReader { geometry in
@@ -43,7 +43,7 @@ struct ConnectionSizeQuestionScreen: View {
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
                     Text("How many people do you want to stay meaningfully connected with?")
-                        .font(Font.custom("WorkSans-Medium", size: 26))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 26))
                         .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
@@ -68,7 +68,7 @@ struct ConnectionSizeQuestionScreen: View {
                     
                     // Micro-copy
                     Text("Don't worry - we'll help you manage whatever you choose")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
@@ -78,8 +78,7 @@ struct ConnectionSizeQuestionScreen: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text("Continue")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white)
+                        .typography(\.primaryButton)
                         .frame(maxWidth: 253)
                         .frame(height: 48)
                         .background(
@@ -126,11 +125,11 @@ struct ConnectionSizeButton: View {
                     
                     VStack(alignment: .leading, spacing: 4) {
                         Text(range)
-                            .font(Font.custom("WorkSans-Medium", size: 18))
+                            .font(Font.custom(AppFontName.workSansMedium, size: 18))
                             .foregroundColor(.black)
                         
                         Text(description)
-                            .font(Font.custom("Overpass-Medium", size: 14))
+                            .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                             .foregroundColor(.black.opacity(0.7))
                     }
                     

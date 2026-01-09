@@ -21,7 +21,7 @@ struct GoalQuestionScreen: View {
                 // Progress bar at the very top
                 HStack(spacing: 12) {
                     Text("1/4")
-                        .font(Font.custom("Overpass-SemiBold", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.semibold))
                         .foregroundColor(.black.opacity(0.7))
                     
                     GeometryReader { geometry in
@@ -43,7 +43,7 @@ struct GoalQuestionScreen: View {
                 // Question
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your main goal with relationships?")
-                        .font(Font.custom("WorkSans-Medium", size: 26))
+                        .font(Font.custom(AppFontName.workSansMedium, size: 26))
                         .foregroundColor(.black)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
@@ -71,8 +71,7 @@ struct GoalQuestionScreen: View {
                 // Continue button
                 Button(action: onContinue) {
                     Text("Continue")
-                        .font(Font.custom("Overpass-Medium", size: 16))
-                        .foregroundColor(.white)
+                        .typography(\.primaryButton)
                         .frame(maxWidth: 253)
                         .frame(height: 48)
                         .background(
@@ -117,7 +116,7 @@ struct RadioButton: View {
                 
                 // Text
                 Text(text)
-                    .font(Font.custom("Overpass-Medium", size: 16))
+                    .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                     .foregroundColor(.black)
                     .multilineTextAlignment(.leading)
                 

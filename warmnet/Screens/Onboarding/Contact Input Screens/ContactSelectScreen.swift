@@ -119,11 +119,11 @@ struct ContactSelectScreen: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Select at least \(minimumSelection) contacts")
-                        .font(Font.custom("Overpass-Medium", size: 14))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                         .foregroundColor(.black.opacity(0.7))
                     
                     Text("\(selectedContacts.count) selected")
-                        .font(Font.custom("Overpass-Medium", size: 12))
+                        .font(Font.custom(AppFontName.overpassVariable, size: 12).weight(.medium))
                         .foregroundColor(canProceed ? Color(red: 0.32, green: 0.57, blue: 0.87) : .white.opacity(0.5))
                 }
                 
@@ -133,7 +133,7 @@ struct ContactSelectScreen: View {
                     Button("Clear All") {
                         selectedContacts.removeAll()
                     }
-                    .font(Font.custom("Overpass-Medium", size: 14))
+                    .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                     .foregroundColor(.red.opacity(0.8))
                 }
             }
@@ -153,7 +153,7 @@ struct ContactSelectScreen: View {
                 .tint(Color(red: 0.32, green: 0.57, blue: 0.87))
             
             Text("Loading contacts...")
-                .font(Font.custom("Overpass-Medium", size: 14))
+                .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                 .foregroundColor(.black.opacity(0.7))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -166,11 +166,11 @@ struct ContactSelectScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             
             Text("No Contacts Found")
-                .font(Font.custom("WorkSans-Medium", size: 22))
+                .font(Font.custom(AppFontName.workSansMedium, size: 22))
                 .foregroundColor(.black)
             
             Text("Add contacts to your device and try again")
-                .font(Font.custom("Overpass-Medium", size: 14))
+                .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
                 .foregroundColor(.black.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
@@ -286,8 +286,7 @@ struct ContactSelectScreen: View {
                         Image(systemName: "square.and.arrow.down")
                     }
                 }
-                .font(Font.custom("Overpass-Medium", size: 16))
-                .foregroundColor(.white)
+                .typography(\.primaryButton)
                 .frame(maxWidth: 253, minHeight: 48)
                 .background(Color(red: 0.32, green: 0.57, blue: 0.87))
                 .cornerRadius(20)

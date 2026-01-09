@@ -35,7 +35,7 @@ struct PriorityEnrichmentScreen: View {
                     navigateToLocation = true
                     onSave()
                 }
-                .font(Font.custom("Overpass-Medium", size: 16))
+                .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
@@ -58,7 +58,7 @@ struct PriorityEnrichmentRow: View {
     var body: some View {
         HStack {
             Text(contact.name)
-                .font(Font.custom("WorkSans-Medium", size: 16))
+                .font(Font.custom(AppFontName.workSansMedium, size: 16))
                 .foregroundColor(.black)
                 .lineLimit(1)
             
