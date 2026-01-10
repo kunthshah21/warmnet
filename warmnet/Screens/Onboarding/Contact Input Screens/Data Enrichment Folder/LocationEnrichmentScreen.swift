@@ -7,6 +7,7 @@ struct LocationEnrichmentScreen: View {
     @Query(sort: \Contact.name) private var allContacts: [Contact]
     
     var onFlowComplete: () -> Void
+    var isOnboarding: Bool = true
     
     @State private var selectedContact: Contact?
     @State private var showSuccessSheet = false
@@ -57,8 +58,11 @@ struct LocationEnrichmentScreen: View {
     
     var body: some View {
         ZStack {
-            Color.white
-                .ignoresSafeArea()
+            if isOnboarding {
+                Color.white.ignoresSafeArea()
+            } else {
+                Color(uiColor: .systemBackground).ignoresSafeArea()
+            }
             
             VStack(spacing: 0) {
                 ScrollView {
@@ -70,7 +74,8 @@ struct LocationEnrichmentScreen: View {
                                         contact: contact,
                                         onTap: {
                                             selectedContact = contact
-                                        }
+                                        },
+                                        isOnboarding: isOnboarding
                                     )
                                 }
                             } header: {
@@ -85,7 +90,8 @@ struct LocationEnrichmentScreen: View {
                                         contact: contact,
                                         onTap: {
                                             selectedContact = contact
-                                        }
+                                        },
+                                        isOnboarding: isOnboarding
                                     )
                                 }
                             } header: {
@@ -110,7 +116,7 @@ struct LocationEnrichmentScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(Color.white)
+        .background(isOnboarding ? Color.white : Color(uiColor: .systemBackground))
         .sheet(item: $selectedContact) { contact in
             LocationInputSheet(
                 contact: contact,
@@ -163,16 +169,16 @@ struct LocationEnrichmentScreen: View {
         HStack {
             Text(title)
                 .font(Font.custom(AppFontName.workSansMedium, size: 14))
-                .foregroundColor(.black.opacity(0.7))
+                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
             
             Spacer()
             
             Text("\(count)")
                 .font(Font.custom(AppFontName.overpassVariable, size: 12).weight(.medium))
-                .foregroundColor(.black.opacity(0.7))
+                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Capsule().fill(Color.black.opacity(0.1)))
+                .background(Capsule().fill(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1)))
         }
         .padding(.horizontal, 4)
     }
@@ -192,6 +198,7 @@ struct LocationEnrichmentScreen: View {
 struct LocationEnrichmentRow: View {
     let contact: Contact
     let onTap: () -> Void
+    var isOnboarding: Bool
     
     private var hasLocation: Bool {
         !contact.fullLocation.isEmpty
@@ -207,7 +214,7 @@ struct LocationEnrichmentRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.name)
                         .font(Font.custom(AppFontName.workSansMedium, size: 16))
-                        .foregroundColor(.black)
+                        .foregroundColor(isOnboarding ? .black : .primary)
                         .lineLimit(1)
                     
                     if hasLocation {

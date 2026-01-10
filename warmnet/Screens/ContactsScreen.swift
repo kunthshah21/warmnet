@@ -6,6 +6,7 @@ struct ContactsScreen: View {
     @Query(sort: \Contact.name) private var contacts: [Contact]
     
     @State private var showAddContact = false
+    @State private var showContactImport = false
     @State private var searchText = ""
     @State private var selectedPriority: Priority? = nil
     
@@ -29,6 +30,49 @@ struct ContactsScreen: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
+                // Custom Header
+                HStack {
+                    Text("Contacts")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                    Spacer()
+                    Button {
+                        showAddContact = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    Menu {
+                        Button {
+                            showContactImport = true
+                        } label: {
+                            Label("Add from Contacts", systemImage: "person.crop.circle.badge.plus")
+                        }
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                            .rotationEffect(.degrees(90))
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.top)
+                .padding(.bottom, 8)
+                
+                // Search Bar
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.gray)
+                    TextField("Search", text: $searchText)
+                }
+                .padding(8)
+                .background(Color(uiColor: .systemGray6))
+                .cornerRadius(10)
+                .padding(.horizontal)
+                .padding(.bottom, 16)
+
                 // Priority Filter
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
@@ -127,19 +171,16 @@ struct ContactsScreen: View {
                 }
             }
             }
-            .navigationTitle("Contacts")
-            .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showAddContact = true
-                    } label: {
-                        Image(systemName: "plus")
-                    }
-                }
-            }
+            .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showAddContact) {
                 AddContactSheet()
+            }
+            .sheet(isPresented: $showContactImport) {
+                NavigationStack {
+                    ContactSelectScreen(onFlowComplete: {
+                        showContactImport = false
+                    }, isOnboarding: false)
+                }
             }
         }
     }

@@ -9,17 +9,21 @@ struct PriorityEnrichmentScreen: View {
     
     var onSave: () -> Void
     var onFlowComplete: () -> Void
+    var isOnboarding: Bool = true
     
     var body: some View {
         ZStack {
-            Color.white
-                .ignoresSafeArea()
+            if isOnboarding {
+                Color.white.ignoresSafeArea()
+            } else {
+                Color(uiColor: .systemBackground).ignoresSafeArea()
+            }
             
             VStack(spacing: 0) {
                 ScrollView {
                     LazyVStack(spacing: 16) {
                         ForEach(contacts) { contact in
-                            PriorityEnrichmentRow(contact: contact)
+                            PriorityEnrichmentRow(contact: contact, isOnboarding: isOnboarding)
                         }
                     }
                     .padding()
@@ -39,7 +43,7 @@ struct PriorityEnrichmentScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(Color.white)
+        .background(isOnboarding ? Color.white : Color(uiColor: .systemBackground))
         .navigationDestination(isPresented: $navigateToLocation) {
             LocationEnrichmentInfoScreen(onEnrich: {
                 // TODO: Navigate to actual location enrichment screen
@@ -47,21 +51,22 @@ struct PriorityEnrichmentScreen: View {
             }, onFlowComplete: {
                 print("PriorityEnrichmentScreen: onFlowComplete called")
                 onFlowComplete()
-            })
+            }, isOnboarding: isOnboarding)
         }
     }
 }
 
 struct PriorityEnrichmentRow: View {
     @Bindable var contact: Contact
+    var isOnboarding: Bool
     
     var body: some View {
         HStack {
             Text(contact.name)
                 .font(Font.custom(AppFontName.workSansMedium, size: 16))
-                .foregroundColor(.black)
+                .foregroundColor(isOnboarding ? .black : .primary)
                 .lineLimit(1)
-            
+             
             Spacer()
             
             HStack(spacing: 8) {
@@ -73,11 +78,11 @@ struct PriorityEnrichmentRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.05))
+                .fill(isOnboarding ? Color.black.opacity(0.05) : Color.primary.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.black.opacity(0.1), lineWidth: 1)
+                .strokeBorder(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1), lineWidth: 1)
         )
     }
     

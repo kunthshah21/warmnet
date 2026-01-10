@@ -3,12 +3,16 @@ import SwiftUI
 struct PriorityEnrichInfoScreen: View {
     var onEnrich: () -> Void
     var onFlowComplete: () -> Void
+    var isOnboarding: Bool = true
     @State private var navigateToEnrichment = false
     
     var body: some View {
         ZStack {
-            Color.white
-                .ignoresSafeArea()
+            if isOnboarding {
+                Color.white.ignoresSafeArea()
+            } else {
+                Color(uiColor: .systemBackground).ignoresSafeArea()
+            }
             
             VStack(spacing: 24) {
                 Spacer()
@@ -21,14 +25,14 @@ struct PriorityEnrichInfoScreen: View {
                 
                 Text("Select Priority")
                     .font(Font.custom(AppFontName.workSansMedium, size: 32))
-                    .foregroundColor(.black)
+                    .foregroundColor(isOnboarding ? .black : .primary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Categorize your contacts into three distinct priority levels to manage your interactions effectively.")
                     .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(.black.opacity(0.7))
+                    .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 
@@ -40,7 +44,7 @@ struct PriorityEnrichInfoScreen: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.black.opacity(0.05))
+                        .fill(isOnboarding ? Color.black.opacity(0.05) : Color.primary.opacity(0.05))
                 )
                 .padding(.horizontal)
                 
@@ -74,7 +78,7 @@ struct PriorityEnrichInfoScreen: View {
             }, onFlowComplete: {
                 print("PriorityEnrichInfoScreen: onFlowComplete called")
                 onFlowComplete()
-            })
+            }, isOnboarding: isOnboarding)
         }
     }
     
@@ -88,10 +92,10 @@ struct PriorityEnrichInfoScreen: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(Font.custom(AppFontName.workSansMedium, size: 16))
-                    .foregroundColor(.black)
+                    .foregroundColor(isOnboarding ? .black : .primary)
                 Text(description)
                     .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                    .foregroundColor(.black.opacity(0.7))
+                    .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
             }
         }
     }

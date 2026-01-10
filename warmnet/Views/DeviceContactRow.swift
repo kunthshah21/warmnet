@@ -4,6 +4,7 @@ import Contacts
 struct DeviceContactRow: View {
     let contact: CNContact
     let isSelected: Bool
+    var isAlreadyAdded: Bool = false
     let action: () -> Void
     
     @Environment(\.colorScheme) private var colorScheme
@@ -14,7 +15,7 @@ struct DeviceContactRow: View {
                 // Avatar Circle
                 ZStack {
                     Circle()
-                        .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.2) : Color.white.opacity(0.1))
+                        .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.2) : (isAlreadyAdded ? Color.gray.opacity(0.1) : Color.primary.opacity(0.05)))
                         .frame(width: 50, height: 50)
                     
                     if let imageData = contact.imageData,
@@ -24,10 +25,11 @@ struct DeviceContactRow: View {
                             .scaledToFill()
                             .frame(width: 50, height: 50)
                             .clipShape(Circle())
+                            .saturation(isAlreadyAdded ? 0 : 1)
                     } else {
                         Text(contact.initials)
                             .font(.headline)
-                            .foregroundColor(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : .black.opacity(0.7))
+                            .foregroundColor(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : (isAlreadyAdded ? .gray : .primary.opacity(0.7)))
                     }
                 }
                 
@@ -35,35 +37,41 @@ struct DeviceContactRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.fullName)
                         .font(.headline)
-                        .foregroundColor(.black)
+                        .foregroundColor(isAlreadyAdded ? .gray : .primary)
                     
                     if let phoneNumber = contact.phoneNumbers.first?.value.stringValue {
                         Text(phoneNumber)
                             .font(.subheadline)
-                            .foregroundColor(.black.opacity(0.6))
+                            .foregroundColor(isAlreadyAdded ? .gray.opacity(0.8) : .secondary)
                     } else if !contact.emailAddresses.isEmpty {
                         Text(contact.emailAddresses.first?.value as String? ?? "")
                             .font(.subheadline)
-                            .foregroundColor(.black.opacity(0.6))
+                            .foregroundColor(isAlreadyAdded ? .gray.opacity(0.8) : .secondary)
                     }
                 }
                 
                 Spacer()
                 
                 // Checkmark
-                ZStack {
-                    Circle()
-                        .strokeBorder(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.black.opacity(0.1), lineWidth: 2)
-                        .background(
-                            Circle()
-                                .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.clear)
-                        )
-                        .frame(width: 24, height: 24)
-                    
-                    if isSelected {
-                        Image(systemName: "checkmark")
-                            .font(.system(size: 12, weight: .bold))
-                            .foregroundColor(.white)
+                if isAlreadyAdded {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.green.opacity(0.6))
+                } else {
+                    ZStack {
+                        Circle()
+                            .strokeBorder(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.primary.opacity(0.1), lineWidth: 2)
+                            .background(
+                                Circle()
+                                    .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.clear)
+                            )
+                            .frame(width: 24, height: 24)
+                        
+                        if isSelected {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 12, weight: .bold))
+                                .foregroundColor(.white)
+                        }
                     }
                 }
             }
@@ -71,14 +79,15 @@ struct DeviceContactRow: View {
             .padding(.horizontal, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.15) : Color.black.opacity(0.05))
+                    .fill(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.15) : Color.primary.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.5) : Color.black.opacity(0.1), lineWidth: 1)
+                    .strokeBorder(isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87).opacity(0.5) : Color.primary.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)
+        .disabled(isAlreadyAdded)
     }
 }
 

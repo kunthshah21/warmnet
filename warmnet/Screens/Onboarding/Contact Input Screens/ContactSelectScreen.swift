@@ -6,6 +6,7 @@ struct ContactSelectScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.dismiss) private var dismiss
+    @Query private var existingContacts: [Contact]
     
     @State private var deviceContacts: [CNContact] = []
     @State private var selectedContacts: Set<String> = []
@@ -18,8 +19,11 @@ struct ContactSelectScreen: View {
     @State private var currentDragIndex: Int? = nil
     
     var onFlowComplete: (() -> Void)? = nil
+    var isOnboarding: Bool = true
     
-    private let minimumSelection = 3
+    private var minimumSelection: Int {
+        isOnboarding ? 3 : 1
+    }
     
     private var filteredContacts: [CNContact] {
         if searchText.isEmpty {
@@ -51,9 +55,12 @@ struct ContactSelectScreen: View {
 
     var body: some View {
         ZStack {
-            // Black background
-            Color.white
-                .ignoresSafeArea()
+            // Background
+            if isOnboarding {
+                Color.white.ignoresSafeArea()
+            } else {
+                Color(uiColor: .systemBackground).ignoresSafeArea()
+            }
             
             VStack(spacing: 0) {
                 // Header
@@ -76,7 +83,7 @@ struct ContactSelectScreen: View {
         .navigationTitle("Select Contacts")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarColorScheme(.light, for: .navigationBar)
+        .toolbarColorScheme(isOnboarding ? .light : nil, for: .navigationBar)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search contacts")
         .onAppear {
             loadDeviceContacts()
@@ -108,7 +115,7 @@ struct ContactSelectScreen: View {
                         dismiss()
                     }
                 }
-            })
+            }, isOnboarding: isOnboarding)
         }
     }
     
@@ -118,13 +125,19 @@ struct ContactSelectScreen: View {
         VStack(spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Select at least \(minimumSelection) contacts")
-                        .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                        .foregroundColor(.black.opacity(0.7))
+                    if isOnboarding {
+                        Text("Select at least \(minimumSelection) contacts")
+                            .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
+                            .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                    } else {
+                        Text("Select contacts")
+                            .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
+                            .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                    }
                     
                     Text("\(selectedContacts.count) selected")
                         .font(Font.custom(AppFontName.overpassVariable, size: 12).weight(.medium))
-                        .foregroundColor(canProceed ? Color(red: 0.32, green: 0.57, blue: 0.87) : .white.opacity(0.5))
+                        .foregroundColor(canProceed ? Color(red: 0.32, green: 0.57, blue: 0.87) : (isOnboarding ? .black.opacity(0.5) : .secondary))
                 }
                 
                 Spacer()
@@ -141,9 +154,9 @@ struct ContactSelectScreen: View {
             .padding(.vertical, 12)
             
             Divider()
-                .background(Color.black.opacity(0.1))
+                .background(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1))
         }
-        .background(Color.black.opacity(0.05))
+        .background(isOnboarding ? Color.black.opacity(0.05) : Color.primary.opacity(0.05))
     }
     
     private var loadingView: some View {
@@ -154,7 +167,7 @@ struct ContactSelectScreen: View {
             
             Text("Loading contacts...")
                 .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                .foregroundColor(.black.opacity(0.7))
+                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -167,11 +180,11 @@ struct ContactSelectScreen: View {
             
             Text("No Contacts Found")
                 .font(Font.custom(AppFontName.workSansMedium, size: 22))
-                .foregroundColor(.black)
+                .foregroundColor(isOnboarding ? .black : .primary)
             
             Text("Add contacts to your device and try again")
                 .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                .foregroundColor(.black.opacity(0.7))
+                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -189,7 +202,8 @@ struct ContactSelectScreen: View {
                                 ForEach(section.value, id: \.identifier) { contact in
                                     DeviceContactRow(
                                         contact: contact,
-                                        isSelected: selectedContacts.contains(contact.identifier)
+                                        isSelected: selectedContacts.contains(contact.identifier),
+                                        isAlreadyAdded: isContactAlreadyAdded(contact)
                                     ) {
                                         toggleSelection(for: contact)
                                     }
@@ -243,6 +257,12 @@ struct ContactSelectScreen: View {
         }
     }
     
+    private func isContactAlreadyAdded(_ contact: CNContact) -> Bool {
+        existingContacts.contains { existing in
+            existing.name.localizedCaseInsensitiveContains(contact.fullName)
+        }
+    }
+
     private func scrollToSection(at point: CGPoint, geometry: GeometryProxy, proxy: ScrollViewProxy) {
         let count = sectionIndexTitles.count
         guard count > 0 else { return }
@@ -264,18 +284,18 @@ struct ContactSelectScreen: View {
         HStack {
             Text(title)
                 .font(.headline)
-                .foregroundColor(.black)
+                .foregroundColor(isOnboarding ? .black : .primary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
             Spacer()
         }
-        .background(Color.white.opacity(0.95))
+        .background(isOnboarding ? Color.white.opacity(0.95) : Color(uiColor: .systemBackground).opacity(0.95))
     }
     
     private var bottomActionView: some View {
         VStack(spacing: 0) {
             Divider()
-                .background(Color.black.opacity(0.1))
+                .background(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1))
             
             Button(action: {
                 importSelectedContacts()
@@ -296,7 +316,7 @@ struct ContactSelectScreen: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 16)
         }
-        .background(Color.white.opacity(0.05))
+        .background(isOnboarding ? Color.white.opacity(0.05) : Color.primary.opacity(0.05))
     }
     
     // MARK: - Methods

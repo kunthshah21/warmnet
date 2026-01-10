@@ -3,12 +3,16 @@ import SwiftUI
 struct EnrichInfoScreen: View {
     var onGetStarted: () -> Void
     var onFlowComplete: () -> Void
+    var isOnboarding: Bool = true
     @State private var navigateToPriority = false
     
     var body: some View {
         ZStack {
-            Color.white
-                .ignoresSafeArea()
+            if isOnboarding {
+                Color.white.ignoresSafeArea()
+            } else {
+                Color(uiColor: .systemBackground).ignoresSafeArea()
+            }
             
             VStack(spacing: 24) {
                 Spacer()
@@ -21,7 +25,7 @@ struct EnrichInfoScreen: View {
                 
                 Text("Enrich Data")
                     .font(Font.custom(AppFontName.workSansMedium, size: 32))
-                    .foregroundColor(.black)
+                    .foregroundColor(isOnboarding ? .black : .primary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
@@ -29,13 +33,13 @@ struct EnrichInfoScreen: View {
                     Text("First, we'll help you organize your contacts by assigning priorities to ensure you stay in touch with who matters most.")
                         .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(.black.opacity(0.7))
+                        .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
                         .fixedSize(horizontal: false, vertical: true)
                     
                     Text("Next, we'll enrich location data to help you visualize where your network is located around the world.")
                         .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(.black.opacity(0.7))
+                        .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal)
@@ -69,7 +73,7 @@ struct EnrichInfoScreen: View {
             }, onFlowComplete: {
                 print("EnrichInfoScreen: onFlowComplete called")
                 onFlowComplete()
-            })
+            }, isOnboarding: isOnboarding)
         }
     }
 }
