@@ -13,9 +13,18 @@ struct SettingsScreen: View {
     @State private var showLocationNotificationTest = false
     @State private var showBirthdayTest = false
     
-    // Dummy Data for now
-    private let dummyName = "Kunth Shah"
-    private let dummyEmail = "kunth@example.com"
+    // Get profile data from SwiftData
+    private var profileData: PersonalisationData? {
+        personalisationData.first
+    }
+    
+    private var displayName: String {
+        profileData?.name ?? "Add your name"
+    }
+    
+    private var displayEmail: String {
+        profileData?.email ?? "Add your email"
+    }
     
     var body: some View {
         NavigationStack {
@@ -23,18 +32,27 @@ struct SettingsScreen: View {
                 // MARK: - Profile Header
                 Section {
                     VStack(spacing: 12) {
-                        Image(systemName: "person.circle.fill")
-                            .resizable()
-                            .frame(width: 80, height: 80)
-                            .foregroundStyle(.gray)
-                            .background(Circle().fill(Color.gray.opacity(0.1)))
+                        if let photoData = profileData?.profilePhoto,
+                           let uiImage = UIImage(data: photoData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 80, height: 80)
+                                .clipShape(Circle())
+                        } else {
+                            Image(systemName: "person.circle.fill")
+                                .resizable()
+                                .frame(width: 80, height: 80)
+                                .foregroundStyle(.gray)
+                                .background(Circle().fill(Color.gray.opacity(0.1)))
+                        }
                         
                         VStack(spacing: 4) {
-                            Text(dummyName)
+                            Text(displayName)
                                 .font(.title2)
                                 .fontWeight(.semibold)
                             
-                            Text(dummyEmail)
+                            Text(displayEmail)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                         }
@@ -101,12 +119,12 @@ struct SettingsScreen: View {
                     Button("Test Onboarding (Resets App)") {
                         resetOnboarding()
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color("Red-app"))
                     
                     Button("Reset All Data") {
                         resetAllData()
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color("Red-app"))
                 }
             }
             .navigationTitle("Profile")

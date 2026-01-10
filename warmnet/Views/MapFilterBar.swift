@@ -78,7 +78,7 @@ struct MapFilterBar: View {
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(selectedFilterType == type ? Color.blue : Color(.systemGray5))
+                        .fill(selectedFilterType == type ? Color("Blue-app") : Color(.systemGray5))
                 )
                 .foregroundStyle(selectedFilterType == type ? .white : .primary)
         }
@@ -123,9 +123,9 @@ struct MapFilterBar: View {
             .padding(.vertical, 6)
             .background(
                 Capsule()
-                    .fill(selectedValue == nil ? Color.blue.opacity(0.15) : Color(.systemGray6))
+                    .fill(selectedValue == nil ? Color("Blue-app").opacity(0.15) : Color(.systemGray6))
             )
-            .foregroundStyle(selectedValue == nil ? .blue : .secondary)
+            .foregroundStyle(selectedValue == nil ? Color("Blue-app") : .secondary)
         }
         .buttonStyle(.plain)
     }
@@ -143,9 +143,9 @@ struct MapFilterBar: View {
                 .padding(.vertical, 6)
                 .background(
                     Capsule()
-                        .fill(selectedValue == value ? Color.blue.opacity(0.15) : Color(.systemGray6))
+                        .fill(selectedValue == value ? Color("Blue-app").opacity(0.15) : Color(.systemGray6))
                 )
-                .foregroundStyle(selectedValue == value ? .blue : .primary)
+                .foregroundStyle(selectedValue == value ? Color("Blue-app") : .primary)
         }
         .buttonStyle(.plain)
     }

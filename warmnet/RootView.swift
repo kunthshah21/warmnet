@@ -11,21 +11,27 @@ import SwiftData
 struct RootView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.colorScheme) private var colorScheme
     @State private var showOnboarding = false
     @State private var hasMigrated = false
     
     var body: some View {
-        Group {
-            if hasCompletedOnboarding {
-                // Main app
-                ContentView()
-            } else {
-                // Onboarding flow
-                OnboardingView(onComplete: {
-                    withAnimation {
-                        hasCompletedOnboarding = true
-                    }
-                })
+        ZStack {
+            backgroundColor
+                .ignoresSafeArea()
+            
+            Group {
+                if hasCompletedOnboarding {
+                    // Main app
+                    ContentView()
+                } else {
+                    // Onboarding flow
+                    OnboardingView(onComplete: {
+                        withAnimation {
+                            hasCompletedOnboarding = true
+                        }
+                    })
+                }
             }
         }
         .onAppear {
@@ -38,6 +44,10 @@ struct RootView: View {
                 hasMigrated = true
             }
         }
+    }
+
+    private var backgroundColor: Color {
+        colorScheme == .dark ? Color("Background-dark") : Color(.systemBackground)
     }
 }
 

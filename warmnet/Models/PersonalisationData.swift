@@ -11,6 +11,14 @@ import SwiftData
 @Model
 class PersonalisationData {
     var id: UUID
+    
+    // Profile fields
+    var name: String?
+    var email: String?
+    var birthday: Date?
+    @Attribute(.externalStorage) var profilePhoto: Data?
+    
+    // Onboarding fields
     var relationshipGoal: RelationshipGoal?
     var challenges: [Challenge]
     var connectionSize: ConnectionSize?
@@ -19,6 +27,10 @@ class PersonalisationData {
     
     init(
         id: UUID = UUID(),
+        name: String? = nil,
+        email: String? = nil,
+        birthday: Date? = nil,
+        profilePhoto: Data? = nil,
         relationshipGoal: RelationshipGoal? = nil,
         challenges: [Challenge] = [],
         connectionSize: ConnectionSize? = nil,
@@ -26,6 +38,10 @@ class PersonalisationData {
         completedAt: Date? = nil
     ) {
         self.id = id
+        self.name = name
+        self.email = email
+        self.birthday = birthday
+        self.profilePhoto = profilePhoto
         self.relationshipGoal = relationshipGoal
         self.challenges = challenges
         self.connectionSize = connectionSize

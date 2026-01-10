@@ -119,7 +119,7 @@ struct LocationInputView: View {
                 Text("Use Current")
                     .font(.caption.weight(.medium))
             }
-            .foregroundStyle(.blue)
+            .foregroundStyle(Color("Blue-app"))
         }
         .disabled(inputState == .searching)
         .buttonStyle(.plain)
@@ -182,7 +182,7 @@ struct LocationInputView: View {
                 .foregroundStyle(.green)
         case .error:
             Image(systemName: "exclamationmark.circle.fill")
-                .foregroundStyle(.red)
+                .foregroundStyle(Color("Red-app"))
         }
     }
     
@@ -253,7 +253,7 @@ struct LocationInputView: View {
                 Text("Invalid location")
                     .font(.caption)
             }
-            .foregroundStyle(.red)
+            .foregroundStyle(Color("Red-app"))
             
         default:
             EmptyView()
@@ -269,7 +269,7 @@ struct LocationInputView: View {
         case .found:
             return .green
         case .error:
-            return .red
+            return Color("Red-app")
         }
     }
     
@@ -278,7 +278,7 @@ struct LocationInputView: View {
         case .found:
             return .green.opacity(0.5)
         case .error:
-            return .red.opacity(0.5)
+            return Color("Red-app").opacity(0.5)
         default:
             return .clear
         }

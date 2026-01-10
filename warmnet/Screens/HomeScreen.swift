@@ -4,12 +4,17 @@ import SwiftData
 struct HomeScreen: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query private var contacts: [Contact]
+    @Query private var personalisationData: [PersonalisationData]
 
     @State private var showAddContact = false
     @State private var showMapSheet = false
     @State private var showLogInteraction = false
     @State private var showSettings = false
     @State private var preSelectedContact: Contact?
+    
+    private var profileData: PersonalisationData? {
+        personalisationData.first
+    }
     
     private var innerCircleCount: Int {
         contacts.filter { $0.priority == .innerCircle }.count
@@ -50,18 +55,34 @@ struct HomeScreen: View {
                     VStack(spacing: 16) {
                         // Custom Header
                         HStack {
-                            Text("Home")
-                                .font(.largeTitle)
-                                .fontWeight(.bold)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Hi User")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                
+                                Text("Welcome to Warmnet")
+                                    .font(.largeTitle)
+                                    .fontWeight(.bold)
+                                    .foregroundStyle(headingColor)
+                            }
                             
                             Spacer()
                             
                             Button {
                                 showSettings = true
                             } label: {
-                                Image(systemName: "person.crop.circle")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.primary)
+                                if let photoData = profileData?.profilePhoto,
+                                   let uiImage = UIImage(data: photoData) {
+                                    Image(uiImage: uiImage)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 60, height: 60)
+                                        .clipShape(Circle())
+                                } else {
+                                    Image(systemName: "person.crop.circle")
+                                        .font(.largeTitle)
+                                        .foregroundStyle(.primary)
+                                }
                             }
                         }
                         .padding(.horizontal)
@@ -71,6 +92,7 @@ struct HomeScreen: View {
                             VStack(alignment: .leading) {
                                 Text("Reach Out")
                                     .font(.headline)
+                                    .foregroundStyle(headingColor)
                                     .padding(.horizontal)
                                 
                                 ScrollView(.horizontal, showsIndicators: false) {
@@ -153,11 +175,15 @@ struct HomeScreen: View {
     // MARK: - Subviews
 
     private var backgroundTopColor: Color {
-        colorScheme == .dark ? Color(.sRGB, white: 0.02, opacity: 1) : Color(.sRGB, white: 1.0, opacity: 1)
+        colorScheme == .dark ? Color("Background-dark") : Color(.sRGB, white: 1.0, opacity: 1)
     }
 
     private var backgroundBottomColor: Color {
-        colorScheme == .dark ? Color(.sRGB, white: 0.10, opacity: 1) : Color(.sRGB, white: 0.95, opacity: 1)
+        colorScheme == .dark ? Color("Background-dark").opacity(0.9) : Color(.sRGB, white: 0.95, opacity: 1)
+    }
+
+    private var headingColor: Color {
+        colorScheme == .dark ? Color("Beige accent") : .primary
     }
     
     private var addContactButton: some View {
@@ -183,13 +209,13 @@ struct HomeScreen: View {
                     Circle()
                         .fill(
                             LinearGradient(
-                                colors: [.blue, .blue.opacity(0.8)],
+                                colors: [Color("Blue-app"), Color("Blue-app").opacity(0.85)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
                         )
                 )
-                .shadow(color: .blue.opacity(0.3), radius: 12, x: 0, y: 6)
+                .shadow(color: Color("Blue-app").opacity(0.3), radius: 12, x: 0, y: 6)
         }
     }
 }

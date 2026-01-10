@@ -220,7 +220,7 @@ struct AddContactSheet: View {
                     // Schedule Override
                     VStack(alignment: .leading, spacing: 12) {
                         Toggle("Custom Schedule", isOn: $useCustomSchedule.animation())
-                            .tint(.blue)
+                            .tint(Color("Blue-app"))
                         
                         if useCustomSchedule {
                             VStack(alignment: .leading, spacing: 16) {
@@ -636,7 +636,7 @@ struct DayToggle: View {
                 .font(.caption2)
                 .fontWeight(.bold)
                 .frame(width: 32, height: 32)
-                .background(isSelected ? Color.blue : Color(.systemGray6))
+                .background(isSelected ? Color("Blue-app") : Color(.systemGray6))
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Circle())
         }

@@ -354,8 +354,8 @@ struct ContactReminderCard: View {
                     .font(.caption)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.red.opacity(0.2))
-                    .foregroundStyle(.red)
+                    .background(Color("Red-app").opacity(0.2))
+                    .foregroundStyle(Color("Red-app"))
                     .cornerRadius(4)
             }
         }

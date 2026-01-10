@@ -29,6 +29,8 @@ struct warmnetApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .accentColor(Color("Blue-app"))
+                .tint(Color("Blue-app"))
                 .environment(\.typography, .warmnet)
                 .environment(\.font, Typography.warmnet.body.font)
                 .preferredColorScheme(selectedScheme)
