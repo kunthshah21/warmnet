@@ -31,83 +31,81 @@ struct LogInteractionSheet: View {
     
     private var listContent: some View {
         List {
-                if let selected = selectedContact {
-                    Section("Log Interaction") {
-                        HStack {
-                            Text("Selected:")
-                            Text(selected.name).bold()
-                            Spacer()
-                            Button("Change") {
-                                selectedContact = nil
-                            }
+            if let selected = selectedContact {
+                Section("Log Interaction") {
+                    HStack {
+                        Text("Selected:")
+                        Text(selected.name).bold()
+                        Spacer()
+                        Button("Change") {
+                            selectedContact = nil
                         }
-                        
-                        DatePicker("Date", selection: $interactionDate, displayedComponents: .date)
-                        
-                        Picker("Interaction Type", selection: $interactionType) {
-                            ForEach(InteractionType.allCases, id: \.self) { type in
-                                Label(type.rawValue, systemImage: type.icon)
-                                    .tag(type)
-                            }
-                        }
-                        
-                        TextField("Notes (optional)", text: $notes, axis: .vertical)
-                            .lineLimit(3...6)
-                        
-                        Button("Save Interaction") {
-                            saveInteraction()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .buttonStyle(.borderedProminent)
                     }
+                    
+                    DatePicker("Date", selection: $interactionDate, displayedComponents: .date)
+                    
+                    Picker("Interaction Type", selection: $interactionType) {
+                        ForEach(InteractionType.allCases, id: \.self) { type in
+                            Label(type.rawValue, systemImage: type.icon)
+                                .tag(type)
+                        }
+                    }
+                    
+                    TextField("Notes (optional)", text: $notes, axis: .vertical)
+                        .lineLimit(3...6)
+                    
+                    Button("Save Interaction") {
+                        saveInteraction()
+                    }
+                    .frame(maxWidth: .infinity)
+                    .buttonStyle(.borderedProminent)
+                }
+            } else {
+                if contacts.isEmpty {
+                    ContentUnavailableView("No Contacts", systemImage: "person.2.slash", description: Text("Add contacts first to log interactions."))
                 } else {
                     ForEach(Priority.allCases, id: \.self) { priority in
                         let priorityContacts = contacts.filter { $0.priority == priority }
                         if !priorityContacts.isEmpty {
                             Section(priority.rawValue) {
                                 ForEach(priorityContacts) { contact in
-                                    Button {
-                                        selectedContact = contact
-                                    } label: {
-                                        HStack {
-                                            Text(contact.name)
-                                            Spacer()
-                                            if let date = contact.lastContacted {
-                                                Text(date, style: .date)
-                                                    .font(.caption)
-                                                    .foregroundStyle(.secondary)
-                                            }
-                                        }
-                                    }
-                                    .foregroundStyle(.primary)
+                                    contactRow(for: contact)
                                 }
                             }
                         }
                     }
                     
-                    let noPriorityContacts = contacts.filter { $0.priority == nil }
                     if !noPriorityContacts.isEmpty {
                         Section("No Priority") {
                             ForEach(noPriorityContacts) { contact in
-                                Button {
-                                    selectedContact = contact
-                                } label: {
-                                    HStack {
-                                        Text(contact.name)
-                                        Spacer()
-                                        if let date = contact.lastContacted {
-                                            Text(date, style: .date)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                }
-                                .foregroundStyle(.primary)
+                                contactRow(for: contact)
                             }
                         }
                     }
                 }
             }
+        }
+    }
+    
+    private var noPriorityContacts: [Contact] {
+        contacts.filter { $0.priority == nil }
+    }
+    
+    private func contactRow(for contact: Contact) -> some View {
+        Button {
+            selectedContact = contact
+        } label: {
+            HStack {
+                Text(contact.name)
+                Spacer()
+                if let date = contact.lastContacted {
+                    Text(date, style: .date)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .foregroundStyle(.primary)
     }
     
     private func saveInteraction() {
