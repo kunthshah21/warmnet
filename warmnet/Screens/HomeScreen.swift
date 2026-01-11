@@ -118,12 +118,10 @@ struct HomeScreen: View {
                             }
                         }
                         
-                        FastLogCard(contacts: todaysGoals) { contact in
+                        TodayAndWeeklyCard(contacts: contacts) { contact in
                             preSelectedContact = contact
                             showLogInteraction = true
                         }
-                        
-                        WeeklyReminderCard(contacts: contacts)
                         
                         NetworkProgressCard()
                         
