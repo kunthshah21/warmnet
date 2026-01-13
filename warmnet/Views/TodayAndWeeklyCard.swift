@@ -76,65 +76,6 @@ struct TodayAndWeeklyCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Today's Network Goals Section
-            HStack {
-                Image(systemName: "bolt.fill")
-                    .foregroundStyle(Color("Primary"))
-                Text("Today's Network Goals")
-                    .font(.headline)
-                Spacer()
-            }
-            
-            if todaysGoals.isEmpty {
-                HStack {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                        .font(.title2)
-                    Text("All caught up for today!")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .center)
-                .padding(.vertical, 8)
-            } else {
-                VStack(spacing: 4) {
-                    ForEach(todaysGoals) { contact in
-                        Button {
-                            onLogInteraction(contact)
-                        } label: {
-                            HStack(spacing: 12) {
-                                ZStack {
-                                    Circle()
-                                        .strokeBorder(Color.secondary.opacity(0.6), lineWidth: 1.5)
-                                        .background(Circle().fill(Color.clear))
-                                    Image(systemName: "plus")
-                                        .font(.system(size: 10, weight: .bold))
-                                        .foregroundStyle(Color.secondary)
-                                }
-                                .frame(width: 20, height: 20)
-
-                                Text(contact.name)
-                                    .font(.body)
-                                    .fontWeight(.medium)
-                                    .foregroundStyle(.primary)
-                                
-                                Spacer()
-                                
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.vertical, 6)
-                            .padding(.horizontal, 8)
-                        }
-                    }
-                }
-            }
-            
-            // Divider between sections
-            Divider()
-                .padding(.vertical, 4)
-            
             // This Week Section
             HStack {
                 Image(systemName: "calendar")
