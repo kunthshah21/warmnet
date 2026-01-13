@@ -18,7 +18,7 @@ struct FinalCongratulationsScreen: View {
         GeometryReader { geo in
             ZStack {
                 // Black background
-                Color.white
+                Color.black
                     .ignoresSafeArea()
                 
                 VStack(spacing: 40) {
@@ -70,7 +70,7 @@ struct FinalCongratulationsScreen: View {
                         
                         Text("You're all set to use your system!")
                             .font(Font.custom(AppFontName.overpassVariable, size: 18).weight(.medium))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, 40)
@@ -161,7 +161,7 @@ struct FeatureCheckRow: View {
             
             Text(text)
                 .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
-                .foregroundColor(.black)
+                .foregroundColor(.white)
             
             Spacer()
             

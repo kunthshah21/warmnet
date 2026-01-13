@@ -9,7 +9,7 @@ struct EnrichInfoScreen: View {
     var body: some View {
         ZStack {
             if isOnboarding {
-                Color.white.ignoresSafeArea()
+                Color.black.ignoresSafeArea()
             } else {
                 Color(uiColor: .systemBackground).ignoresSafeArea()
             }
@@ -25,7 +25,7 @@ struct EnrichInfoScreen: View {
                 
                 Text("Enrich Data")
                     .font(Font.custom(AppFontName.workSansMedium, size: 32))
-                    .foregroundColor(isOnboarding ? .black : .primary)
+                    .foregroundColor(isOnboarding ? .white : .primary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
@@ -33,13 +33,13 @@ struct EnrichInfoScreen: View {
                     Text("First, we'll help you organize your contacts by assigning priorities to ensure you stay in touch with who matters most.")
                         .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                        .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                         .fixedSize(horizontal: false, vertical: true)
                     
                     Text("Next, we'll enrich location data to help you visualize where your network is located around the world.")
                         .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                         .multilineTextAlignment(.center)
-                        .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                        .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(.horizontal)

@@ -9,7 +9,7 @@ struct LocationEnrichmentInfoScreen: View {
     var body: some View {
         ZStack {
             if isOnboarding {
-                Color.white.ignoresSafeArea()
+                Color.black.ignoresSafeArea()
             } else {
                 Color(uiColor: .systemBackground).ignoresSafeArea()
             }
@@ -25,14 +25,14 @@ struct LocationEnrichmentInfoScreen: View {
                 
                 Text("Enrich Location")
                     .font(Font.custom(AppFontName.workSansMedium, size: 32))
-                    .foregroundColor(isOnboarding ? .black : .primary)
+                    .foregroundColor(isOnboarding ? .white : .primary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 
                 Text("Add location data to your contacts to visualize your network on a map and plan meetups when you travel.")
                     .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
                     .multilineTextAlignment(.center)
-                    .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                    .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
                 
@@ -44,7 +44,7 @@ struct LocationEnrichmentInfoScreen: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(isOnboarding ? Color.black.opacity(0.05) : Color.primary.opacity(0.05))
+                        .fill(isOnboarding ? Color.white.opacity(0.05) : Color.primary.opacity(0.05))
                 )
                 .padding(.horizontal)
                 
@@ -88,10 +88,10 @@ struct LocationEnrichmentInfoScreen: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(Font.custom(AppFontName.workSansMedium, size: 16))
-                    .foregroundColor(isOnboarding ? .black : .primary)
+                    .foregroundColor(isOnboarding ? .white : .primary)
                 Text(description)
                     .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                    .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                    .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
             }
         }
     }

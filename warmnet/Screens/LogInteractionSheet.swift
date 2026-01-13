@@ -11,7 +11,10 @@ struct LogInteractionSheet: View {
     @State private var interactionType: InteractionType = .inPerson
     @State private var notes: String = ""
     
+    private let initialContact: Contact?
+    
     init(preSelectedContact: Contact? = nil) {
+        self.initialContact = preSelectedContact
         _selectedContact = State(initialValue: preSelectedContact)
     }
     
@@ -26,6 +29,11 @@ struct LogInteractionSheet: View {
                         }
                     }
                 }
+        }
+        .onAppear {
+            if let initial = initialContact {
+                selectedContact = initial
+            }
         }
     }
     

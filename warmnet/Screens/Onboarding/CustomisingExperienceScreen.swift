@@ -24,7 +24,7 @@ struct CustomisingExperienceScreen: View {
     var body: some View {
         ZStack {
             // Black background
-            Color.white
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
@@ -92,7 +92,7 @@ struct CustomisingExperienceScreen: View {
                 VStack(spacing: 16) {
                     Text(steps[currentStep])
                         .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .fixedSize(horizontal: false, vertical: true)
                         .transition(.asymmetric(
                             insertion: .move(edge: .trailing).combined(with: .opacity),
@@ -117,7 +117,7 @@ struct CustomisingExperienceScreen: View {
                     
                     Text("\(Int(progress * 100))%")
                         .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                        .foregroundColor(.black.opacity(0.7))
+                        .foregroundColor(.white.opacity(0.7))
                 }
                 
                 Spacer()

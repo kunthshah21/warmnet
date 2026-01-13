@@ -14,7 +14,7 @@ struct ChallengeQuestionScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.white
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 24) {
@@ -22,7 +22,7 @@ struct ChallengeQuestionScreen: View {
                 HStack(spacing: 12) {
                     Text("2/4")
                         .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.semibold))
-                        .foregroundColor(.black.opacity(0.7))
+                        .foregroundColor(.white.opacity(0.7))
                     
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
@@ -44,13 +44,13 @@ struct ChallengeQuestionScreen: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Text("What's your biggest challenge?")
                         .font(Font.custom(AppFontName.workSansMedium, size: 26))
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .padding(.horizontal, 32)
                         .padding(.top, 24)
                     
                     Text("Select all that apply")
                         .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                        .foregroundColor(.black.opacity(0.7))
+                        .foregroundColor(.white.opacity(0.7))
                         .padding(.horizontal, 32)
                 }
                 
@@ -130,7 +130,7 @@ struct CheckboxButton: View {
                 // Text
                 Text(text)
                     .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
@@ -138,12 +138,12 @@ struct CheckboxButton: View {
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.05))
+                    .fill(Color.white.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .strokeBorder(
-                        isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.gray.opacity(0.25),
+                        isSelected ? Color(red: 0.32, green: 0.57, blue: 0.87) : Color.white.opacity(0.25),
                         lineWidth: 2
                     )
             )

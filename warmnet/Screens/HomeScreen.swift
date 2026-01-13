@@ -88,25 +88,37 @@ struct HomeScreen: View {
                         .padding(.horizontal)
                         .padding(.top, 20)
                         
-                        if !overdueContacts.isEmpty {
-                            VStack(alignment: .leading) {
+                        if !todaysGoals.isEmpty {
+                            VStack(alignment: .leading, spacing: 8) {
                                 Text("Reach Out")
                                     .font(.headline)
                                     .foregroundStyle(headingColor)
                                     .padding(.horizontal)
                                 
+                                Text("Today's Network Goals")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal)
+                                
                                 ScrollView(.horizontal, showsIndicators: false) {
                                     HStack(spacing: 12) {
-                                        ForEach(overdueContacts) { contact in
-                                            NavigationLink(destination: ContactDetailScreen(contact: contact)) {
-                                                VStack {
+                                        ForEach(todaysGoals) { contact in
+                                            Button {
+                                                preSelectedContact = contact
+                                                showLogInteraction = true
+                                            } label: {
+                                                VStack(spacing: 8) {
                                                     AvatarView(name: contact.name, size: 50)
                                                     Text(contact.name)
                                                         .font(.caption)
-                                                        .lineLimit(1)
+                                                        .lineLimit(2)
+                                                        .multilineTextAlignment(.center)
                                                         .foregroundStyle(.primary)
+                                                        .frame(height: 32)
                                                 }
-                                                .padding()
+                                                .frame(width: 100)
+                                                .padding(.vertical, 12)
+                                                .padding(.horizontal, 8)
                                                 .background(Color(uiColor: .secondarySystemGroupedBackground))
                                                 .cornerRadius(10)
                                                 .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
@@ -156,8 +168,9 @@ struct HomeScreen: View {
             .sheet(isPresented: $showAddContact) {
                 AddContactSheet()
             }
-            .sheet(isPresented: $showLogInteraction) {
+            .sheet(isPresented: $showLogInteraction, onDismiss: { preSelectedContact = nil }) {
                 LogInteractionSheet(preSelectedContact: preSelectedContact)
+                    .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showMapSheet) {
                 MapScreen(showsDismissButton: true)

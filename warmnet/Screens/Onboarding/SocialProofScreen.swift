@@ -16,7 +16,7 @@ struct SocialProofScreen: View {
     var body: some View {
         ZStack {
             // Black background
-            Color.white
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
@@ -70,7 +70,7 @@ struct SocialProofScreen: View {
                 VStack(spacing: 24) {
                     Text("You are 1 step away")
                         .font(Font.custom(AppFontName.workSansMedium, size: 28))
-                        .foregroundColor(.black.opacity(0.8))
+                        .foregroundColor(.white.opacity(0.8))
                         .fixedSize(horizontal: false, vertical: true)
                         .opacity(showContent ? 1.0 : 0.0)
                         .offset(y: showContent ? 0 : 20)
@@ -79,13 +79,13 @@ struct SocialProofScreen: View {
                     VStack(spacing: 12) {
                         Text("You have joined the")
                             .font(Font.custom(AppFontName.overpassVariable, size: 18).weight(.medium))
-                            .foregroundColor(.black.opacity(0.7))
+                            .foregroundColor(.white.opacity(0.7))
                             .fixedSize(horizontal: false, vertical: true)
                         
                         HStack(spacing: 8) {
                             Text("top")
                                 .font(Font.custom(AppFontName.workSansMedium, size: 24))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                             
                             Text("1%")
                                 .font(Font.custom(AppFontName.workSansMedium, size: 36))
@@ -99,12 +99,12 @@ struct SocialProofScreen: View {
                             
                             Text("Club")
                                 .font(Font.custom(AppFontName.workSansMedium, size: 24))
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                         
                         Text("of high social network interactions")
                             .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
-                            .foregroundColor(.black.opacity(0.7))
+                            .foregroundColor(.white.opacity(0.7))
                             .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.center)
                     }

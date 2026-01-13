@@ -13,10 +13,10 @@ struct MapScreen: View {
     // MARK: - State
     
     @State private var locationService = ContactLocationService.shared
-    @State private var cameraPosition: MapCameraPosition = .automatic
+    @State private var mapRegion: MKCoordinateRegion?
     @State private var selectedFilterType: FilterType = .all
     @State private var selectedFilterValue: String?
-    @State private var selectedAnnotation: ContactAnnotation?
+    @State private var selectedContactId: UUID?
     @State private var hasLoaded = false
 
     // MARK: - Configuration
@@ -93,7 +93,7 @@ struct MapScreen: View {
                     hasLoaded = true
                     if let region = locationService.regionToFit(filteredLocations) {
                         withAnimation(.easeInOut(duration: 0.5)) {
-                            cameraPosition = .region(region)
+                            mapRegion = region
                         }
                     }
                 } else {
@@ -106,24 +106,18 @@ struct MapScreen: View {
     // MARK: - Subviews
     
     private var mapView: some View {
-        Map(position: $cameraPosition, selection: $selectedAnnotation) {
-            ForEach(annotations) { annotation in
-                Annotation(
-                    annotation.contactName,
-                    coordinate: annotation.coordinate,
-                    anchor: .bottom
-                ) {
-                    annotationView(for: annotation)
-                }
-                .tag(annotation)
+        ClusteredMapView(
+            annotations: annotations,
+            region: $mapRegion,
+            onAnnotationSelected: { annotation in
+                // Navigate to contact detail
+                selectedContactId = annotation.contactId
+            },
+            onClusterTapped: { cluster in
+                // Zoom into the cluster
+                zoomToCluster(cluster)
             }
-        }
-        .mapStyle(.standard)
-        .mapControls {
-            MapCompass()
-            MapScaleView()
-            MapUserLocationButton()
-        }
+        )
         .ignoresSafeArea(edges: .bottom)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .frame(minHeight: 300)
@@ -143,34 +137,48 @@ struct MapScreen: View {
                     }
             }
         )
+        .navigationDestination(item: $selectedContactId) { contactId in
+            if let contact = contacts.first(where: { $0.id == contactId }) {
+                ContactDetailScreen(contact: contact)
+            }
+        }
     }
     
-    private func annotationView(for annotation: ContactAnnotation) -> some View {
-        VStack(spacing: 0) {
-            // Contact initial bubble
-            ZStack {
-                Circle()
-                    .fill(
-                        LinearGradient(
-                            colors: [.blue, .blue.opacity(0.8)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 36, height: 36)
-                    .shadow(color: .blue.opacity(0.3), radius: 4, y: 2)
-                
-                Text(annotation.contactName.prefix(1).uppercased())
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
-            }
-            
-            // Pin point
-            Image(systemName: "triangle.fill")
-                .font(.system(size: 10))
-                .foregroundStyle(.blue)
-                .rotationEffect(.degrees(180))
-                .offset(y: -3)
+    /// Zooms the map to show all annotations within a cluster
+    private func zoomToCluster(_ cluster: MKClusterAnnotation) {
+        let memberAnnotations = cluster.memberAnnotations
+        guard !memberAnnotations.isEmpty else { return }
+        
+        // Calculate bounding region for all cluster members
+        var minLat = CLLocationDegrees.greatestFiniteMagnitude
+        var maxLat = -CLLocationDegrees.greatestFiniteMagnitude
+        var minLon = CLLocationDegrees.greatestFiniteMagnitude
+        var maxLon = -CLLocationDegrees.greatestFiniteMagnitude
+        
+        for annotation in memberAnnotations {
+            let coord = annotation.coordinate
+            minLat = min(minLat, coord.latitude)
+            maxLat = max(maxLat, coord.latitude)
+            minLon = min(minLon, coord.longitude)
+            maxLon = max(maxLon, coord.longitude)
+        }
+        
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+        
+        // Add padding and ensure minimum zoom
+        let latDelta = max((maxLat - minLat) * 1.5, 0.01)
+        let lonDelta = max((maxLon - minLon) * 1.5, 0.01)
+        
+        let span = MKCoordinateSpan(
+            latitudeDelta: latDelta,
+            longitudeDelta: lonDelta
+        )
+        
+        withAnimation {
+            mapRegion = MKCoordinateRegion(center: center, span: span)
         }
     }
     
@@ -257,7 +265,7 @@ struct MapScreen: View {
         // Fit map to show all pins
         if let region = locationService.regionToFit(filteredLocations) {
             withAnimation(.easeInOut(duration: 0.5)) {
-                cameraPosition = .region(region)
+                mapRegion = region
             }
         }
     }
@@ -273,7 +281,7 @@ struct MapScreen: View {
             // Show all contacts
             if let region = locationService.regionToFit(filteredLocations) {
                 withAnimation(.easeInOut(duration: 0.5)) {
-                    cameraPosition = .region(region)
+                    mapRegion = region
                 }
             }
         } else if let value = selectedFilterValue {
@@ -283,7 +291,7 @@ struct MapScreen: View {
                 let region = MKCoordinateRegion(center: coordinate, span: span)
                 
                 withAnimation(.easeInOut(duration: 0.5)) {
-                    cameraPosition = .region(region)
+                    mapRegion = region
                 }
             }
         }

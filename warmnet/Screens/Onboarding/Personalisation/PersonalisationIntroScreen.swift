@@ -12,8 +12,8 @@ struct PersonalisationIntroScreen: View {
     
     var body: some View {
         ZStack {
-            // Background - White
-            Color.white
+            // Background - Black
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -28,7 +28,7 @@ struct PersonalisationIntroScreen: View {
                     Text("Lets personalise your\nexperience")
                         .font(Font.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 16)
@@ -38,7 +38,7 @@ struct PersonalisationIntroScreen: View {
                     Text("Personalize how you nurture every important relationship effortlessly")
                         .font(Font.custom(AppFontName.overpassVariable, size: 14))
                         .lineSpacing(4)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .padding(.horizontal, 70)

@@ -16,7 +16,7 @@ struct PlanReadyScreen: View {
     var body: some View {
         ZStack {
             // Black background
-            Color.white
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 40) {
@@ -82,12 +82,12 @@ struct PlanReadyScreen: View {
                     VStack(spacing: 12) {
                         Text("Your Plan is ready")
                             .font(Font.custom(AppFontName.workSansMedium, size: 24))
-                            .foregroundColor(.black)
+                            .foregroundColor(.white)
                             .fixedSize(horizontal: false, vertical: true)
                         
                         Text("Everything is set up and ready for you to start building meaningful connections")
                             .font(Font.custom(AppFontName.overpassVariable, size: 16).weight(.medium))
-                            .foregroundColor(.black.opacity(0.7))
+                            .foregroundColor(.white.opacity(0.7))
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.horizontal, 40)

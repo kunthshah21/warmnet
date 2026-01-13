@@ -14,7 +14,7 @@ struct PriorityEnrichmentScreen: View {
     var body: some View {
         ZStack {
             if isOnboarding {
-                Color.white.ignoresSafeArea()
+                Color.black.ignoresSafeArea()
             } else {
                 Color(uiColor: .systemBackground).ignoresSafeArea()
             }
@@ -43,7 +43,7 @@ struct PriorityEnrichmentScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(isOnboarding ? Color.white : Color(uiColor: .systemBackground))
+        .background(isOnboarding ? Color.black : Color(uiColor: .systemBackground))
         .navigationDestination(isPresented: $navigateToLocation) {
             LocationEnrichmentInfoScreen(onEnrich: {
                 // TODO: Navigate to actual location enrichment screen
@@ -64,7 +64,7 @@ struct PriorityEnrichmentRow: View {
         HStack {
             Text(contact.name)
                 .font(Font.custom(AppFontName.workSansMedium, size: 16))
-                .foregroundColor(isOnboarding ? .black : .primary)
+                .foregroundColor(isOnboarding ? .white : .primary)
                 .lineLimit(1)
              
             Spacer()
@@ -78,11 +78,11 @@ struct PriorityEnrichmentRow: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(isOnboarding ? Color.black.opacity(0.05) : Color.primary.opacity(0.05))
+                .fill(isOnboarding ? Color.white.opacity(0.05) : Color.primary.opacity(0.05))
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1), lineWidth: 1)
+                .strokeBorder(isOnboarding ? Color.white.opacity(0.1) : Color.primary.opacity(0.1), lineWidth: 1)
         )
     }
     

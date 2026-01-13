@@ -13,7 +13,7 @@ struct Onboarding1ProblemScreen: View {
     var body: some View {
         ZStack {
             // Background - Black
-            Color.white
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -37,7 +37,7 @@ struct Onboarding1ProblemScreen: View {
                     Text("Your relationships are slipping away")
                         .font(Font.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 80)
@@ -47,7 +47,7 @@ struct Onboarding1ProblemScreen: View {
                     Text("Important people fade from your life, not from lack of care, but from lack of system")
                         .font(Font.custom(AppFontName.overpassVariable, size: 14))
                         .lineSpacing(4)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 60)

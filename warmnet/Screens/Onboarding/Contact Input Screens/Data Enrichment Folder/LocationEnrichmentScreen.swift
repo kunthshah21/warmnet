@@ -59,7 +59,7 @@ struct LocationEnrichmentScreen: View {
     var body: some View {
         ZStack {
             if isOnboarding {
-                Color.white.ignoresSafeArea()
+                Color.black.ignoresSafeArea()
             } else {
                 Color(uiColor: .systemBackground).ignoresSafeArea()
             }
@@ -116,7 +116,7 @@ struct LocationEnrichmentScreen: View {
                 .foregroundColor(Color(red: 0.32, green: 0.57, blue: 0.87))
             }
         }
-        .background(isOnboarding ? Color.white : Color(uiColor: .systemBackground))
+        .background(isOnboarding ? Color.black : Color(uiColor: .systemBackground))
         .sheet(item: $selectedContact) { contact in
             LocationInputSheet(
                 contact: contact,
@@ -169,16 +169,16 @@ struct LocationEnrichmentScreen: View {
         HStack {
             Text(title)
                 .font(Font.custom(AppFontName.workSansMedium, size: 14))
-                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
             
             Spacer()
             
             Text("\(count)")
                 .font(Font.custom(AppFontName.overpassVariable, size: 12).weight(.medium))
-                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
-                .background(Capsule().fill(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1)))
+                .background(Capsule().fill(isOnboarding ? Color.white.opacity(0.1) : Color.primary.opacity(0.1)))
         }
         .padding(.horizontal, 4)
     }
@@ -214,13 +214,13 @@ struct LocationEnrichmentRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(contact.name)
                         .font(Font.custom(AppFontName.workSansMedium, size: 16))
-                        .foregroundColor(isOnboarding ? .black : .primary)
+                        .foregroundColor(isOnboarding ? .white : .primary)
                         .lineLimit(1)
                     
                     if hasLocation {
                         Text(contact.fullLocation)
                             .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                            .foregroundColor(.black.opacity(0.7))
+                            .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                             .lineLimit(1)
                     } else {
                         Text("Tap to add location")
@@ -238,11 +238,11 @@ struct LocationEnrichmentRow: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.05))
+                    .fill(isOnboarding ? Color.white.opacity(0.05) : Color.primary.opacity(0.05))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(Color.black.opacity(0.1), lineWidth: 1)
+                    .strokeBorder(isOnboarding ? Color.white.opacity(0.1) : Color.primary.opacity(0.1), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

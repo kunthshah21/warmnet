@@ -57,7 +57,7 @@ struct ContactSelectScreen: View {
         ZStack {
             // Background
             if isOnboarding {
-                Color.white.ignoresSafeArea()
+                Color.black.ignoresSafeArea()
             } else {
                 Color(uiColor: .systemBackground).ignoresSafeArea()
             }
@@ -83,7 +83,7 @@ struct ContactSelectScreen: View {
         .navigationTitle("Select Contacts")
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarColorScheme(isOnboarding ? .light : nil, for: .navigationBar)
+        .toolbarColorScheme(isOnboarding ? .dark : nil, for: .navigationBar)
         .searchable(text: $searchText, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search contacts")
         .onAppear {
             loadDeviceContacts()
@@ -128,16 +128,16 @@ struct ContactSelectScreen: View {
                     if isOnboarding {
                         Text("Select at least \(minimumSelection) contacts")
                             .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                            .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                            .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                     } else {
                         Text("Select contacts")
                             .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                            .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                            .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                     }
                     
                     Text("\(selectedContacts.count) selected")
                         .font(Font.custom(AppFontName.overpassVariable, size: 12).weight(.medium))
-                        .foregroundColor(canProceed ? Color(red: 0.32, green: 0.57, blue: 0.87) : (isOnboarding ? .black.opacity(0.5) : .secondary))
+                        .foregroundColor(canProceed ? Color(red: 0.32, green: 0.57, blue: 0.87) : (isOnboarding ? .white.opacity(0.5) : .secondary))
                 }
                 
                 Spacer()
@@ -154,9 +154,9 @@ struct ContactSelectScreen: View {
             .padding(.vertical, 12)
             
             Divider()
-                .background(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1))
+                .background(isOnboarding ? Color.white.opacity(0.1) : Color.primary.opacity(0.1))
         }
-        .background(isOnboarding ? Color.black.opacity(0.05) : Color.primary.opacity(0.05))
+        .background(isOnboarding ? Color.white.opacity(0.05) : Color.primary.opacity(0.05))
     }
     
     private var loadingView: some View {
@@ -167,7 +167,7 @@ struct ContactSelectScreen: View {
             
             Text("Loading contacts...")
                 .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
@@ -180,11 +180,11 @@ struct ContactSelectScreen: View {
             
             Text("No Contacts Found")
                 .font(Font.custom(AppFontName.workSansMedium, size: 22))
-                .foregroundColor(isOnboarding ? .black : .primary)
+                .foregroundColor(isOnboarding ? .white : .primary)
             
             Text("Add contacts to your device and try again")
                 .font(Font.custom(AppFontName.overpassVariable, size: 14).weight(.medium))
-                .foregroundColor(isOnboarding ? .black.opacity(0.7) : .primary.opacity(0.7))
+                .foregroundColor(isOnboarding ? .white.opacity(0.7) : .primary.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -284,18 +284,18 @@ struct ContactSelectScreen: View {
         HStack {
             Text(title)
                 .font(.headline)
-                .foregroundColor(isOnboarding ? .black : .primary)
+                .foregroundColor(isOnboarding ? .white : .primary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
             Spacer()
         }
-        .background(isOnboarding ? Color.white.opacity(0.95) : Color(uiColor: .systemBackground).opacity(0.95))
+        .background(isOnboarding ? Color.black.opacity(0.95) : Color(uiColor: .systemBackground).opacity(0.95))
     }
     
     private var bottomActionView: some View {
         VStack(spacing: 0) {
             Divider()
-                .background(isOnboarding ? Color.black.opacity(0.1) : Color.primary.opacity(0.1))
+                .background(isOnboarding ? Color.white.opacity(0.1) : Color.primary.opacity(0.1))
             
             Button(action: {
                 importSelectedContacts()

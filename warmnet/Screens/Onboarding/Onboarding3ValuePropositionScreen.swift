@@ -12,8 +12,8 @@ struct Onboarding3ValuePropositionScreen: View {
     
     var body: some View {
         ZStack {
-            // Background - White
-            Color.white
+            // Background - Black
+            Color.black
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -37,7 +37,7 @@ struct Onboarding3ValuePropositionScreen: View {
                     Text("Imagine reaching out with nothing to ask")
                         .font(Font.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 80)
@@ -47,7 +47,7 @@ struct Onboarding3ValuePropositionScreen: View {
                     Text("Just value to give. Just genuine interest. That's how real networks are built.")
                         .font(Font.custom(AppFontName.overpassVariable, size: 14))
                         .lineSpacing(4)
-                        .foregroundColor(.black)
+                        .foregroundColor(.white.opacity(0.7))
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 60)
