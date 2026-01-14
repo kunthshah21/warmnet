@@ -16,7 +16,7 @@ struct KPICard: View {
                     count: innerCircleCount,
                     label: "Inner Circle",
                     icon: "star.fill",
-                    color: .green
+                    color: Color("Green-app")
                 )
                 
                 Divider()
@@ -26,7 +26,7 @@ struct KPICard: View {
                     count: keyRelationshipsCount,
                     label: "Key Relationships",
                     icon: "person.2.fill",
-                    color: .blue
+                    color: Color("Blue-app")
                 )
                 
                 Divider()
