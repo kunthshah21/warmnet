@@ -11,6 +11,10 @@ struct ContentView: View {
             Tab("Contacts", systemImage: "person.2.fill") {
                 ContactsScreen()
             }
+            
+            Tab("Insights", systemImage: "chart.bar.fill") {
+                InsightsScreen()
+            }
         }
     }
 }
