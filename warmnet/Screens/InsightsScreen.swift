@@ -13,6 +13,19 @@ struct InsightsScreen: View {
     @Query private var contacts: [Contact]
     @Query private var interactions: [Interaction]
     
+    // MARK: - Computed Properties
+    private var innerCircleCount: Int {
+        contacts.filter { $0.priority == .innerCircle }.count
+    }
+    
+    private var keyRelationshipsCount: Int {
+        contacts.filter { $0.priority == .keyRelationships }.count
+    }
+    
+    private var broaderNetworkCount: Int {
+        contacts.filter { $0.priority == .broaderNetwork }.count
+    }
+    
     private var backgroundColor: Color {
         colorScheme == .dark ? Color("Background-dark") : Color(.systemBackground)
     }
@@ -44,63 +57,16 @@ struct InsightsScreen: View {
                         .padding(.horizontal)
                         .padding(.top, 20)
                         
-                        // Total Contacts Card
-                        VStack(spacing: 12) {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text("Total Contacts")
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    
-                                    Text("\(contacts.count)")
-                                        .font(.title2)
-                                        .fontWeight(.bold)
-                                        .foregroundStyle(headingColor)
-                                }
-                                
-                                Spacer()
-                                
-                                Image(systemName: "person.2.fill")
-                                    .font(.title2)
-                                    .foregroundStyle(Color("Blue-app"))
-                            }
-                            .padding()
-                            .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray6))
-                            .cornerRadius(12)
-                        }
-                        .padding(.horizontal)
-                        
-                        // Network Breakdown
-                        VStack(spacing: 12) {
-                            Text("Network Distribution")
-                                .font(.headline)
-                                .foregroundStyle(headingColor)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            VStack(spacing: 8) {
-                                NetworkBreakdownRow(
-                                    title: "Inner Circle",
-                                    count: contacts.filter { $0.priority == .innerCircle }.count,
-                                    color: Color("Blue-app")
-                                )
-                                
-                                NetworkBreakdownRow(
-                                    title: "Key Relationships",
-                                    count: contacts.filter { $0.priority == .keyRelationships }.count,
-                                    color: .orange
-                                )
-                                
-                                NetworkBreakdownRow(
-                                    title: "Broader Network",
-                                    count: contacts.filter { $0.priority == .broaderNetwork }.count,
-                                    color: .gray
-                                )
-                            }
-                            .padding()
-                            .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray6))
-                            .cornerRadius(12)
-                        }
-                        .padding(.horizontal)
+                        KPICard(
+                            innerCircleCount: innerCircleCount,
+                            keyRelationshipsCount: keyRelationshipsCount,
+                            broaderNetworkCount: broaderNetworkCount
+                        )
+                            .padding(.horizontal)
+
+                        // Full Calendar Access
+                        CalendarAccessCard()
+                            .padding(.horizontal)
                         
                         // Engagement Stats
                         VStack(spacing: 12) {
@@ -145,6 +111,41 @@ struct InsightsScreen: View {
 }
 
 // MARK: - Helper Views
+
+struct CalendarAccessCard: View {
+    @State private var showCalendar = false
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        Button {
+            showCalendar = true
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                     Text("Calendar")
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                    
+                    Text("View full interaction schedule")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "calendar")
+                    .font(.title2)
+                    .foregroundStyle(Color("Blue-app"))
+            }
+            .padding()
+            .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray6))
+            .cornerRadius(12)
+        }
+        .sheet(isPresented: $showCalendar) {
+            ReminderCalendarScreen()
+        }
+    }
+}
 
 struct NetworkBreakdownRow: View {
     let title: String

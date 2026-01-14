@@ -137,12 +137,6 @@ struct HomeScreen: View {
                         
                         NetworkProgressCard()
                         
-                        KPICard(
-                            innerCircleCount: innerCircleCount,
-                            keyRelationshipsCount: keyRelationshipsCount,
-                            broaderNetworkCount: broaderNetworkCount
-                        )
-                        
                         MapPreviewCard {
                             showMapSheet = true
                         }

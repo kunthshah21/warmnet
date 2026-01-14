@@ -134,27 +134,10 @@ struct TodayAndWeeklyCard: View {
                 }
                 .frame(height: 8)
             }
-            
-            // View calendar button
-            Button {
-                showCalendar = true
-            } label: {
-                HStack {
-                    Text("View Full Calendar")
-                        .font(.subheadline.weight(.medium))
-                    Image(systemName: "arrow.right")
-                        .font(.caption)
-                }
-                .foregroundStyle(.blue)
-                .frame(maxWidth: .infinity, alignment: .center)
-            }
         }
         .padding(16)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
-        .sheet(isPresented: $showCalendar) {
-            ReminderCalendarScreen()
-        }
     }
 }
