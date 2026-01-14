@@ -10,10 +10,15 @@ struct HomeScreen: View {
     @State private var showMapSheet = false
     @State private var showLogInteraction = false
     @State private var showSettings = false
+    @State private var showNotifications = false
     @State private var preSelectedContact: Contact?
     
     private var profileData: PersonalisationData? {
         personalisationData.first
+    }
+    
+    private var userName: String {
+        profileData?.name ?? ""
     }
     
     private var innerCircleCount: Int {
@@ -40,6 +45,10 @@ struct HomeScreen: View {
         }.sorted { $0.nextReminderDate < $1.nextReminderDate }
     }
     
+    private var upcomingReminders: [Contact] {
+        contacts.sorted { $0.nextReminderDate < $1.nextReminderDate }
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -53,98 +62,42 @@ struct HomeScreen: View {
                 
                 ScrollView {
                     VStack(spacing: 16) {
-                        // Custom Header
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text("Hi User")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.gray)
-                                
-                                Text("Welcome to Warmnet")
-                                    .font(.largeTitle)
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(headingColor)
-                            }
-                            
-                            Spacer()
-                            
-                            Button {
+                        // Top Dashboard Card - extends to edges
+                        TopDashboardCard(
+                            userName: userName,
+                            profilePhoto: profileData?.profilePhoto,
+                            todaysGoals: todaysGoals,
+                            innerCircleCount: innerCircleCount,
+                            keyRelationshipsCount: keyRelationshipsCount,
+                            broaderNetworkCount: broaderNetworkCount,
+                            onProfileTap: {
                                 showSettings = true
-                            } label: {
-                                if let photoData = profileData?.profilePhoto,
-                                   let uiImage = UIImage(data: photoData) {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 60, height: 60)
-                                        .clipShape(Circle())
-                                } else {
-                                    Image(systemName: "person.crop.circle")
-                                        .font(.largeTitle)
-                                        .foregroundStyle(.primary)
-                                }
+                            },
+                            onNotificationTap: {
+                                showNotifications = true
+                            },
+                            onContactTap: { contact in
+                                preSelectedContact = contact
+                                showLogInteraction = true
+                            }
+                        )
+                        
+                        // Other cards with horizontal padding
+                        VStack(spacing: 16) {
+                            TodayAndWeeklyCard(contacts: contacts) { contact in
+                                preSelectedContact = contact
+                                showLogInteraction = true
+                            }
+                            
+                            MapPreviewCard {
+                                showMapSheet = true
                             }
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
-                        
-                        if !todaysGoals.isEmpty {
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("Reach Out")
-                                    .font(.headline)
-                                    .foregroundStyle(headingColor)
-                                    .padding(.horizontal)
-                                
-                                Text("Today's Network Goals")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal)
-                                
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 12) {
-                                        ForEach(todaysGoals) { contact in
-                                            Button {
-                                                preSelectedContact = contact
-                                                showLogInteraction = true
-                                            } label: {
-                                                VStack(spacing: 8) {
-                                                    AvatarView(name: contact.name, size: 50)
-                                                    Text(contact.name)
-                                                        .font(.caption)
-                                                        .lineLimit(2)
-                                                        .multilineTextAlignment(.center)
-                                                        .foregroundStyle(.primary)
-                                                        .frame(height: 32)
-                                                }
-                                                .frame(width: 100)
-                                                .padding(.vertical, 12)
-                                                .padding(.horizontal, 8)
-                                                .background(Color(uiColor: .secondarySystemGroupedBackground))
-                                                .cornerRadius(10)
-                                                .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-                                            }
-                                        }
-                                    }
-                                    .padding(.horizontal)
-                                }
-                            }
-                        }
-                        
-                        TodayAndWeeklyCard(contacts: contacts) { contact in
-                            preSelectedContact = contact
-                            showLogInteraction = true
-                        }
-                        
-                        NetworkProgressCard()
-                        
-                        MapPreviewCard {
-                            showMapSheet = true
-                        }
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
                     .padding(.bottom, 120) // Space for floating button
                 }
+                .ignoresSafeArea(edges: .top)
                 .scrollContentBackground(.visible)
                 
                 // Floating Add Contact Button
@@ -173,6 +126,17 @@ struct HomeScreen: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsScreen()
+            }
+            .sheet(isPresented: $showNotifications) {
+                NotificationsSheet(
+                    upcomingReminders: upcomingReminders,
+                    onContactTap: { contact in
+                        preSelectedContact = contact
+                        showLogInteraction = true
+                    }
+                )
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
             }
         }
     }
@@ -225,6 +189,35 @@ struct HomeScreen: View {
     }
 }
 
+// MARK: - Preview with Sample Data
+
 #Preview {
-    HomeScreen()
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Contact.self, PersonalisationData.self, configurations: config)
+    
+    // Create sample contacts for preview - set nextTouchDate to today so they appear in todaysGoals
+    let today = Date()
+    let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+    
+    let sampleContacts = [
+        Contact(name: "Sarah Johnson", priority: .innerCircle, nextTouchDate: today),
+        Contact(name: "Mike Chen", priority: .keyRelationships, nextTouchDate: today),
+        Contact(name: "Emma Wilson", priority: .innerCircle, nextTouchDate: yesterday),
+        Contact(name: "James Brown", priority: .broaderNetwork, nextTouchDate: today),
+        Contact(name: "Lisa Park", priority: .keyRelationships, nextTouchDate: yesterday),
+        Contact(name: "David Kim", priority: .broaderNetwork),
+        Contact(name: "Anna Martinez", priority: .innerCircle)
+    ]
+    
+    for contact in sampleContacts {
+        container.mainContext.insert(contact)
+    }
+    
+    // Create sample profile data
+    let profileData = PersonalisationData()
+    profileData.name = "Kunth"
+    container.mainContext.insert(profileData)
+    
+    return HomeScreen()
+        .modelContainer(container)
 }
