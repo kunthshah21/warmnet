@@ -28,9 +28,7 @@ struct TopDashboardCard: View {
             headerRow
             
             // MARK: - Today's Network Goals
-            if !todaysGoals.isEmpty {
-                todaysGoalsSection
-            }
+            todaysGoalsSection
             
             // MARK: - Network Health
             networkHealthSection
@@ -121,41 +119,54 @@ struct TopDashboardCard: View {
     // MARK: - Today's Goals Section
     
     private var todaysGoalsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(spacing: 12) {
             Text("Today's Network Goals")
                 .font(.custom(AppFontName.workSansMedium, size: 16))
                 .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .center)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(todaysGoals) { contact in
-                        Button {
-                            onContactTap(contact)
-                        } label: {
-                            goalContactCard(for: contact)
+            if todaysGoals.isEmpty {
+                Text("You are all caught up for today")
+                    .font(.custom(AppFontName.overpassVariable, size: 14))
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 8)
+            } else {
+                GeometryReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(todaysGoals) { contact in
+                                Button {
+                                    onContactTap(contact)
+                                } label: {
+                                    goalContactCard(for: contact)
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
-                        .buttonStyle(.plain)
+                        .frame(minWidth: proxy.size.width)
                     }
                 }
+                .frame(height: 130)
             }
         }
+        .padding(.bottom, 12)
     }
     
     private func goalContactCard(for contact: Contact) -> some View {
         VStack(spacing: 8) {
-            AvatarView(name: contact.name, size: 44)
+            AvatarView(name: contact.name, size: 56)
             
             Text(contact.name.components(separatedBy: " ").first ?? contact.name)
-                .font(.custom(AppFontName.overpassVariable, size: 12))
+                .font(.custom(AppFontName.overpassVariable, size: 13))
                 .lineLimit(1)
                 .foregroundStyle(.primary)
         }
-        .frame(width: 70)
-        .padding(.vertical, 10)
+        .frame(width: 88)
+        .padding(.vertical, 12)
         .padding(.horizontal, 8)
-        .background(
+        .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .fill(goalCardBackgroundColor)
+                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
         )
     }
     
