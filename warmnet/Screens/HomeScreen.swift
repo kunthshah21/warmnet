@@ -7,10 +7,10 @@ struct HomeScreen: View {
     @Query private var personalisationData: [PersonalisationData]
 
     @State private var showAddContact = false
-    @State private var showMapSheet = false
     @State private var showLogInteraction = false
     @State private var showSettings = false
     @State private var showNotifications = false
+    @State private var showMapSheet = false
     @State private var preSelectedContact: Contact?
     
     private var profileData: PersonalisationData? {
@@ -78,7 +78,6 @@ struct HomeScreen: View {
                             },
                             onContactTap: { contact in
                                 preSelectedContact = contact
-                                showLogInteraction = true
                             }
                         )
                         
@@ -86,19 +85,17 @@ struct HomeScreen: View {
                         VStack(spacing: 16) {
                             TodayAndWeeklyCard(contacts: contacts) { contact in
                                 preSelectedContact = contact
-                                showLogInteraction = true
                             }
                             
-                            MapPreviewCard {
-                                showMapSheet = true
-                            }
+                            NetworkProgressCard()
                         }
                         .padding(.horizontal, 16)
                     }
                     .padding(.bottom, 120) // Space for floating button
                 }
-                .ignoresSafeArea(edges: .top)
-                .scrollContentBackground(.visible)
+            }
+            .ignoresSafeArea(edges: .top)
+            .scrollContentBackground(.visible)
                 
                 // Floating Add Contact Button
                 VStack {
@@ -115,8 +112,12 @@ struct HomeScreen: View {
             .sheet(isPresented: $showAddContact) {
                 AddContactSheet()
             }
-            .sheet(isPresented: $showLogInteraction, onDismiss: { preSelectedContact = nil }) {
-                LogInteractionSheet(preSelectedContact: preSelectedContact)
+            .sheet(isPresented: $showLogInteraction) {
+                LogInteractionSheet(preSelectedContact: nil)
+                    .presentationDragIndicator(.visible)
+            }
+            .sheet(item: $preSelectedContact) { contact in
+                LogInteractionSheet(preSelectedContact: contact)
                     .presentationDragIndicator(.visible)
             }
             .sheet(isPresented: $showMapSheet) {
@@ -124,15 +125,12 @@ struct HomeScreen: View {
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
             }
-            .sheet(isPresented: $showSettings) {
-                SettingsScreen()
-            }
             .sheet(isPresented: $showNotifications) {
                 NotificationsSheet(
                     upcomingReminders: upcomingReminders,
                     onContactTap: { contact in
+                        showNotifications = false
                         preSelectedContact = contact
-                        showLogInteraction = true
                     }
                 )
                 .presentationDetents([.medium, .large])

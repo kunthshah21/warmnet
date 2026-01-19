@@ -13,6 +13,8 @@ struct InsightsScreen: View {
     @Query private var contacts: [Contact]
     @Query private var interactions: [Interaction]
     
+    @State private var showMapSheet = false
+
     // MARK: - Computed Properties
     private var innerCircleCount: Int {
         contacts.filter { $0.priority == .innerCircle }.count
@@ -62,6 +64,11 @@ struct InsightsScreen: View {
                             keyRelationshipsCount: keyRelationshipsCount,
                             broaderNetworkCount: broaderNetworkCount
                         )
+                        MapPreviewCard {
+                            showMapSheet = true
+                        }
+                        .padding(.horizontal)
+
                             .padding(.horizontal)
 
                         // Full Calendar Access
@@ -105,6 +112,11 @@ struct InsightsScreen: View {
                     }
                 }
                 .scrollContentBackground(.visible)
+            }
+            .sheet(isPresented: $showMapSheet) {
+                MapScreen(showsDismissButton: true)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
             }
         }
     }

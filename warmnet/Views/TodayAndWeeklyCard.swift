@@ -59,14 +59,14 @@ struct TodayAndWeeklyCard: View {
     private var completedThisWeek: Int {
         contacts.filter { contact in
             guard let lastInteraction = contact.lastContacted else { return false }
-            let wasDue = contact.nextReminderDate <= endOfWeek
             let contactedThisWeek = lastInteraction >= startOfWeek && lastInteraction <= endOfWeek
-            return wasDue && contactedThisWeek
+            return contactedThisWeek
         }.count
     }
     
     private var totalDueThisWeek: Int {
-        weeklyReminders.values.reduce(0, +)
+        let remaining = weeklyReminders.values.reduce(0, +)
+        return completedThisWeek + remaining
     }
     
     private var progressPercentage: Double {
