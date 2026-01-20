@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FastLogCard: View {
+    @Environment(\.colorScheme) private var colorScheme
     let contacts: [Contact]
     let onLogInteraction: (Contact) -> Void
     
@@ -8,17 +9,17 @@ struct FastLogCard: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Image(systemName: "bolt.fill")
-                    .foregroundStyle(Color("Primary"))
+                    .foregroundStyle(AppColors.mutedBlue)
                 Text("Today's Network Goals")
-                    .font(.headline)
+                    .font(.custom(AppFontName.workSansMedium, size: 16))
                 Spacer()
             }
             .padding(.bottom, 8)
             
             if contacts.isEmpty {
                 Text("All caught up for today!")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 8)
             } else {
@@ -29,24 +30,23 @@ struct FastLogCard: View {
                         HStack(spacing: 12) {
                             ZStack {
                                 Circle()
-                                    .strokeBorder(Color.secondary.opacity(0.6), lineWidth: 1.5)
+                                    .strokeBorder(colorScheme == .dark ? AppColors.textTertiary : Color.secondary.opacity(0.6), lineWidth: 1.5)
                                     .background(Circle().fill(Color.clear))
                                 Image(systemName: "plus")
                                     .font(.system(size: 10, weight: .bold))
-                                    .foregroundStyle(Color.secondary)
+                                    .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : Color.secondary)
                             }
                             .frame(width: 20, height: 20)
 
                             Text(contact.name)
-                                .font(.body)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.primary)
+                                .font(.custom(AppFontName.workSansMedium, size: 15))
+                                .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
                             
                             Spacer()
                             
                             Image(systemName: "chevron.right")
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(colorScheme == .dark ? AppColors.textTertiary : .secondary)
                         }
                         .padding(.vertical, 6)
                         .padding(.horizontal, 8)
@@ -55,15 +55,15 @@ struct FastLogCard: View {
             }
         }
         .padding()
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .background(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(16)
-        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 4)
     }
 }
 
 #Preview {
     ZStack {
-        Color(uiColor: .systemGroupedBackground)
+        AppColors.deepNavy
             .ignoresSafeArea()
         FastLogCard(contacts: [], onLogInteraction: { _ in })
             .padding()

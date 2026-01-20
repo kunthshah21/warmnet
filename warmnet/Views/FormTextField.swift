@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct FormTextField: View {
+    @Environment(\.colorScheme) private var colorScheme
     let title: String
     @Binding var text: String
     var placeholder: String = ""
@@ -10,17 +11,18 @@ struct FormTextField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
+                .font(.custom(AppFontName.workSansMedium, size: 13))
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
             
             TextField(placeholder.isEmpty ? title : placeholder, text: $text)
+                .font(.custom(AppFontName.workSansRegular, size: 16))
                 .keyboardType(keyboardType)
                 .textInputAutocapitalization(autocapitalization)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 14)
                 .background(
                     RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.systemGray6))
+                        .fill(colorScheme == .dark ? AppColors.charcoal : Color(.systemGray6))
                 )
         }
     }
@@ -32,5 +34,6 @@ struct FormTextField: View {
         FormTextField(title: "Email", text: .constant(""), placeholder: "Enter email", keyboardType: .emailAddress)
     }
     .padding()
+    .background(AppColors.deepNavy)
 }
 

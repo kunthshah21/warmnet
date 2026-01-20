@@ -119,7 +119,7 @@ struct LocationInputView: View {
                 Text("Use Current")
                     .font(.caption.weight(.medium))
             }
-            .foregroundStyle(Color("Blue-app"))
+            .foregroundStyle(AppColors.mutedBlue)
         }
         .disabled(inputState == .searching)
         .buttonStyle(.plain)
@@ -179,10 +179,10 @@ struct LocationInputView: View {
                 .scaleEffect(0.8)
         case .found:
             Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
+                .foregroundStyle(AppColors.accentGreen)
         case .error:
             Image(systemName: "exclamationmark.circle.fill")
-                .foregroundStyle(Color("Red-app"))
+                .foregroundStyle(AppColors.accentRed)
         }
     }
     
@@ -253,7 +253,7 @@ struct LocationInputView: View {
                 Text("Invalid location")
                     .font(.caption)
             }
-            .foregroundStyle(Color("Red-app"))
+            .foregroundStyle(AppColors.accentRed)
             
         default:
             EmptyView()
@@ -267,18 +267,18 @@ struct LocationInputView: View {
         case .empty, .typing, .searching:
             return .secondary
         case .found:
-            return .green
+            return AppColors.accentGreen
         case .error:
-            return Color("Red-app")
+            return AppColors.accentRed
         }
     }
     
     private var inputStateBorderColor: Color {
         switch inputState {
         case .found:
-            return .green.opacity(0.5)
+            return AppColors.accentGreen.opacity(0.5)
         case .error:
-            return Color("Red-app").opacity(0.5)
+            return AppColors.accentRed.opacity(0.5)
         default:
             return .clear
         }

@@ -21,15 +21,16 @@ struct SecondaryButton: View {
                 .padding(EdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10))
                 .frame(maxWidth: .infinity)
                 .frame(height: 48)
-                .cornerRadius(15)
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(AppColors.charcoal.opacity(0.5))
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: 15)
-                        .inset(by: 0.50)
-                        .stroke(Color(red: 0.49, green: 0.49, blue: 0.49), lineWidth: 0.50)
+                        .stroke(AppColors.mutedBlue.opacity(0.4), lineWidth: 1)
                 )
             }
             .frame(height: 48)
-            .cornerRadius(15)
         }
     }
 }
@@ -39,4 +40,5 @@ struct SecondaryButton: View {
         print("Secondary button tapped")
     }
     .padding()
+    .background(AppColors.deepNavy)
 }

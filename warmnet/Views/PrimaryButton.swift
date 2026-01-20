@@ -26,8 +26,9 @@ struct PrimaryButton: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.accentColor.gradient)
+                    .fill(AppGradients.blueGlow)
             )
+            .shadow(color: AppColors.mutedBlue.opacity(0.3), radius: 12, x: 0, y: 6)
         }
         .buttonStyle(.plain)
     }
@@ -44,5 +45,6 @@ struct PrimaryButton: View {
         }
     }
     .padding()
+    .background(AppColors.deepNavy)
 }
 

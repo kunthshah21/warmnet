@@ -33,7 +33,7 @@ struct ContactsScreen: View {
                 // Custom Header
                 HStack {
                     Text("Contacts")
-                        .font(.largeTitle)
+                        .font(.custom(AppFontName.workSansMedium, size: 32))
                         .fontWeight(.bold)
                     Spacer()
                     Button {
@@ -42,6 +42,7 @@ struct ContactsScreen: View {
                         Image(systemName: "plus")
                             .font(.title2)
                             .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.mutedBlue)
                     }
                     
                     Menu {
@@ -54,6 +55,7 @@ struct ContactsScreen: View {
                         Image(systemName: "ellipsis")
                             .font(.title2)
                             .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.mutedBlue)
                             .rotationEffect(.degrees(90))
                     }
                 }
@@ -152,7 +154,7 @@ struct ContactsScreen: View {
                                 ForEach(alphabet, id: \.self) { letter in
                                     Text(letter)
                                         .font(.system(size: 10, weight: .semibold))
-                                        .foregroundStyle(.blue)
+                                        .foregroundStyle(AppColors.mutedBlue)
                                         .frame(width: 20)
                                         .onTapGesture {
                                             withAnimation {
@@ -193,26 +195,27 @@ struct ContactsScreen: View {
 }
 
 struct FilterButton: View {
+    @Environment(\.colorScheme) private var colorScheme
     let title: String
     let isSelected: Bool
-    var color: Color = .blue
+    var color: Color = AppColors.mutedBlue
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .font(.custom(AppFontName.workSansMedium, size: 13))
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(isSelected ? color.opacity(0.2) : Color.gray.opacity(0.1))
+                        .fill(isSelected ? color.opacity(0.2) : (colorScheme == .dark ? AppColors.charcoal : Color.gray.opacity(0.1)))
                 )
                 .overlay(
                     Capsule()
                         .strokeBorder(isSelected ? color : Color.clear, lineWidth: 1)
                 )
-                .foregroundStyle(isSelected ? color : .primary)
+                .foregroundStyle(isSelected ? color : (colorScheme == .dark ? AppColors.textPrimary : .primary))
         }
     }
 }

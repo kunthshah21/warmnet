@@ -252,12 +252,11 @@ struct WeekRowView: View {
                                 
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(contact.name)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
+                                        .font(.custom(AppFontName.workSansMedium, size: 14))
                                         .foregroundStyle(.primary)
                                     
                                     Text(dueDateText(for: contact))
-                                        .font(.caption2)
+                                        .font(.custom(AppFontName.workSansRegular, size: 11))
                                         .foregroundStyle(.secondary)
                                 }
                                 
@@ -265,11 +264,11 @@ struct WeekRowView: View {
                                 
                                 if contact.isOverdue {
                                     Text("Overdue")
-                                        .font(.caption2)
+                                        .font(.custom(AppFontName.workSansMedium, size: 11))
                                         .padding(.horizontal, 6)
                                         .padding(.vertical, 3)
-                                        .background(Color("Red-app").opacity(0.2))
-                                        .foregroundStyle(Color("Red-app"))
+                                        .background(AppColors.accentRed.opacity(0.2))
+                                        .foregroundStyle(AppColors.accentRed)
                                         .cornerRadius(4)
                                 }
                             }

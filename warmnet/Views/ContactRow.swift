@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct ContactRow: View {
+    @Environment(\.colorScheme) private var colorScheme
     let contact: Contact
     
     var body: some View {
@@ -9,8 +10,8 @@ struct ContactRow: View {
             AvatarView(name: contact.name, size: 36)
             
             Text(contact.name)
-                .font(.body.weight(.semibold))
-                .foregroundStyle(.primary)
+                .font(.custom(AppFontName.workSansMedium, size: 16))
+                .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
             
             Circle()
                 .fill((contact.priority ?? .broaderNetwork).color)
@@ -30,5 +31,6 @@ struct ContactRow: View {
         reference: "Met at conference"
     ))
     .padding()
+    .background(AppColors.charcoal)
 }
 

@@ -141,15 +141,15 @@ struct HomeScreen: View {
     // MARK: - Subviews
 
     private var backgroundTopColor: Color {
-        colorScheme == .dark ? Color("Background-dark") : Color(.sRGB, white: 1.0, opacity: 1)
+        colorScheme == .dark ? AppColors.deepNavy : Color(.sRGB, white: 0.98, opacity: 1)
     }
 
     private var backgroundBottomColor: Color {
-        colorScheme == .dark ? Color("Background-dark").opacity(0.9) : Color(.sRGB, white: 0.95, opacity: 1)
+        colorScheme == .dark ? AppColors.charcoal.opacity(0.95) : Color(.sRGB, white: 0.94, opacity: 1)
     }
 
     private var headingColor: Color {
-        colorScheme == .dark ? Color("Beige accent") : .primary
+        colorScheme == .dark ? AppColors.softBeige : .primary
     }
     
     private var addContactButton: some View {
@@ -173,15 +173,9 @@ struct HomeScreen: View {
                 .frame(width: 60, height: 60)
                 .background(
                     Circle()
-                        .fill(
-                            LinearGradient(
-                                colors: [Color("Blue-app"), Color("Blue-app").opacity(0.85)],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
+                        .fill(AppGradients.blueGlow)
                 )
-                .shadow(color: Color("Blue-app").opacity(0.3), radius: 12, x: 0, y: 6)
+                .shadow(color: AppColors.mutedBlue.opacity(0.3), radius: 12, x: 0, y: 6)
         }
     }
 }

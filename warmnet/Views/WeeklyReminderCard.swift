@@ -72,9 +72,9 @@ struct WeeklyReminderCard: View {
             // Header
             HStack {
                 Image(systemName: "calendar")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(AppColors.mutedBlue)
                 Text("THIS WEEK")
-                    .font(.headline)
+                    .font(.custom(AppFontName.workSansMedium, size: 14))
                     .foregroundStyle(.primary)
             }
             
@@ -89,7 +89,7 @@ struct WeeklyReminderCard: View {
                     Text("·").foregroundStyle(.secondary)
                     Text("Wed: \(weeklyReminders["Wed"] ?? 0)")
                 }
-                .font(.subheadline)
+                .font(.custom(AppFontName.workSansRegular, size: 13))
                 
                 HStack(spacing: 4) {
                     Text("Thu: \(weeklyReminders["Thu"] ?? 0)")
@@ -98,14 +98,14 @@ struct WeeklyReminderCard: View {
                     Text("·").foregroundStyle(.secondary)
                     Text("Weekend: \(weeklyReminders["Weekend"] ?? 0)")
                 }
-                .font(.subheadline)
+                .font(.custom(AppFontName.workSansRegular, size: 13))
             }
             .foregroundStyle(.secondary)
             
             // Progress
             VStack(alignment: .leading, spacing: 6) {
                 Text("Progress: \(completedThisWeek)/\(totalDueThisWeek) completed")
-                    .font(.subheadline)
+                    .font(.custom(AppFontName.workSansRegular, size: 13))
                     .foregroundStyle(.secondary)
                 
                 GeometryReader { geometry in
@@ -117,13 +117,7 @@ struct WeeklyReminderCard: View {
                         
                         // Progress fill
                         RoundedRectangle(cornerRadius: 4)
-                            .fill(
-                                LinearGradient(
-                                    colors: [.blue, .blue.opacity(0.8)],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
+                            .fill(AppGradients.blueGlow)
                             .frame(width: geometry.size.width * progressPercentage, height: 8)
                     }
                 }
@@ -136,17 +130,17 @@ struct WeeklyReminderCard: View {
             } label: {
                 HStack {
                     Text("View Weekly Calendar")
-                        .font(.subheadline.weight(.medium))
+                        .font(.custom(AppFontName.workSansMedium, size: 13))
                     Image(systemName: "arrow.right")
                         .font(.caption)
                 }
-                .foregroundStyle(.blue)
+                .foregroundStyle(AppColors.mutedBlue)
             }
         }
         .padding(16)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 4)
         .sheet(isPresented: $showCalendar) {
             ReminderCalendarScreen()
         }

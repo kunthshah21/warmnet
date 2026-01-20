@@ -10,6 +10,7 @@ import SwiftData
 
 /// Card displaying network coverage progress with Apple Watch-style rings
 struct NetworkProgressCard: View {
+    @Environment(\.colorScheme) private var colorScheme
     @Query private var contacts: [Contact]
     @Query private var interactions: [Interaction]
     
@@ -20,8 +21,8 @@ struct NetworkProgressCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Network Coverage")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(.custom(AppFontName.workSansMedium, size: 16))
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
             
             if isLoading {
                 loadingView
@@ -34,8 +35,8 @@ struct NetworkProgressCard: View {
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+                .fill(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
+                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
         .onAppear {
             calculateProgress()
@@ -56,6 +57,7 @@ struct NetworkProgressCard: View {
             Spacer()
             ProgressView()
                 .scaleEffect(1.2)
+                .tint(AppColors.mutedBlue)
             Spacer()
         }
         .frame(height: 140)
@@ -65,11 +67,11 @@ struct NetworkProgressCard: View {
         VStack(spacing: 8) {
             Image(systemName: "person.3")
                 .font(.title)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colorScheme == .dark ? AppColors.textTertiary : .secondary)
             
             Text("Add contacts to track progress")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .font(.custom(AppFontName.workSansRegular, size: 14))
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
         }
         .frame(maxWidth: .infinity)
         .frame(height: 100)
@@ -129,7 +131,7 @@ struct NetworkProgressCard: View {
 
 #Preview {
     ZStack {
-        Color(uiColor: .systemGroupedBackground)
+        AppColors.deepNavy
             .ignoresSafeArea()
         
         VStack(spacing: 20) {

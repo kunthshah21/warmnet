@@ -9,6 +9,7 @@ import SwiftUI
 
 /// A single legend item showing colored dot and count
 struct NetworkProgressLegendItem: View {
+    @Environment(\.colorScheme) private var colorScheme
     let tierProgress: TierProgress
     
     var body: some View {
@@ -18,9 +19,9 @@ struct NetworkProgressLegendItem: View {
                 .frame(width: 8, height: 8)
             
             Text(tierProgress.displayText)
-                .font(.subheadline)
-                .fontWeight(.medium)
+                .font(.custom(AppFontName.workSansMedium, size: 13))
                 .monospacedDigit()
+                .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
                 .contentTransition(.numericText())
         }
     }
@@ -28,6 +29,7 @@ struct NetworkProgressLegendItem: View {
 
 /// Legend row displaying all tier progress counts
 struct NetworkProgressLegend: View {
+    @Environment(\.colorScheme) private var colorScheme
     let tierProgresses: [TierProgress]
     
     /// Display order: Green → Blue → Yellow (Inner to Outer conceptually)
@@ -43,7 +45,7 @@ struct NetworkProgressLegend: View {
             ForEach(Array(orderedProgresses.enumerated()), id: \.element.id) { index, tierProgress in
                 if index > 0 {
                     Text("•")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(colorScheme == .dark ? AppColors.textTertiary : .secondary)
                         .padding(.horizontal, 8)
                 }
                 

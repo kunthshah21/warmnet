@@ -454,10 +454,9 @@ struct DayToggle: View {
     var body: some View {
         Button(action: action) {
             Text(day)
-                .font(.caption2)
-                .fontWeight(.bold)
+                .font(.custom(AppFontName.workSansMedium, size: 11))
                 .frame(width: 32, height: 32)
-                .background(isSelected ? Color("Blue-app") : Color(.systemGray6))
+                .background(isSelected ? AppColors.mutedBlue : Color(.systemGray6))
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Circle())
         }

@@ -191,7 +191,7 @@ struct MapScreen: View {
                     .scaleEffect(1.2)
                 
                 Text("Loading contact locations...")
-                    .font(.subheadline)
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
                     .foregroundStyle(.secondary)
                 
                 ProgressView(value: locationService.loadingProgress)
@@ -217,10 +217,10 @@ struct MapScreen: View {
                     .foregroundStyle(.tertiary)
                 
                 Text("No Contacts to Display")
-                    .font(.headline)
+                    .font(.custom(AppFontName.workSansMedium, size: 17))
                 
                 Text(emptyStateMessage)
-                    .font(.subheadline)
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }

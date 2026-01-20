@@ -12,14 +12,14 @@ struct SplashScreen: View {
     
     var body: some View {
         ZStack {
-            // Background - Black
-            Color.black
+            // Background - Deep Navy gradient
+            AppGradients.background
                 .ignoresSafeArea()
             
             // App name
             Text("WarmNet")
-                .font(Font.custom(AppFontName.workSansMedium, size: 56))
-                .foregroundColor(.white)
+                .font(.custom(AppFontName.workSansMedium, size: 56))
+                .foregroundColor(AppColors.textPrimary)
             
             // Skip button in top right
             VStack {
@@ -28,10 +28,11 @@ struct SplashScreen: View {
                     
                     Button(action: onSkip) {
                         Text("Skip")
-                            .typography(\.primaryButton)
+                            .font(.custom(AppFontName.workSansMedium, size: 14))
+                            .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .background(AppGradients.blueGlow)
                             .cornerRadius(20)
                     }
                     .padding(.top, 60)

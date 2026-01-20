@@ -29,11 +29,11 @@ struct InsightsScreen: View {
     }
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color("Background-dark") : Color(.systemBackground)
+        colorScheme == .dark ? AppColors.deepNavy : Color(.systemBackground)
     }
     
     private var headingColor: Color {
-        colorScheme == .dark ? .white : .black
+        colorScheme == .dark ? AppColors.textPrimary : .black
     }
     
     var body: some View {
@@ -47,13 +47,13 @@ struct InsightsScreen: View {
                         // Header
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Insights")
-                                .font(.largeTitle)
+                                .font(.custom(AppFontName.workSansMedium, size: 32))
                                 .fontWeight(.bold)
                                 .foregroundStyle(headingColor)
                             
                             Text("Track your network patterns and engagement")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .font(.custom(AppFontName.workSansRegular, size: 14))
+                                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
@@ -78,7 +78,7 @@ struct InsightsScreen: View {
                         // Engagement Stats
                         VStack(spacing: 12) {
                             Text("Engagement Statistics")
-                                .font(.headline)
+                                .font(.custom(AppFontName.workSansMedium, size: 16))
                                 .foregroundStyle(headingColor)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             
@@ -102,7 +102,7 @@ struct InsightsScreen: View {
                                 )
                             }
                             .padding()
-                            .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray6))
+                            .background(colorScheme == .dark ? AppColors.charcoal : Color(.systemGray6))
                             .cornerRadius(12)
                         }
                         .padding(.horizontal)
@@ -135,22 +135,22 @@ struct CalendarAccessCard: View {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                      Text("Calendar")
-                        .font(.headline)
+                        .font(.custom(AppFontName.workSansMedium, size: 16))
                         .foregroundStyle(.primary)
                     
                     Text("View full interaction schedule")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.custom(AppFontName.workSansRegular, size: 14))
+                        .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
                 }
                 
                 Spacer()
                 
                 Image(systemName: "calendar")
                     .font(.title2)
-                    .foregroundStyle(Color("Blue-app"))
+                    .foregroundStyle(AppColors.mutedBlue)
             }
             .padding()
-            .background(colorScheme == .dark ? Color(.systemGray6) : Color(.systemGray6))
+            .background(colorScheme == .dark ? AppColors.charcoal : Color(.systemGray6))
             .cornerRadius(12)
         }
         .sheet(isPresented: $showCalendar) {
@@ -174,16 +174,16 @@ struct NetworkBreakdownRow: View {
                     .frame(width: 8, height: 8)
                 
                 Text(title)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
             }
             
             Spacer()
             
             Text("\(count)")
-                .font(.subheadline)
+                .font(.custom(AppFontName.workSansMedium, size: 14))
                 .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
         }
         .padding(.vertical, 8)
     }
@@ -201,20 +201,20 @@ struct StatRow: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.subheadline)
-                    .foregroundStyle(Color("Blue-app"))
+                    .foregroundStyle(AppColors.mutedBlue)
                     .frame(width: 24)
                 
                 Text(title)
-                    .font(.subheadline)
-                    .foregroundStyle(.primary)
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
             }
             
             Spacer()
             
             Text(value)
-                .font(.subheadline)
+                .font(.custom(AppFontName.workSansMedium, size: 14))
                 .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
         }
         .padding(.vertical, 8)
     }

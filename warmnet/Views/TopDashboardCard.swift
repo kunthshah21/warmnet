@@ -81,12 +81,12 @@ struct TopDashboardCard: View {
             Button(action: onNotificationTap) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color("Blue-app").opacity(0.15))
+                        .fill(AppColors.mutedBlue.opacity(0.15))
                         .frame(width: 44, height: 44)
                     
                     Image(systemName: "bell.fill")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(Color("Blue-app"))
+                        .foregroundStyle(AppColors.mutedBlue)
                 }
             }
             .buttonStyle(.plain)
@@ -105,7 +105,7 @@ struct TopDashboardCard: View {
             } else {
                 ZStack {
                     Circle()
-                        .fill(Color("Blue-app").gradient)
+                        .fill(AppGradients.blueGlow)
                         .frame(width: 50, height: 50)
                     
                     Image(systemName: "person.fill")
@@ -183,7 +183,7 @@ struct TopDashboardCard: View {
                     count: innerCircleCount,
                     label: "Inner Circle",
                     icon: "star.fill",
-                    color: Color("Green-app")
+                    color: AppColors.accentGreen
                 )
                 
                 Divider()
@@ -193,7 +193,7 @@ struct TopDashboardCard: View {
                     count: keyRelationshipsCount,
                     label: "Key",
                     icon: "person.2.fill",
-                    color: Color("Blue-app")
+                    color: AppColors.mutedBlue
                 )
                 
                 Divider()
@@ -203,7 +203,7 @@ struct TopDashboardCard: View {
                     count: broaderNetworkCount,
                     label: "Broader",
                     icon: "person.3.fill",
-                    color: .yellow
+                    color: AppColors.softBeige
                 )
             }
             .padding(16)
@@ -240,20 +240,20 @@ struct TopDashboardCard: View {
     
     private var cardBackgroundColor: Color {
         colorScheme == .dark
-            ? Color(uiColor: .secondarySystemGroupedBackground)
+            ? AppColors.charcoal
             : Color(uiColor: .systemBackground)
     }
     
     private var goalCardBackgroundColor: Color {
         colorScheme == .dark
-            ? Color(uiColor: .tertiarySystemGroupedBackground)
+            ? AppColors.deepNavy.opacity(0.8)
             : Color(uiColor: .secondarySystemGroupedBackground)
     }
     
     private var networkHealthBackgroundColor: Color {
         colorScheme == .dark
-            ? Color(uiColor: .tertiarySystemGroupedBackground)
-            : Color("Red-app").opacity(0.1)
+            ? AppColors.deepNavy.opacity(0.6)
+            : AppColors.softBeige.opacity(0.15)
     }
 }
 
@@ -320,21 +320,21 @@ struct NotificationsSheet: View {
                                     .foregroundStyle(.primary)
                                 
                                 Text(formattedDate(contact.nextReminderDate))
-                                    .font(.custom(AppFontName.overpassVariable, size: 13))
-                                    .foregroundStyle(contact.isOverdue ? Color("Red-app") : .secondary)
+                                    .font(.custom(AppFontName.workSansRegular, size: 13))
+                                    .foregroundStyle(contact.isOverdue ? AppColors.accentRed : .secondary)
                             }
                             
                             Spacer()
                             
                             if contact.isOverdue {
                                 Text("Overdue")
-                                    .font(.custom(AppFontName.overpassVariable, size: 12))
-                                    .foregroundStyle(Color("Red-app"))
+                                    .font(.custom(AppFontName.workSansRegular, size: 12))
+                                    .foregroundStyle(AppColors.accentRed)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)
                                     .background(
                                         Capsule()
-                                            .fill(Color("Red-app").opacity(0.15))
+                                            .fill(AppColors.accentRed.opacity(0.15))
                                     )
                             }
                         }

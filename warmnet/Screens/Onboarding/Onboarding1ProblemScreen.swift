@@ -12,8 +12,8 @@ struct Onboarding1ProblemScreen: View {
     
     var body: some View {
         ZStack {
-            // Background - Black
-            Color.black
+            // Background - Deep Navy gradient
+            AppGradients.background
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -35,9 +35,9 @@ struct Onboarding1ProblemScreen: View {
                 VStack(spacing: 12) {
                     // Title
                     Text("Your relationships are slipping away")
-                        .font(Font.custom(AppFontName.workSansRegular, size: 30))
+                        .font(.custom(AppFontName.workSansRegular, size: 30))
                         .lineSpacing(6)
-                        .foregroundColor(.white)
+                        .foregroundColor(AppColors.textPrimary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 80)
@@ -45,9 +45,9 @@ struct Onboarding1ProblemScreen: View {
                     
                     // Subtitle
                     Text("Important people fade from your life, not from lack of care, but from lack of system")
-                        .font(Font.custom(AppFontName.overpassVariable, size: 14))
+                        .font(.custom(AppFontName.workSansRegular, size: 14))
                         .lineSpacing(4)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(height: 60)
@@ -61,13 +61,15 @@ struct Onboarding1ProblemScreen: View {
                     // Primary Button - Start Fresh
                     Button(action: onContinue) {
                         Text("Start Fresh")
-                            .typography(\.primaryButton)
+                            .font(.custom(AppFontName.workSansMedium, size: 16))
+                            .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .background(Color(red: 0.32, green: 0.57, blue: 0.87))
+                            .background(AppGradients.blueGlow)
                             .cornerRadius(15)
                     }
                     .padding(.horizontal, 20)
+                    .shadow(color: AppColors.mutedBlue.opacity(0.3), radius: 12, x: 0, y: 6)
                     
                     // Secondary Button - Login
                     SecondaryButton(title: "Login to my Account") {

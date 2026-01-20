@@ -47,7 +47,7 @@ struct RootView: View {
     }
 
     private var backgroundColor: Color {
-        colorScheme == .dark ? Color("Background-dark") : Color(.systemBackground)
+        colorScheme == .dark ? AppColors.deepNavy : Color(.systemBackground)
     }
 }
 

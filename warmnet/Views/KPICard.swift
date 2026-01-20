@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct KPICard: View {
+    @Environment(\.colorScheme) private var colorScheme
     let innerCircleCount: Int
     let keyRelationshipsCount: Int
     let broaderNetworkCount: Int
@@ -8,15 +9,15 @@ struct KPICard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Network Health")
-                .font(.headline)
-                .foregroundStyle(.secondary)
+                .font(.custom(AppFontName.workSansMedium, size: 16))
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
             
             HStack(spacing: 12) {
                 kpiItem(
                     count: innerCircleCount,
                     label: "Inner Circle",
                     icon: "star.fill",
-                    color: Color("Green-app")
+                    color: AppColors.accentGreen
                 )
                 
                 Divider()
@@ -26,7 +27,7 @@ struct KPICard: View {
                     count: keyRelationshipsCount,
                     label: "Key Relationships",
                     icon: "person.2.fill",
-                    color: Color("Blue-app")
+                    color: AppColors.mutedBlue
                 )
                 
                 Divider()
@@ -36,15 +37,15 @@ struct KPICard: View {
                     count: broaderNetworkCount,
                     label: "Broader Network",
                     icon: "person.3.fill",
-                    color: .yellow
+                    color: AppColors.softBeige
                 )
             }
         }
         .padding(20)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color(uiColor: .secondarySystemGroupedBackground))
-                .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+                .fill(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
+                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
         )
     }
     
@@ -56,14 +57,15 @@ struct KPICard: View {
                     .foregroundStyle(color)
                 
                 Text("\(count)")
-                    .font(.title2)
+                    .font(.custom(AppFontName.workSansMedium, size: 20))
                     .fontWeight(.bold)
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
                     .contentTransition(.numericText())
             }
             
             Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .font(.custom(AppFontName.workSansRegular, size: 11))
+                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
@@ -73,7 +75,7 @@ struct KPICard: View {
 
 #Preview {
     ZStack {
-        Color(uiColor: .systemGroupedBackground)
+        AppColors.deepNavy
             .ignoresSafeArea()
         
         KPICard(

@@ -119,12 +119,12 @@ struct SettingsScreen: View {
                     Button("Test Onboarding (Resets App)") {
                         resetOnboarding()
                     }
-                    .foregroundStyle(Color("Red-app"))
+                    .foregroundStyle(AppColors.accentRed)
                     
                     Button("Reset All Data") {
                         resetAllData()
                     }
-                    .foregroundStyle(Color("Red-app"))
+                    .foregroundStyle(AppColors.accentRed)
                 }
             }
             .navigationTitle("Profile")

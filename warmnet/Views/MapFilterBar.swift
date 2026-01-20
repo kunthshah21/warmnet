@@ -72,13 +72,13 @@ struct MapFilterBar: View {
             }
         } label: {
             Text(type.rawValue)
-                .font(.subheadline.weight(.medium))
+                .font(.custom(AppFontName.workSansMedium, size: 13))
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(
                     Capsule()
-                        .fill(selectedFilterType == type ? Color("Blue-app") : Color(.systemGray5))
+                        .fill(selectedFilterType == type ? AppColors.mutedBlue : Color(.systemGray5))
                 )
                 .foregroundStyle(selectedFilterType == type ? .white : .primary)
         }
@@ -118,14 +118,14 @@ struct MapFilterBar: View {
                     .font(.caption)
                 Text("All \(selectedFilterType.rawValue.lowercased())s")
             }
-            .font(.caption.weight(.medium))
+            .font(.custom(AppFontName.workSansMedium, size: 12))
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(
                 Capsule()
-                    .fill(selectedValue == nil ? Color("Blue-app").opacity(0.15) : Color(.systemGray6))
+                    .fill(selectedValue == nil ? AppColors.mutedBlue.opacity(0.15) : Color(.systemGray6))
             )
-            .foregroundStyle(selectedValue == nil ? Color("Blue-app") : .secondary)
+            .foregroundStyle(selectedValue == nil ? AppColors.mutedBlue : .secondary)
         }
         .buttonStyle(.plain)
     }
@@ -138,14 +138,14 @@ struct MapFilterBar: View {
             }
         } label: {
             Text(value)
-                .font(.caption.weight(.medium))
+                .font(.custom(AppFontName.workSansMedium, size: 12))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
                     Capsule()
-                        .fill(selectedValue == value ? Color("Blue-app").opacity(0.15) : Color(.systemGray6))
+                        .fill(selectedValue == value ? AppColors.mutedBlue.opacity(0.15) : Color(.systemGray6))
                 )
-                .foregroundStyle(selectedValue == value ? Color("Blue-app") : .primary)
+                .foregroundStyle(selectedValue == value ? AppColors.mutedBlue : .primary)
         }
         .buttonStyle(.plain)
     }

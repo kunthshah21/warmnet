@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct MapPreviewCard: View {
+    @Environment(\.colorScheme) private var colorScheme
     var onTap: () -> Void
 
     var body: some View {
@@ -17,11 +18,16 @@ struct MapPreviewCard: View {
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            // One glass container for similarly-sized, tightly-grouped elements (header + preview)
+            // Glassmorphism effect
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                    .fill(colorScheme == .dark ? AppColors.charcoal.opacity(0.8) : .white.opacity(0.8))
+                    .background(
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    )
             )
+            .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 4)
         }
         .buttonStyle(.plain)
     }
@@ -30,18 +36,19 @@ struct MapPreviewCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Map")
-                    .font(.headline)
+                    .font(.custom(AppFontName.workSansMedium, size: 16))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
 
                 Text("View where your contacts are")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
             }
 
             Spacer()
 
             Image(systemName: "chevron.up")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.secondary)
+                .foregroundStyle(colorScheme == .dark ? AppColors.textTertiary : .secondary)
                 .accessibilityHidden(true)
         }
         .accessibilityElement(children: .combine)
@@ -52,12 +59,8 @@ struct MapPreviewCard: View {
 
 #Preview {
     ZStack {
-        LinearGradient(
-            colors: [Color(.sRGB, white: 1.0, opacity: 1), Color(.sRGB, white: 0.95, opacity: 1)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .ignoresSafeArea()
+        AppGradients.background
+            .ignoresSafeArea()
 
         MapPreviewCard(onTap: {})
             .padding()

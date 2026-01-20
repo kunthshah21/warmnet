@@ -153,7 +153,7 @@ struct ContactDetailScreen: View {
             // Name and Subtitle
             VStack(spacing: 8) {
                 Text(contact.name)
-                    .font(.system(size: 32, weight: .bold, design: .default))
+                    .font(.custom(AppFontName.workSansMedium, size: 32))
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                 
@@ -161,13 +161,13 @@ struct ContactDetailScreen: View {
                     VStack(spacing: 4) {
                         if !contact.jobTitle.isEmpty {
                             Text(contact.jobTitle)
-                                .font(.headline)
+                                .font(.custom(AppFontName.workSansMedium, size: 16))
                                 .foregroundStyle(.secondary)
                         }
                         
                         if !contact.company.isEmpty {
                             Text(contact.company)
-                                .font(.subheadline)
+                                .font(.custom(AppFontName.workSansRegular, size: 14))
                                 .foregroundStyle(.tertiary)
                         }
                     }
@@ -188,17 +188,17 @@ struct ContactDetailScreen: View {
                 HStack {
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(AppColors.mutedBlue)
                     
                     Text("Times Contacted")
-                        .font(.subheadline.weight(.medium))
+                        .font(.custom(AppFontName.workSansMedium, size: 14))
                         .foregroundStyle(.primary)
                     
                     Spacer()
                     
                     Text("\(interactionCount)")
-                        .font(.title3.weight(.bold))
-                        .foregroundStyle(.blue)
+                        .font(.custom(AppFontName.workSansMedium, size: 20))
+                        .foregroundStyle(AppColors.mutedBlue)
                 }
                 
                 // Progress Bar
@@ -213,24 +213,24 @@ struct ContactDetailScreen: View {
             HStack(spacing: 12) {
                 Image(systemName: "clock.fill")
                     .font(.system(size: 18))
-                    .foregroundStyle(.green)
+                    .foregroundStyle(AppColors.accentGreen)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Last Contacted")
-                        .font(.caption)
+                        .font(.custom(AppFontName.workSansRegular, size: 12))
                         .foregroundStyle(.secondary)
                     
                     if let lastContacted = contact.lastContacted {
                         Text(lastContacted.formatted(date: .abbreviated, time: .omitted))
-                            .font(.body.weight(.medium))
+                            .font(.custom(AppFontName.workSansMedium, size: 16))
                             .foregroundStyle(.primary)
                     } else if let lastInteraction = sortedInteractions.first {
                         Text(lastInteraction.date.formatted(date: .abbreviated, time: .omitted))
-                            .font(.body.weight(.medium))
+                            .font(.custom(AppFontName.workSansMedium, size: 16))
                             .foregroundStyle(.primary)
                     } else {
                         Text("Never")
-                            .font(.body.weight(.medium))
+                            .font(.custom(AppFontName.workSansMedium, size: 16))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -251,17 +251,17 @@ struct ContactDetailScreen: View {
                 HStack(spacing: 12) {
                     Image(systemName: "list.bullet.clipboard")
                         .font(.system(size: 18))
-                        .foregroundStyle(.purple)
+                        .foregroundStyle(Color.purple)
                     
                     Text("Interaction History")
-                        .font(.body)
+                        .font(.custom(AppFontName.workSansRegular, size: 16))
                         .foregroundStyle(.primary)
                     
                     Spacer()
                     
                     HStack(spacing: 6) {
                         Text("\(interactionCount) entries")
-                            .font(.subheadline)
+                            .font(.custom(AppFontName.workSansRegular, size: 14))
                             .foregroundStyle(.secondary)
                         
                         Image(systemName: showHistory ? "chevron.up" : "chevron.down")
@@ -298,7 +298,7 @@ struct ContactDetailScreen: View {
                         .foregroundStyle(.secondary)
                     
                     Text("No interactions logged yet")
-                        .font(.body)
+                        .font(.custom(AppFontName.workSansRegular, size: 16))
                         .foregroundStyle(.secondary)
                     
                     Spacer()
@@ -322,19 +322,19 @@ struct ContactDetailScreen: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
                                     Text(interaction.interactionType.rawValue)
-                                        .font(.subheadline.weight(.medium))
+                                        .font(.custom(AppFontName.workSansMedium, size: 14))
                                         .foregroundStyle(.primary)
                                     
                                     Spacer()
                                     
                                     Text(interaction.date.formatted(date: .abbreviated, time: .shortened))
-                                        .font(.caption)
+                                        .font(.custom(AppFontName.workSansRegular, size: 12))
                                         .foregroundStyle(.secondary)
                                 }
                                 
                                 if !interaction.notes.isEmpty {
                                     Text(interaction.notes)
-                                        .font(.caption)
+                                        .font(.custom(AppFontName.workSansRegular, size: 12))
                                         .foregroundStyle(.secondary)
                                         .lineLimit(2)
                                         .padding(.top, 2)
@@ -436,11 +436,11 @@ struct ContactDetailScreen: View {
             HStack(alignment: .top, spacing: 12) {
                 Image(systemName: "note.text")
                     .font(.system(size: 18))
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(AppColors.softBeige)
                     .frame(width: 24)
                 
                 Text(contact.notes)
-                    .font(.body)
+                    .font(.custom(AppFontName.workSansRegular, size: 16))
                     .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -459,16 +459,16 @@ struct ContactDetailScreen: View {
             HStack(spacing: 12) {
                 Image(systemName: "person.text.rectangle.fill")
                     .font(.system(size: 18))
-                    .foregroundStyle(.cyan)
+                    .foregroundStyle(AppColors.darkTeal)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text("How you met")
-                        .font(.caption)
+                        .font(.custom(AppFontName.workSansRegular, size: 12))
                         .foregroundStyle(.secondary)
                     
                     Text(contact.reference)
-                        .font(.body)
+                        .font(.custom(AppFontName.workSansRegular, size: 16))
                         .foregroundStyle(.primary)
                 }
                 
@@ -495,7 +495,7 @@ struct ContactDetailScreen: View {
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .font(.subheadline.weight(.semibold))
+            .font(.custom(AppFontName.workSansMedium, size: 12))
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .padding(.leading, 4)
@@ -510,11 +510,11 @@ struct ContactDetailScreen: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.caption)
+                    .font(.custom(AppFontName.workSansRegular, size: 12))
                     .foregroundStyle(.secondary)
                 
                 Text(value)
-                    .font(.body)
+                    .font(.custom(AppFontName.workSansRegular, size: 16))
                     .foregroundStyle(.primary)
             }
             
@@ -548,9 +548,15 @@ private struct ContactAvatarView: View {
     }
     
     private var backgroundColor: Color {
+        // Use design system colors for avatars
         let colors: [Color] = [
-            .red, .orange, .yellow, .green, .mint,
-            .teal, .cyan, .blue, .indigo, .purple, .pink
+            AppColors.mutedBlue,
+            AppColors.darkTeal,
+            AppColors.accentGreen,
+            AppColors.softBeige,
+            Color.purple,
+            Color.pink,
+            Color.orange
         ]
         let hash = name.hashValue
         return colors[abs(hash) % colors.count]
@@ -582,7 +588,7 @@ private struct ContactAvatarView: View {
                     .frame(width: size, height: size)
                 
                 Text(initials)
-                    .font(.system(size: size * 0.35, weight: .semibold, design: .rounded))
+                    .font(.custom(AppFontName.workSansMedium, size: size * 0.35))
                     .foregroundStyle(.white)
             }
         }
@@ -647,13 +653,13 @@ private struct ContactProgressBar: View {
     
     private var progressGradientColors: [Color] {
         if interactionCount < 10 {
-            return [.blue, .cyan]
+            return [AppColors.mutedBlue, AppColors.darkTeal]
         } else if interactionCount < 25 {
-            return [.green, .mint]
+            return [AppColors.accentGreen, Color.mint]
         } else if interactionCount < 40 {
-            return [.orange, .yellow]
+            return [AppColors.softBeige, Color.orange]
         } else {
-            return [.purple, .pink]
+            return [Color.purple, Color.pink]
         }
     }
 }

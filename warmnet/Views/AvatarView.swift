@@ -15,9 +15,15 @@ struct AvatarView: View {
     }
     
     private var backgroundColor: Color {
+        // Use design system colors for avatars
         let colors: [Color] = [
-            .red, .orange, .yellow, .green, .mint,
-            .teal, .cyan, .blue, .indigo, .purple, .pink
+            AppColors.mutedBlue,
+            AppColors.darkTeal,
+            AppColors.accentGreen,
+            AppColors.softBeige,
+            Color.purple,
+            Color.pink,
+            Color.orange
         ]
         let hash = name.hashValue
         return colors[abs(hash) % colors.count]
@@ -30,7 +36,7 @@ struct AvatarView: View {
                 .frame(width: size, height: size)
             
             Text(initials)
-                .font(.system(size: size * 0.4, weight: .semibold, design: .rounded))
+                .font(.custom(AppFontName.workSansMedium, size: size * 0.4))
                 .foregroundStyle(.white)
         }
     }
@@ -42,5 +48,7 @@ struct AvatarView: View {
         AvatarView(name: "Alice", size: 70)
         AvatarView(name: "Bob Smith", size: 40)
     }
+    .padding()
+    .background(AppColors.deepNavy)
 }
 
