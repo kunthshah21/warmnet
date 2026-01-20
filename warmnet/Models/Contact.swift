@@ -6,6 +6,7 @@ import SwiftUI
 final class Contact {
     var id: UUID
     var name: String
+    @Attribute(.externalStorage) var photoData: Data?
     var phoneCountryCode: String
     var phoneNumber: String
     var reference: String
@@ -42,6 +43,7 @@ final class Contact {
     
     init(
         name: String = "",
+        photoData: Data? = nil,
         phoneCountryCode: String = "+1",
         phoneNumber: String = "",
         reference: String = "",
@@ -63,6 +65,7 @@ final class Contact {
     ) {
         self.id = UUID()
         self.name = name
+        self.photoData = photoData
         self.phoneCountryCode = phoneCountryCode
         self.phoneNumber = phoneNumber
         self.reference = reference

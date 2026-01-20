@@ -5,46 +5,112 @@ struct ContactDetailScreen: View {
     @Bindable var contact: Contact
     @State private var showEditSheet = false
     @State private var showHistory = false
+    @State private var scrollOffset: CGFloat = 0
+    
+    // MARK: - Computed Properties
+    
+    private var interactionCount: Int {
+        contact.interactions.count
+    }
+    
+    private var progressValue: Double {
+        // Progress based on interaction count, max at 50 interactions
+        min(Double(interactionCount) / 50.0, 1.0)
+    }
+    
+    private var blurAmount: CGFloat {
+        // Blur increases as user scrolls up, max blur at 20
+        min(max(scrollOffset / 15, 0), 20)
+    }
+    
+    private var avatarScale: CGFloat {
+        // Scale down slightly as user scrolls
+        let scale = 1 - (scrollOffset / 500)
+        return max(min(scale, 1), 0.8)
+    }
+    
+    private var avatarOpacity: Double {
+        // Fade out avatar as blur increases
+        let opacity = 1 - (scrollOffset / 200)
+        return max(min(opacity, 1), 0.3)
+    }
+    
+    private var hasContactInfo: Bool {
+        !contact.phoneNumber.isEmpty || !contact.email.isEmpty
+    }
+    
+    private var hasWorkOrPersonalInfo: Bool {
+        !contact.company.isEmpty || !contact.jobTitle.isEmpty || contact.birthday != nil
+    }
+    
+    private var sortedInteractions: [Interaction] {
+        contact.interactions.sorted { $0.date > $1.date }
+    }
+    
+    // MARK: - Body
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
-                // Header
-                headerSection
-                
-                // Contact Info
-                if hasContactInfo {
-                    contactInfoSection
+            VStack(spacing: 0) {
+                // Scroll offset tracker
+                GeometryReader { geometry in
+                    Color.clear
+                        .preference(key: ScrollOffsetPreferenceKey.self, value: -geometry.frame(in: .named("scroll")).minY)
                 }
+                .frame(height: 0)
                 
-                // Location
-                if !contact.fullLocation.isEmpty {
-                    locationSection
+                VStack(spacing: 24) {
+                    // Large Profile Header with Blur Effect
+                    profileHeaderSection
+                    
+                    // Contact Stats Section (Progress + Last Contacted + History)
+                    contactStatsSection
+                    
+                    // Contact Info
+                    if hasContactInfo {
+                        contactInfoSection
+                    }
+                    
+                    // Location
+                    if !contact.fullLocation.isEmpty {
+                        locationSection
+                    }
+                    
+                    // Work & Personal
+                    if hasWorkOrPersonalInfo {
+                        workAndPersonalSection
+                    }
+                    
+                    // Notes
+                    if !contact.notes.isEmpty {
+                        notesSection
+                    }
+                    
+                    // Reference
+                    if !contact.reference.isEmpty {
+                        referenceSection
+                    }
                 }
-                
-                // Work & Personal
-                if hasWorkOrPersonalInfo {
-                    workAndPersonalSection
-                }
-                
-                // Notes
-                if !contact.notes.isEmpty {
-                    notesSection
-                }
-                
-                // Reference
-                if !contact.reference.isEmpty {
-                    referenceSection
-                }
-                
-                // Interaction History
-                interactionHistorySection
+                .padding(.horizontal, 20)
+                .padding(.bottom, 40)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 20)
+        }
+        .coordinateSpace(name: "scroll")
+        .onPreferenceChange(ScrollOffsetPreferenceKey.self) { value in
+            scrollOffset = value
         }
         .scrollContentBackground(.visible)
-        .background(Color(.systemGroupedBackground))
+        .background(
+            LinearGradient(
+                colors: [
+                    Color(.systemGray5),
+                    Color(.systemGray6),
+                    Color(.systemGroupedBackground)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -59,134 +125,345 @@ struct ContactDetailScreen: View {
         }
     }
     
-    // MARK: - Computed Properties
+    // MARK: - Profile Header Section
     
-    private var hasContactInfo: Bool {
-        !contact.phoneNumber.isEmpty || !contact.email.isEmpty
-    }
-    
-    private var hasWorkOrPersonalInfo: Bool {
-        !contact.company.isEmpty || !contact.jobTitle.isEmpty || contact.birthday != nil
-    }
-    
-    // MARK: - Sections
-    
-    private var headerSection: some View {
-        VStack(spacing: 16) {
-            AvatarView(name: contact.name, size: 100)
+    private var profileHeaderSection: some View {
+        VStack(spacing: 20) {
+            // Large Avatar with Blur Effect
+            ZStack {
+                // Blurred background ring
+                Circle()
+                    .fill(.ultraThinMaterial)
+                    .frame(width: 180, height: 180)
+                    .blur(radius: blurAmount)
+                    .opacity(avatarOpacity)
+                
+                // Avatar
+                ContactAvatarView(
+                    name: contact.name,
+                    photoData: contact.photoData,
+                    size: 160
+                )
+                .scaleEffect(avatarScale)
+                .blur(radius: blurAmount * 0.5)
+                .opacity(avatarOpacity)
+            }
+            .animation(.easeOut(duration: 0.1), value: scrollOffset)
             
-            VStack(spacing: 4) {
+            // Name and Subtitle
+            VStack(spacing: 8) {
                 Text(contact.name)
-                    .font(.title2.weight(.semibold))
+                    .font(.system(size: 32, weight: .bold, design: .default))
                     .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                 
-                if !contact.jobTitle.isEmpty {
-                    Text(contact.jobTitle)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                
-                if !contact.company.isEmpty {
-                    Text(contact.company)
-                        .font(.subheadline)
-                        .foregroundStyle(.tertiary)
+                if !contact.jobTitle.isEmpty || !contact.company.isEmpty {
+                    VStack(spacing: 4) {
+                        if !contact.jobTitle.isEmpty {
+                            Text(contact.jobTitle)
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        if !contact.company.isEmpty {
+                            Text(contact.company)
+                                .font(.subheadline)
+                                .foregroundStyle(.tertiary)
+                        }
+                    }
                 }
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.top, 20)
+        .padding(.bottom, 10)
     }
     
+    // MARK: - Contact Stats Section
+    
+    private var contactStatsSection: some View {
+        VStack(spacing: 0) {
+            // Progress Bar Section
+            VStack(spacing: 12) {
+                HStack {
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(.blue)
+                    
+                    Text("Times Contacted")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(.primary)
+                    
+                    Spacer()
+                    
+                    Text("\(interactionCount)")
+                        .font(.title3.weight(.bold))
+                        .foregroundStyle(.blue)
+                }
+                
+                // Progress Bar
+                ContactProgressBar(progress: progressValue, interactionCount: interactionCount)
+            }
+            .padding(16)
+            
+            Divider()
+                .padding(.leading, 16)
+            
+            // Last Contacted Section
+            HStack(spacing: 12) {
+                Image(systemName: "clock.fill")
+                    .font(.system(size: 18))
+                    .foregroundStyle(.green)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Last Contacted")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                    if let lastContacted = contact.lastContacted {
+                        Text(lastContacted.formatted(date: .abbreviated, time: .omitted))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.primary)
+                    } else if let lastInteraction = sortedInteractions.first {
+                        Text(lastInteraction.date.formatted(date: .abbreviated, time: .omitted))
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.primary)
+                    } else {
+                        Text("Never")
+                            .font(.body.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Spacer()
+            }
+            .padding(16)
+            
+            Divider()
+                .padding(.leading, 16)
+            
+            // Interaction History Toggle
+            Button {
+                withAnimation(.spring(duration: 0.4, bounce: 0.2)) {
+                    showHistory.toggle()
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "list.bullet.clipboard")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.purple)
+                    
+                    Text("Interaction History")
+                        .font(.body)
+                        .foregroundStyle(.primary)
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 6) {
+                        Text("\(interactionCount) entries")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        
+                        Image(systemName: showHistory ? "chevron.up" : "chevron.down")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(16)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            
+            // Expandable History List
+            if showHistory {
+                Divider()
+                    .padding(.leading, 16)
+                
+                interactionHistoryList
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .background(glassCardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+    
+    // MARK: - Interaction History List
+    
+    private var interactionHistoryList: some View {
+        VStack(spacing: 0) {
+            if sortedInteractions.isEmpty {
+                HStack(spacing: 12) {
+                    Image(systemName: "tray")
+                        .font(.system(size: 20))
+                        .foregroundStyle(.secondary)
+                    
+                    Text("No interactions logged yet")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                }
+                .padding(16)
+            } else {
+                ForEach(Array(sortedInteractions.enumerated()), id: \.element.id) { index, interaction in
+                    VStack(spacing: 0) {
+                        HStack(alignment: .top, spacing: 12) {
+                            // Interaction type icon
+                            ZStack {
+                                Circle()
+                                    .fill(colorForType(interaction.interactionType.color).opacity(0.15))
+                                    .frame(width: 36, height: 36)
+                                
+                                Image(systemName: interaction.interactionType.icon)
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundStyle(colorForType(interaction.interactionType.color))
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Text(interaction.interactionType.rawValue)
+                                        .font(.subheadline.weight(.medium))
+                                        .foregroundStyle(.primary)
+                                    
+                                    Spacer()
+                                    
+                                    Text(interaction.date.formatted(date: .abbreviated, time: .shortened))
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                
+                                if !interaction.notes.isEmpty {
+                                    Text(interaction.notes)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(2)
+                                        .padding(.top, 2)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        
+                        if index < sortedInteractions.count - 1 {
+                            Divider()
+                                .padding(.leading, 64)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Contact Info Section
+    
     private var contactInfoSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Contact Info")
             
             VStack(spacing: 0) {
                 if !contact.phoneNumber.isEmpty {
-                    detailRow(icon: "phone.fill", title: "Phone", value: contact.fullPhoneNumber)
+                    detailRow(icon: "phone.fill", iconColor: .blue, title: "Phone", value: contact.fullPhoneNumber)
                 }
                 
                 if !contact.phoneNumber.isEmpty && !contact.email.isEmpty {
                     Divider()
-                        .padding(.leading, 44)
+                        .padding(.leading, 52)
                 }
                 
                 if !contact.email.isEmpty {
-                    detailRow(icon: "envelope.fill", title: "Email", value: contact.email)
+                    detailRow(icon: "envelope.fill", iconColor: .orange, title: "Email", value: contact.email)
                 }
             }
-            .background(cardBackground)
+            .background(glassCardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
     
+    // MARK: - Location Section
+    
     private var locationSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Location")
             
             VStack(spacing: 0) {
-                detailRow(icon: "mappin.circle.fill", title: "Address", value: contact.fullLocation)
+                detailRow(icon: "mappin.circle.fill", iconColor: .red, title: "Address", value: contact.fullLocation)
             }
-            .background(cardBackground)
+            .background(glassCardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
     
+    // MARK: - Work And Personal Section
+    
     private var workAndPersonalSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Personal Details")
             
             VStack(spacing: 0) {
                 if !contact.company.isEmpty {
-                    detailRow(icon: "building.2.fill", title: "Company", value: contact.company)
+                    detailRow(icon: "building.2.fill", iconColor: .indigo, title: "Company", value: contact.company)
                 }
                 
                 if !contact.company.isEmpty && !contact.jobTitle.isEmpty {
                     Divider()
-                        .padding(.leading, 44)
+                        .padding(.leading, 52)
                 }
                 
                 if !contact.jobTitle.isEmpty {
-                    detailRow(icon: "briefcase.fill", title: "Job Title", value: contact.jobTitle)
+                    detailRow(icon: "briefcase.fill", iconColor: .brown, title: "Job Title", value: contact.jobTitle)
                 }
                 
                 if (!contact.company.isEmpty || !contact.jobTitle.isEmpty) && contact.birthday != nil {
                     Divider()
-                        .padding(.leading, 44)
+                        .padding(.leading, 52)
                 }
                 
                 if let birthday = contact.birthday {
-                    detailRow(icon: "gift.fill", title: "Birthday", value: birthday.formatted(date: .long, time: .omitted))
+                    detailRow(icon: "gift.fill", iconColor: .pink, title: "Birthday", value: birthday.formatted(date: .long, time: .omitted))
                 }
             }
-            .background(cardBackground)
+            .background(glassCardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
+    
+    // MARK: - Notes Section
     
     private var notesSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Notes")
             
-            Text(contact.notes)
-                .font(.body)
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(16)
-                .background(cardBackground)
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: "note.text")
+                    .font(.system(size: 18))
+                    .foregroundStyle(.yellow)
+                    .frame(width: 24)
+                
+                Text(contact.notes)
+                    .font(.body)
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(16)
+            .background(glassCardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
     
+    // MARK: - Reference Section
+    
     private var referenceSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 12) {
             sectionHeader("Reference")
             
             HStack(spacing: 12) {
                 Image(systemName: "person.text.rectangle.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(.blue)
+                    .font(.system(size: 18))
+                    .foregroundStyle(.cyan)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Reference")
+                    Text("How you met")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     
@@ -194,95 +471,12 @@ struct ContactDetailScreen: View {
                         .font(.body)
                         .foregroundStyle(.primary)
                 }
-            }
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(cardBackground)
-        }
-    }
-    
-    private var interactionHistorySection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                sectionHeader("Interaction History")
                 
                 Spacer()
-                
-                Button {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        showHistory.toggle()
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(showHistory ? "Hide" : "Show")
-                            .font(.subheadline.weight(.medium))
-                        Image(systemName: showHistory ? "chevron.up" : "chevron.down")
-                            .font(.caption.weight(.semibold))
-                    }
-                    .foregroundStyle(.blue)
-                }
             }
-            
-            if showHistory {
-                VStack(spacing: 0) {
-                    if contact.interactions.isEmpty {
-                        HStack(spacing: 12) {
-                            Image(systemName: "clock.fill")
-                                .font(.system(size: 20))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 24)
-                            
-                            Text("No interactions logged yet")
-                                .font(.body)
-                                .foregroundStyle(.secondary)
-                            
-                            Spacer()
-                        }
-                        .padding(16)
-                    } else {
-                        ForEach(contact.interactions.sorted(by: { $0.date > $1.date }), id: \.id) { interaction in
-                            VStack(spacing: 0) {
-                                HStack(alignment: .top, spacing: 12) {
-                                    Image(systemName: interaction.interactionType.icon)
-                                        .font(.system(size: 18))
-                                        .foregroundStyle(colorForType(interaction.interactionType.color))
-                                        .frame(width: 24)
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        HStack {
-                                            Text(interaction.interactionType.rawValue)
-                                                .font(.subheadline.weight(.medium))
-                                                .foregroundStyle(.primary)
-                                            
-                                            Spacer()
-                                            
-                                            Text(interaction.date, style: .date)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                        }
-                                        
-                                        if !interaction.notes.isEmpty {
-                                            Text(interaction.notes)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                                .lineLimit(3)
-                                                .padding(.top, 2)
-                                        }
-                                    }
-                                }
-                                .padding(16)
-                                
-                                if interaction.id != contact.interactions.sorted(by: { $0.date > $1.date }).last?.id {
-                                    Divider()
-                                        .padding(.leading, 52)
-                                }
-                            }
-                        }
-                    }
-                }
-                .background(cardBackground)
-                .transition(.opacity.combined(with: .move(edge: .top)))
-            }
+            .padding(16)
+            .background(glassCardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
     }
     
@@ -301,16 +495,17 @@ struct ContactDetailScreen: View {
     
     private func sectionHeader(_ title: String) -> some View {
         Text(title)
-            .font(.headline)
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(.secondary)
+            .textCase(.uppercase)
             .padding(.leading, 4)
     }
     
-    private func detailRow(icon: String, title: String, value: String) -> some View {
+    private func detailRow(icon: String, iconColor: Color, title: String, value: String) -> some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .font(.system(size: 20))
-                .foregroundStyle(.blue)
+                .font(.system(size: 18))
+                .foregroundStyle(iconColor)
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: 2) {
@@ -328,12 +523,151 @@ struct ContactDetailScreen: View {
         .padding(16)
     }
     
-    private var cardBackground: some View {
+    private var glassCardBackground: some View {
         RoundedRectangle(cornerRadius: 16, style: .continuous)
-            .fill(Color(.systemBackground))
-            .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
+            .fill(.ultraThinMaterial)
+            .shadow(color: .black.opacity(0.05), radius: 10, y: 4)
     }
 }
+
+// MARK: - Contact Avatar View (Supports Photo Data)
+
+private struct ContactAvatarView: View {
+    let name: String
+    let photoData: Data?
+    let size: CGFloat
+    
+    private var initials: String {
+        let components = name.split(separator: " ")
+        if components.count >= 2 {
+            return String(components[0].prefix(1) + components[1].prefix(1)).uppercased()
+        } else if let first = components.first {
+            return String(first.prefix(2)).uppercased()
+        }
+        return "?"
+    }
+    
+    private var backgroundColor: Color {
+        let colors: [Color] = [
+            .red, .orange, .yellow, .green, .mint,
+            .teal, .cyan, .blue, .indigo, .purple, .pink
+        ]
+        let hash = name.hashValue
+        return colors[abs(hash) % colors.count]
+    }
+    
+    var body: some View {
+        ZStack {
+            // Outer ring
+            Circle()
+                .stroke(
+                    LinearGradient(
+                        colors: [.white.opacity(0.6), .white.opacity(0.2)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 3
+                )
+                .frame(width: size + 6, height: size + 6)
+            
+            if let photoData, let uiImage = UIImage(data: photoData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: size, height: size)
+                    .clipShape(Circle())
+            } else {
+                Circle()
+                    .fill(backgroundColor.gradient)
+                    .frame(width: size, height: size)
+                
+                Text(initials)
+                    .font(.system(size: size * 0.35, weight: .semibold, design: .rounded))
+                    .foregroundStyle(.white)
+            }
+        }
+    }
+}
+
+// MARK: - Contact Progress Bar
+
+private struct ContactProgressBar: View {
+    let progress: Double
+    let interactionCount: Int
+    
+    @State private var animatedProgress: Double = 0
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    // Background track
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(Color(.systemGray5))
+                        .frame(height: 12)
+                    
+                    // Progress fill
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(
+                            LinearGradient(
+                                colors: progressGradientColors,
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(width: max(geometry.size.width * animatedProgress, 0), height: 12)
+                }
+            }
+            .frame(height: 12)
+            
+            // Labels
+            HStack {
+                Text("0")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                
+                Spacer()
+                
+                Text("50+")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .onAppear {
+            withAnimation(.spring(duration: 1.0, bounce: 0.3)) {
+                animatedProgress = progress
+            }
+        }
+        .onChange(of: progress) { oldValue, newValue in
+            withAnimation(.spring(duration: 0.6, bounce: 0.2)) {
+                animatedProgress = newValue
+            }
+        }
+    }
+    
+    private var progressGradientColors: [Color] {
+        if interactionCount < 10 {
+            return [.blue, .cyan]
+        } else if interactionCount < 25 {
+            return [.green, .mint]
+        } else if interactionCount < 40 {
+            return [.orange, .yellow]
+        } else {
+            return [.purple, .pink]
+        }
+    }
+}
+
+// MARK: - Scroll Offset Preference Key
+
+private struct ScrollOffsetPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
+// MARK: - Preview
 
 #Preview {
     NavigationStack {

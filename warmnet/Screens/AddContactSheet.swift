@@ -6,36 +6,51 @@ struct AddContactSheet: View {
     @Environment(\.dismiss) private var dismiss
     
     var contactToEdit: Contact?
-      
-    // Basic info
-    @State private var name = ""
+    
+    // UI-specific state for split names
+    @State private var firstName = ""
+    @State private var lastName = ""
+    
+    // Core fields
     @State private var selectedCountryCode = CountryCode.all[0]
     @State private var phoneNumber = ""
-    @State private var reference = ""
-    @State private var priority: Priority = .broaderNetwork
     
-    // Advanced info
+    // Advanced fields
     @State private var email = ""
+    @State private var company = ""
+    @State private var jobTitle = ""
+    @State private var reference = ""
+    
+    // Location
     @State private var city = ""
     @State private var state = ""
     @State private var country = ""
+    
+    // Personal
     @State private var birthday: Date? = nil
     @State private var showBirthdayPicker = false
-    @State private var company = ""
-    @State private var jobTitle = ""
     @State private var notes = ""
     
-    // Schedule Override
+    // Priority
+    @State private var priority: Priority = .broaderNetwork
     @State private var useCustomSchedule = false
     @State private var scheduleFrequency: ScheduleFrequency = .month
     @State private var scheduleInterval: Int = 6
     @State private var selectedDays: Set<Weekday> = []
     
+    @State private var showDeleteConfirmation = false
+    
     init(contactToEdit: Contact? = nil) {
         self.contactToEdit = contactToEdit
         
         if let contact = contactToEdit {
-            _name = State(initialValue: contact.name)
+            let components = contact.name.components(separatedBy: " ")
+            _firstName = State(initialValue: components.first ?? "")
+            if components.count > 1 {
+                _lastName = State(initialValue: components.dropFirst().joined(separator: " "))
+            } else {
+                _lastName = State(initialValue: "")
+            }
             
             if let match = CountryCode.all.first(where: { $0.code == contact.phoneCountryCode }) {
                 _selectedCountryCode = State(initialValue: match)
@@ -53,7 +68,6 @@ struct AddContactSheet: View {
             _jobTitle = State(initialValue: contact.jobTitle)
             _notes = State(initialValue: contact.notes)
             
-            // Initialize schedule defaults based on existing priority
             _useCustomSchedule = State(initialValue: contact.useCustomSchedule)
             
             if contact.useCustomSchedule {
@@ -77,502 +91,302 @@ struct AddContactSheet: View {
         }
     }
     
-    private var isValid: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    var fullName: String {
+        [firstName, lastName].filter { !$0.isEmpty }.joined(separator: " ")
     }
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header avatar
-                    headerSection
-                    
-                    // Basic fields
-                    basicInfoSection
-                    
-                    // Priority
-                    prioritySection
-                    
-                    // Advanced fields
-                    advancedInfoSection
+            Form {
+                // Header / Avatar Section
+                Section {
+                    VStack(spacing: 12) {
+                        ZStack {
+                            if fullName.isEmpty && contactToEdit == nil {
+                                Circle()
+                                    .fill(Color(.systemGray4))
+                                    .frame(width: 100, height: 100)
+                                Text("?")
+                                    .font(.largeTitle)
+                                    .foregroundStyle(.white)
+                            } else {
+                                AvatarView(name: fullName.isEmpty ? "?" : fullName, size: 100)
+                            }
+                        }
+                        
+                        Button("Add Photo") {
+                            // Photo picker placeholder
+                        }
+                        .font(.subheadline)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets())
+                    .padding(.bottom, 10)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
+                
+                Section {
+                    TextField("First name", text: $firstName)
+                    TextField("Last name", text: $lastName)
+                    TextField("Company", text: $company)
+                }
+                
+                // Phone Group
+                Section {
+                    if !phoneNumber.isEmpty {
+                        HStack {
+                            Button {
+                                phoneNumber = ""
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundStyle(.red)
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Menu {
+                                ForEach(CountryCode.all) { code in
+                                    Button {
+                                        selectedCountryCode = code
+                                    } label: {
+                                        Text(code.fullDisplayName)
+                                    }
+                                }
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Text("mobile")
+                                        .foregroundStyle(.blue)
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+
+                            Text(selectedCountryCode.code)
+                                .foregroundStyle(.secondary)
+
+                            TextField("Phone", text: $phoneNumber)
+                                .keyboardType(.phonePad)
+                        }
+                    } else {
+                        Button {
+                            phoneNumber = " "
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text("add phone")
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                    }
+                    
+                    if !email.isEmpty {
+                         HStack {
+                            Button {
+                                email = ""
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundStyle(.red)
+                            }
+                            .buttonStyle(.plain)
+                            
+                            Text("email")
+                                .foregroundStyle(.blue)
+                                .frame(width: 60, alignment: .leading)
+                            
+                            Divider()
+                            
+                            TextField("Email", text: $email)
+                                .keyboardType(.emailAddress)
+                                .textInputAutocapitalization(.never)
+                        }
+                    } else {
+                         Button {
+                            email = " "
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text("add email")
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                    }
+                }
+                
+                // Extra Fields
+                Section {
+                     if let bday = birthday {
+                        HStack {
+                             Button {
+                                birthday = nil
+                                showBirthdayPicker = false
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .foregroundStyle(.red)
+                            }
+                            .buttonStyle(.plain)
+
+                            Text("birthday")
+                                .foregroundStyle(.blue)
+                            
+                             Spacer()
+                            
+                             Button {
+                                showBirthdayPicker.toggle()
+                             } label: {
+                                Text(bday, style: .date)
+                                    .foregroundStyle(.primary)
+                             }
+                        }
+                        if showBirthdayPicker {
+                            DatePicker("Birthday", selection: Binding(get: { birthday ?? Date() }, set: { birthday = $0 }), displayedComponents: .date)
+                                .datePickerStyle(.graphical)
+                        }
+                     } else {
+                         Button {
+                            birthday = Date()
+                            showBirthdayPicker = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text("add birthday")
+                                    .foregroundStyle(.primary)
+                            }
+                        }
+                     }
+                     
+                    TextField("Job Title", text: $jobTitle)
+                    TextField("Reference", text: $reference)
+                }
+                
+                // Location
+                Section {
+                    TextField("City", text: $city)
+                    TextField("State", text: $state)
+                    TextField("Country", text: $country)
+                }
+                
+                 // Priority
+                Section(header: Text("Priority & Schedule")) {
+                    Picker("Priority", selection: $priority) {
+                        ForEach(Priority.allCases, id: \.self) { option in
+                            Text(option.rawValue).tag(option)
+                        }
+                    }
+                    
+                    if priority == .innerCircle {
+                        Toggle("Custom Schedule", isOn: $useCustomSchedule)
+                        if useCustomSchedule {
+                             HStack {
+                                Text("Repeat every")
+                                TextField("Interval", value: $scheduleInterval, format: .number)
+                                    .keyboardType(.numberPad)
+                                    .frame(width: 40)
+                                Picker("", selection: $scheduleFrequency) {
+                                    ForEach(ScheduleFrequency.allCases, id: \.self) { freq in
+                                        Text(freq.rawValue).tag(freq)
+                                    }
+                                }
+                             }
+                        }
+                    }
+                }
+                
+                Section {
+                     ZStack(alignment: .topLeading) {
+                        if notes.isEmpty {
+                            Text("Notes")
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 8)
+                                .padding(.leading, 4)
+                        }
+                        TextEditor(text: $notes)
+                            .frame(minHeight: 100)
+                    }
+                }
+                
+                if contactToEdit != nil {
+                     Section {
+                        Button {
+                            showDeleteConfirmation = true
+                        } label: {
+                            Text("Delete Contact")
+                                .foregroundStyle(.red)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        }
+                     }
+                }
             }
-            .scrollContentBackground(.visible)
-            .background(Color(.systemGroupedBackground))
             .navigationTitle(contactToEdit == nil ? "New Contact" : "Edit Contact")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
+                    Button("Cancel") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { saveContact() }
+                        .fontWeight(.semibold)
+                        .disabled(firstName.isEmpty && lastName.isEmpty && company.isEmpty)
+                }
+            }
+            .alert("Delete Contact?", isPresented: $showDeleteConfirmation) {
+                Button("Delete", role: .destructive) {
+                    if let contact = contactToEdit {
+                        modelContext.delete(contact)
                         dismiss()
                     }
                 }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        saveContact()
-                    }
-                    .fontWeight(.semibold)
-                    .disabled(!isValid)
-                }
+                Button("Cancel", role: .cancel) {}
             }
         }
     }
-    
-    // MARK: - Sections
-    
-    private var headerSection: some View {
-        VStack(spacing: 12) {
-            AvatarView(name: name.isEmpty ? "?" : name, size: 100)
-            
-            Text(name.isEmpty ? (contactToEdit == nil ? "New Contact" : "Edit Contact") : name)
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(name.isEmpty ? .secondary : .primary)
-        }
-        .padding(.top, 20)
-    }
-    
-    private var basicInfoSection: some View {
-        VStack(spacing: 16) {
-            sectionHeader("Basic Information")
-            
-            VStack(spacing: 12) {
-                FormTextField(
-                    title: "Name",
-                    text: $name,
-                    placeholder: "Full name",
-                    autocapitalization: .words
-                )
-                
-                phoneField
-                
-                FormTextField(
-                    title: "Reference",
-                    text: $reference,
-                    placeholder: "How do you know this person?"
-                )
-            }
-            .padding(16)
-            .background(cardBackground)
-        }
-    }
-    
-    private var prioritySection: some View {
-        VStack(spacing: 16) {
-            sectionHeader("Priority & Schedule")
-            
-            VStack(spacing: 16) {
-                // Priority Picker
-                HStack(spacing: 0) {
-                    ForEach(Priority.allCases, id: \.self) { option in
-                        Button {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                priority = option
-                                // Update schedule defaults when priority changes
-                                let (interval, freq) = Self.getDefaultSchedule(for: option)
-                                scheduleInterval = interval
-                                scheduleFrequency = freq
-                            }
-                        } label: {
-                            Text(option.rawValue.replacingOccurrences(of: " ", with: "\n"))
-                                .font(.subheadline)
-                                .fontWeight(priority == option ? .semibold : .regular)
-                                .multilineTextAlignment(.center)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .padding(.vertical, 12)
-                                .padding(.horizontal, 4)
-                                .frame(maxWidth: .infinity)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 7)
-                                        .fill(priority == option ? Color(.systemBackground) : Color.clear)
-                                        .shadow(color: priority == option ? .black.opacity(0.12) : .clear, radius: 2, x: 0, y: 1)
-                                        .padding(2)
-                                )
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .background(
-                    RoundedRectangle(cornerRadius: 9)
-                        .fill(Color(.tertiarySystemFill))
-                )
-                
-                HStack {
-                    Circle()
-                        .fill(priority.color)
-                        .frame(width: 8, height: 8)
-                    
-                    Text(priority.rawValue)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    
-                    Spacer()
-                }
-                .padding(.horizontal, 4)
-                
-                if priority == .innerCircle {
-                    Divider()
-                    
-                    // Schedule Override
-                    VStack(alignment: .leading, spacing: 12) {
-                        Toggle("Custom Schedule", isOn: $useCustomSchedule.animation())
-                            .tint(Color("Blue-app"))
-                        
-                        if useCustomSchedule {
-                            VStack(alignment: .leading, spacing: 16) {
-                                // Frequency Picker
-                                HStack {
-                                    Text("Repeat every")
-                                        .foregroundStyle(.secondary)
-                                    
-                                    if scheduleFrequency == .week {
-                                        Menu {
-                                            ForEach(1...3, id: \.self) { num in
-                                                Button {
-                                                    scheduleInterval = num
-                                                } label: {
-                                                    if scheduleInterval == num {
-                                                        Label("\(num)", systemImage: "checkmark")
-                                                    } else {
-                                                        Text("\(num)")
-                                                    }
-                                                }
-                                            }
-                                        } label: {
-                                            Text("\(scheduleInterval)")
-                                                .multilineTextAlignment(.center)
-                                                .frame(width: 50)
-                                                .padding(.vertical, 6)
-                                                .background(Color(.systemGray6))
-                                                .cornerRadius(8)
-                                                .foregroundStyle(.primary)
-                                        }
-                                    } else {
-                                        TextField("1", value: $scheduleInterval, format: .number)
-                                            .keyboardType(.numberPad)
-                                            .multilineTextAlignment(.center)
-                                            .frame(width: 50)
-                                            .padding(.vertical, 6)
-                                            .background(Color(.systemGray6))
-                                            .cornerRadius(8)
-                                    }
-                                    
-                                    Picker("", selection: $scheduleFrequency) {
-                                        ForEach([ScheduleFrequency.day, ScheduleFrequency.week], id: \.self) { freq in
-                                            Text(freq.rawValue).tag(freq)
-                                        }
-                                    }
-                                    .labelsHidden()
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .onChange(of: scheduleFrequency) { _, newValue in
-                                        if newValue == .week && scheduleInterval > 3 {
-                                            scheduleInterval = 2
-                                        }
-                                    }
-                                }
-                                
-                                // Days of week picker (if weekly)
-                                if scheduleFrequency == .week {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        Text("On these days")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                        
-                                        HStack(spacing: 0) {
-                                            ForEach(Weekday.allCases) { day in
-                                                DayToggle(day: day.shortName, isSelected: selectedDays.contains(day)) {
-                                                    if selectedDays.contains(day) {
-                                                        selectedDays.remove(day)
-                                                    } else {
-                                                        selectedDays.insert(day)
-                                                    }
-                                                }
-                                                .frame(maxWidth: .infinity)
-                                            }
-                                        }
-                                    }
-                                    .transition(.move(edge: .top).combined(with: .opacity))
-                                }
-                            }
-                            .padding(.top, 4)
-                        } else {
-                            // Default Schedule Info
-                            HStack {
-                                Image(systemName: "calendar.badge.clock")
-                                    .foregroundStyle(.secondary)
-                                Text("Default: Every \(defaultDaysForPriority) days")
-                                    .font(.subheadline)
-                                    .foregroundStyle(.secondary)
-                                Spacer()
-                            }
-                            .padding(.top, 4)
-                        }
-                    }
-                }
-            }
-            .padding(16)
-            .background(cardBackground)
-        }
-    }
-    
-    private var defaultDaysForPriority: Int {
-        switch priority {
-        case .innerCircle: return 14
-        case .keyRelationships: return 60
-        case .broaderNetwork: return 180
-        }
-    }
-    
-    private static func getDefaultSchedule(for priority: Priority) -> (Int, ScheduleFrequency) {
-        switch priority {
-        case .innerCircle: return (2, .week)
-        case .keyRelationships: return (2, .month)
-        case .broaderNetwork: return (6, .month)
-        }
-    }
-    
-    private var phoneField: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Phone")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-            
-            HStack(spacing: 8) {
-                // Country code picker
-                Menu {
-                    ForEach(CountryCode.all) { code in
-                        Button {
-                            selectedCountryCode = code
-                        } label: {
-                            Text(code.fullDisplayName)
-                        }
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Text(selectedCountryCode.displayName)
-                            .font(.body)
-                        Image(systemName: "chevron.down")
-                            .font(.caption.weight(.semibold))
-                    }
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color(.systemGray5))
-                    )
-                }
-                
-                // Phone number field
-                TextField("Phone number", text: $phoneNumber)
-                    .keyboardType(.phonePad)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 14)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color(.systemGray6))
-                    )
-            }
-        }
-    }
-    
-    private var advancedInfoSection: some View {
-        VStack(spacing: 16) {
-            // Contact details
-            VStack(spacing: 16) {
-                sectionHeader("Contact Details")
-                
-                VStack(spacing: 12) {
-                    FormTextField(
-                        title: "Email",
-                        text: $email,
-                        placeholder: "email@example.com",
-                        keyboardType: .emailAddress,
-                        autocapitalization: .never
-                    )
-                }
-                .padding(16)
-                .background(cardBackground)
-            }
-            
-            // Location
-            VStack(spacing: 16) {
-                sectionHeader("Location")
-                
-                LocationInputView(
-                    city: $city,
-                    state: $state,
-                    country: $country
-                )
-                .padding(16)
-                .background(cardBackground)
-            }
-            
-            // Personal details
-            VStack(spacing: 16) {
-                sectionHeader("Personal Details")
-                
-                VStack(spacing: 12) {
-                    // Birthday
-                    birthdayField
-                    
-                    FormTextField(
-                        title: "Company",
-                        text: $company,
-                        placeholder: "Company name",
-                        autocapitalization: .words
-                    )
-                    
-                    FormTextField(
-                        title: "Job Title",
-                        text: $jobTitle,
-                        placeholder: "Job title",
-                        autocapitalization: .words
-                    )
-                    
-                    notesField
-                }
-                .padding(16)
-                .background(cardBackground)
-            }
-        }
-    }
-    
-    private var birthdayField: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Birthday")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-            
-            Button {
-                showBirthdayPicker.toggle()
-                if birthday == nil {
-                    birthday = Date()
-                }
-            } label: {
-                HStack {
-                    if let birthday = birthday {
-                        Text(birthday, style: .date)
-                            .foregroundStyle(.primary)
-                    } else {
-                        Text("Add birthday")
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "calendar")
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.systemGray6))
-                )
-            }
-            .buttonStyle(.plain)
-            
-            if showBirthdayPicker, let _ = birthday {
-                DatePicker(
-                    "Birthday",
-                    selection: Binding(
-                        get: { birthday ?? Date() },
-                        set: { birthday = $0 }
-                    ),
-                    displayedComponents: .date
-                )
-                .datePickerStyle(.graphical)
-                .padding(8)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.systemGray6))
-                )
-            }
-        }
-    }
-    
-    private var notesField: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Notes")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
-            
-            TextEditor(text: $notes)
-                .frame(minHeight: 80)
-                .padding(12)
-                .scrollContentBackground(.hidden)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color(.systemGray6))
-                )
-        }
-    }
-    
-    // MARK: - Helpers
-    
-    private func sectionHeader(_ title: String) -> some View {
-        HStack {
-            Text(title)
-                .font(.headline)
-                .foregroundStyle(.primary)
-            Spacer()
-        }
-    }
-    
-    private var cardBackground: some View {
-        RoundedRectangle(cornerRadius: 16, style: .continuous)
-            .fill(Color(.systemBackground))
-            .shadow(color: .black.opacity(0.03), radius: 8, y: 2)
-    }
-    
-    // MARK: - Actions
     
     private func saveContact() {
+        let finalName = [firstName, lastName].filter { !$0.isEmpty }.joined(separator: " ")
+        var adjustedName = finalName
+        if adjustedName.isEmpty && !company.isEmpty { adjustedName = company }
+        if adjustedName.isEmpty { adjustedName = "No Name" }
+        
+        let cleanedPhone = phoneNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+        let cleanedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         if let contact = contactToEdit {
-            let priorityChanged = contact.priority != priority
-            let scheduleChanged = contact.useCustomSchedule != useCustomSchedule
-            
-            contact.name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            contact.phoneCountryCode = selectedCountryCode.code
-            contact.phoneNumber = phoneNumber
-            contact.reference = reference
-            contact.email = email
-            contact.city = city
-            contact.state = state
-            contact.country = country
-            contact.birthday = birthday
-            contact.company = company
-            contact.jobTitle = jobTitle
-            contact.notes = notes
-            contact.priority = priority
-            
-            // Save custom schedule
-            contact.useCustomSchedule = useCustomSchedule
-            contact.scheduleFrequency = scheduleFrequency.rawValue
-            contact.scheduleInterval = scheduleInterval
-            contact.scheduleDays = selectedDays.map { $0.rawValue }
-            
-            contact.updatedAt = Date()
-            
-            if priorityChanged || scheduleChanged || useCustomSchedule {
-                if let lastContacted = contact.lastContacted {
-                    ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: lastContacted)
-                } else {
-                    ReminderScheduler.scheduleNewContact(contact)
-                }
-            }
+             let priorityChanged = contact.priority != priority
+             contact.name = adjustedName
+             contact.phoneCountryCode = selectedCountryCode.code
+             contact.phoneNumber = cleanedPhone == " " ? "" : cleanedPhone
+             contact.reference = reference
+             contact.email = cleanedEmail == " " ? "" : cleanedEmail
+             contact.city = city
+             contact.state = state
+             contact.country = country
+             contact.birthday = birthday
+             contact.company = company
+             contact.jobTitle = jobTitle
+             contact.notes = notes
+             contact.priority = priority
+             contact.useCustomSchedule = useCustomSchedule
+             contact.scheduleFrequency = scheduleFrequency.rawValue
+             contact.scheduleInterval = scheduleInterval
+             contact.scheduleDays = selectedDays.map { $0.rawValue }
+             contact.updatedAt = Date()
+             
+             if priorityChanged || contact.useCustomSchedule != useCustomSchedule {
+                 if let lastContacted = contact.lastContacted {
+                     ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: lastContacted)
+                 } else {
+                     ReminderScheduler.scheduleNewContact(contact)
+                 }
+             }
         } else {
-            let contact = Contact(
-                name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+             let contact = Contact(
+                name: adjustedName,
                 phoneCountryCode: selectedCountryCode.code,
-                phoneNumber: phoneNumber,
+                phoneNumber: cleanedPhone == " " ? "" : cleanedPhone,
                 reference: reference,
-                email: email,
+                email: cleanedEmail == " " ? "" : cleanedEmail,
                 city: city,
                 state: state,
                 country: country,
@@ -586,11 +400,18 @@ struct AddContactSheet: View {
                 scheduleInterval: scheduleInterval,
                 scheduleDays: selectedDays.map { $0.rawValue }
             )
-            
-            ReminderScheduler.scheduleNewContact(contact)
-            modelContext.insert(contact)
+             ReminderScheduler.scheduleNewContact(contact)
+             modelContext.insert(contact)
         }
         dismiss()
+    }
+    
+    private static func getDefaultSchedule(for priority: Priority) -> (Int, ScheduleFrequency) {
+        switch priority {
+        case .innerCircle: return (2, .week)
+        case .keyRelationships: return (2, .month)
+        case .broaderNetwork: return (6, .month)
+        }
     }
 }
 
