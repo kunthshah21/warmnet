@@ -135,6 +135,9 @@ struct HomeScreen: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
             }
+            .sheet(isPresented: $showSettings) {
+                SettingsScreen()
+            }
         }
     }
     
