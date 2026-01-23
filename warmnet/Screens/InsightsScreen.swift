@@ -64,12 +64,12 @@ struct InsightsScreen: View {
                             keyRelationshipsCount: keyRelationshipsCount,
                             broaderNetworkCount: broaderNetworkCount
                         )
+                        .padding(.horizontal)
+
                         MapPreviewCard {
                             showMapSheet = true
                         }
                         .padding(.horizontal)
-
-                            .padding(.horizontal)
 
                         // Full Calendar Access
                         CalendarAccessCard()
