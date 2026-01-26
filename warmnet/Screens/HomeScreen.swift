@@ -152,7 +152,7 @@ struct HomeScreen: View {
     }
 
     private var headingColor: Color {
-        colorScheme == .dark ? AppColors.softBeige : .primary
+        .primary
     }
     
     private var addContactButton: some View {

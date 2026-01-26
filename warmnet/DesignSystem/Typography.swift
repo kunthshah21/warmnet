@@ -11,8 +11,8 @@ enum AppFontName {
 /// Color palette following the design system guidelines
 struct AppColors {
     // Background Colors
-    static let deepNavy = Color("deepNavy")          // Darkest background layer
-    static let charcoal = Color("Charcoal")          // Secondary background, elevated surfaces
+    static let deepNavy = Color.black                 // Darkest background layer
+    static let charcoal = Color(uiColor: .systemGray6)// Secondary background, elevated surfaces
     static let darkTeal = Color("darkTeal")          // Accent background
     
     // Accent Colors

@@ -253,7 +253,7 @@ struct TopDashboardCard: View {
     private var networkHealthBackgroundColor: Color {
         colorScheme == .dark
             ? AppColors.deepNavy.opacity(0.6)
-            : AppColors.softBeige.opacity(0.15)
+            : Color.secondary.opacity(0.1)
     }
 }
 
