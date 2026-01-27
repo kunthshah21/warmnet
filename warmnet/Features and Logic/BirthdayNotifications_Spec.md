@@ -1,4 +1,5 @@
 # Birthday Notification System
+Rhis is a part of the overall notification system of the app
 
 ## Overview
 
