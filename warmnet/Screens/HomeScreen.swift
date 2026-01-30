@@ -11,6 +11,7 @@ struct HomeScreen: View {
     @State private var showSettings = false
     @State private var showNotifications = false
     @State private var showMapSheet = false
+    @State private var showAddReminderSheet = false
     @State private var preSelectedContact: Contact?
     
     private var profileData: PersonalisationData? {
@@ -49,39 +50,69 @@ struct HomeScreen: View {
         contacts.sorted { $0.nextReminderDate < $1.nextReminderDate }
     }
     
+    // Get greeting based on time of day
+    private var greeting: String {
+        let hour = Calendar.current.component(.hour, from: Date())
+        switch hour {
+        case 5..<12:
+            return "Good morning,"
+        case 12..<17:
+            return "Good afternoon,"
+        case 17..<21:
+            return "Good evening,"
+        default:
+            return "Good night,"
+        }
+    }
+    
+    // AI-generated summary placeholder
+    private var aiSummary: String {
+        if todaysGoals.isEmpty {
+            return "You're all caught up! This is a great time to explore new connections or strengthen existing relationships in your network."
+        } else {
+            return "This month, you've focused on connecting with professionals in the biotech and AI sectors. The trend shows a growing interest in collaborative projects at the intersection of these fields."
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 // Background gradient
                 LinearGradient(
-                    colors: [backgroundTopColor, backgroundBottomColor],
+                    stops: [
+                        .init(color: Color("Top"), location: 0.0),
+                        .init(color: Color("Middle"), location: 0.15),
+                        .init(color: Color("Bottom"), location: 0.35)
+                    ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 16) {
-                        // Top Dashboard Card - extends to edges
-                        TopDashboardCard(
-                            userName: userName,
-                            profilePhoto: profileData?.profilePhoto,
-                            todaysGoals: todaysGoals,
-                            innerCircleCount: innerCircleCount,
-                            keyRelationshipsCount: keyRelationshipsCount,
-                            broaderNetworkCount: broaderNetworkCount,
-                            onProfileTap: {
-                                showSettings = true
-                            },
-                            onNotificationTap: {
-                                showNotifications = true
-                            },
+                    VStack(spacing: 25) {
+                        // MARK: - Header Row
+                        headerRow
+                        
+                        // MARK: - Add Network Reminder CTA
+                        addReminderButton
+                        
+                        // MARK: - AI Summary
+                        aiSummarySection
+                        
+                        // MARK: - Today's Network Goals
+                        TodaysNetworkGoalsView(
+                            contacts: todaysGoals,
                             onContactTap: { contact in
                                 preSelectedContact = contact
+                            },
+                            onSeeAllTap: {
+                                // Navigate to full list or reminders
+                                showNotifications = true
                             }
                         )
                         
-                        // Other cards with horizontal padding
+                        // Other cards
                         VStack(spacing: 16) {
                             TodayAndWeeklyCard(contacts: contacts) { contact in
                                 preSelectedContact = contact
@@ -89,12 +120,13 @@ struct HomeScreen: View {
                             
                             NetworkProgressCard()
                         }
-                        .padding(.horizontal, 16)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 60) // Account for safe area
                     .padding(.bottom, 120) // Space for floating button
                 }
-            }
-            .ignoresSafeArea(edges: .top)
-            .scrollContentBackground(.visible)
+                .ignoresSafeArea(edges: .top)
+                .scrollContentBackground(.visible)
                 
                 // Floating Add Contact Button
                 VStack {
@@ -138,7 +170,74 @@ struct HomeScreen: View {
             .sheet(isPresented: $showSettings) {
                 SettingsScreen()
             }
+            .sheet(isPresented: $showAddReminderSheet) {
+                AddReminderSheet()
+            }
         }
+    }
+    
+    // MARK: - Header Row
+    
+    private var headerRow: some View {
+        HStack(alignment: .bottom) {
+            // Greeting text on left
+            Text("\(greeting)\n\(userName.isEmpty ? "User" : userName)!")
+                .font(.custom(AppFontName.workSansMedium, size: 25))
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+                .lineSpacing(4)
+            
+            Spacer()
+            
+            // Icons on right
+            HStack(spacing: 14) {
+                // Notification button
+                Button {
+                    showNotifications = true
+                } label: {
+                    Image(systemName: "bell.fill")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundStyle(.primary.opacity(0.7))
+                }
+                .buttonStyle(.plain)
+                
+                // Profile button
+                ProfileIconView(
+                    profilePhoto: profileData?.profilePhoto,
+                    size: 63,
+                    action: {
+                        showSettings = true
+                    }
+                )
+            }
+        }
+    }
+    
+    // MARK: - Add Reminder Button
+    
+    private var addReminderButton: some View {
+        Button {
+            showAddReminderSheet = true
+        } label: {
+            Text("Add Network Reminder")
+                .font(.custom(AppFontName.workSansMedium, size: 16))
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: 64)
+                .background(Color(red: 0.09, green: 0.09, blue: 0.11))
+                .cornerRadius(100)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - AI Summary Section
+    
+    private var aiSummarySection: some View {
+        Text(aiSummary)
+            .font(.custom(AppFontName.workSansMedium, size: 15))
+            .lineSpacing(7.5)
+            .foregroundStyle(.primary)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     // MARK: - Subviews
