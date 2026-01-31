@@ -14,6 +14,8 @@ struct InsightsScreen: View {
     @Query private var interactions: [Interaction]
     
     @State private var showMapSheet = false
+    @State private var selectedDate = Date()
+    @State private var showDatePicker = false
 
     // MARK: - Computed Properties
     private var innerCircleCount: Int {
@@ -45,17 +47,48 @@ struct InsightsScreen: View {
                 ScrollView {
                     VStack(spacing: 16) {
                         // Header
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Insights")
-                                .font(.custom(AppFontName.workSansMedium, size: 32))
-                                .fontWeight(.bold)
-                                .foregroundStyle(headingColor)
+                        HStack(spacing: 0) {
+                            Text("Go ")
+                                .font(.system(size: 37, weight: .bold))
+                                .foregroundColor(.black)
+                            +
+                            Text("Deep")
+                                .font(.system(size: 37, weight: .bold))
+                                .foregroundColor(Color(red: 0.38, green: 0.51, blue: 0.98))
+                            +
+                            Text(" into\nyour ")
+                                .font(.system(size: 37, weight: .bold))
+                                .foregroundColor(.black)
+                            +
+                            Text("Network")
+                                .font(.system(size: 37, weight: .bold))
+                                .foregroundColor(Color(red: 0.38, green: 0.51, blue: 0.98))
                             
-                            Text("Track your network patterns and engagement")
-                                .font(.custom(AppFontName.workSansRegular, size: 14))
-                                .foregroundStyle(colorScheme == .dark ? AppColors.textSecondary : .secondary)
+                            Spacer()
+                            
+                            Button {
+                                showDatePicker.toggle()
+                            } label: {
+                                HStack(spacing: 8) {
+                                    Text(selectedDate, format: .dateTime.month(.abbreviated).day())
+                                        .font(.custom("Inter", size: 12).weight(.medium))
+                                        .foregroundColor(Color(red: 0.34, green: 0.34, blue: 0.34))
+                                    
+                                    Image(systemName: "chevron.down")
+                                        .font(.system(size: 10, weight: .medium))
+                                        .foregroundColor(Color(red: 0.34, green: 0.34, blue: 0.34))
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(Color.white)
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .inset(by: 0.5)
+                                        .stroke(Color(red: 0.68, green: 0.68, blue: 0.68), lineWidth: 0.5)
+                                )
+                            }
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
                         .padding(.top, 20)
                         
@@ -117,6 +150,13 @@ struct InsightsScreen: View {
                 MapScreen(showsDismissButton: true)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
+            }
+            .sheet(isPresented: $showDatePicker) {
+                DatePicker("Select Date", selection: $selectedDate, displayedComponents: [.date])
+                    .datePickerStyle(.graphical)
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+                    .padding()
             }
         }
     }
