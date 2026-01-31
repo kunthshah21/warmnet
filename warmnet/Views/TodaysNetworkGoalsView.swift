@@ -15,16 +15,9 @@ struct TodaysNetworkGoalsView: View {
     let onContactTap: (Contact) -> Void
     var onSeeAllTap: (() -> Void)? = nil
     
-    @State private var currentPage: Int = 0
     
-    // Number of items per page in the goals carousel
-    private let itemsPerPage = 4
-    
-    // Calculate total number of pages
-    private var totalPages: Int {
-        guard !contacts.isEmpty else { return 1 }
-        return (contacts.count + itemsPerPage - 1) / itemsPerPage
-    }
+    private let cardWidth: CGFloat = 85
+    private let cardSpacing: CGFloat = 10
     
     var body: some View {
         VStack(spacing: 18) {
@@ -36,11 +29,6 @@ struct TodaysNetworkGoalsView: View {
                 emptyGoalsState
             } else {
                 goalsCarousel
-                
-                // Page indicators
-                if totalPages > 1 {
-                    pageIndicators
-                }
             }
         }
     }
@@ -86,40 +74,20 @@ struct TodaysNetworkGoalsView: View {
     // MARK: - Goals Carousel
     
     private var goalsCarousel: some View {
-        TabView(selection: $currentPage) {
-            ForEach(0..<totalPages, id: \.self) { pageIndex in
-                goalsPage(for: pageIndex)
-                    .tag(pageIndex)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: cardSpacing) {
+                ForEach(contacts) { contact in
+                    Button {
+                        onContactTap(contact)
+                    } label: {
+                        goalContactCard(for: contact)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
+            .padding(.horizontal, 4)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
         .frame(height: 145)
-    }
-    
-    private func goalsPage(for pageIndex: Int) -> some View {
-        let startIndex = pageIndex * itemsPerPage
-        let endIndex = min(startIndex + itemsPerPage, contacts.count)
-        let pageContacts = Array(contacts[startIndex..<endIndex])
-        
-        return HStack(spacing: 10) {
-            ForEach(pageContacts) { contact in
-                Button {
-                    onContactTap(contact)
-                } label: {
-                    goalContactCard(for: contact)
-                }
-                .buttonStyle(.plain)
-            }
-            
-            // Add spacers if page is not full
-            if pageContacts.count < itemsPerPage {
-                ForEach(0..<(itemsPerPage - pageContacts.count), id: \.self) { _ in
-                    Color.clear
-                        .frame(width: 85)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private func goalContactCard(for contact: Contact) -> some View {
@@ -132,16 +100,19 @@ struct TodaysNetworkGoalsView: View {
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.primary)
                 .lineLimit(2)
+                .truncationMode(.tail)
+                .frame(minHeight: 28, alignment: .top)
         }
         .padding(.vertical, 18)
         .padding(.horizontal, 14)
-        .frame(width: 85)
+        .frame(width: cardWidth)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(goalCardBackgroundColor)
         )
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
+
     
     private func formatName(_ fullName: String) -> String {
         let components = fullName.components(separatedBy: " ")
@@ -149,18 +120,6 @@ struct TodaysNetworkGoalsView: View {
             return "\(components[0])\n\(components[1])"
         }
         return fullName
-    }
-    
-    // MARK: - Page Indicators
-    
-    private var pageIndicators: some View {
-        HStack(spacing: 3) {
-            ForEach(0..<totalPages, id: \.self) { index in
-                Circle()
-                    .fill(index == currentPage ? Color.gray.opacity(0.65) : Color.gray.opacity(0.35))
-                    .frame(width: 7, height: 7)
-            }
-        }
     }
     
     // MARK: - Colors
