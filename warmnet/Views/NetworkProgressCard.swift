@@ -33,11 +33,6 @@ struct NetworkProgressCard: View {
             }
         }
         .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
-                .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
-        )
         .onAppear {
             calculateProgress()
         }
@@ -78,12 +73,46 @@ struct NetworkProgressCard: View {
     }
     
     private var progressContent: some View {
-        VStack(spacing: 16) {
-            ConcentricProgressRings(tierProgresses: tierProgresses)
+        VStack(spacing: 20) {
+            // Concentric rings with center percentage
+            ZStack {
+                ConcentricProgressRings(tierProgresses: tierProgresses)
+                
+                // Overall completion percentage in the center
+                VStack(spacing: 2) {
+                    Text("\(Int(overallProgress * 100))%")
+                        .font(.custom(AppFontName.workSansMedium, size: 24))
+                        .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
+                    
+                    Text("Coverage")
+                        .font(.custom(AppFontName.workSansRegular, size: 11))
+                        .foregroundStyle(colorScheme == .dark ? AppColors.textTertiary : .secondary)
+                }
+            }
             
-            NetworkProgressLegend(tierProgresses: tierProgresses)
+            // Detailed tier breakdown
+            VStack(spacing: 12) {
+                ForEach(orderedTierProgresses) { tierProgress in
+                    TierProgressRow(tierProgress: tierProgress)
+                }
+            }
         }
         .frame(maxWidth: .infinity)
+    }
+    
+    private var overallProgress: Double {
+        guard !tierProgresses.isEmpty else { return 0 }
+        let totalContacted = tierProgresses.reduce(0) { $0 + $1.contacted }
+        let totalExpected = tierProgresses.reduce(0) { $0 + $1.total }
+        guard totalExpected > 0 else { return 0 }
+        return Double(totalContacted) / Double(totalExpected)
+    }
+    
+    private var orderedTierProgresses: [TierProgress] {
+        let order: [Priority] = [.innerCircle, .keyRelationships, .broaderNetwork]
+        return order.compactMap { tier in
+            tierProgresses.first { $0.tier == tier }
+        }
     }
     
     // MARK: - Progress Calculation
@@ -126,6 +155,62 @@ struct NetworkProgressCard: View {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.prepare()
         generator.impactOccurred()
+    }
+}
+
+// MARK: - Tier Progress Row
+
+struct TierProgressRow: View {
+    @Environment(\.colorScheme) private var colorScheme
+    let tierProgress: TierProgress
+    
+    private var tierName: String {
+        switch tierProgress.tier {
+        case .innerCircle: return "Close Network"
+        case .keyRelationships: return "Middle Network"
+        case .broaderNetwork: return "Broader Network"
+        }
+    }
+    
+    private var windowText: String {
+        "Every \(tierProgress.windowDays) days"
+    }
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Colored indicator
+            Circle()
+                .fill(tierProgress.tier.color)
+                .frame(width: 10, height: 10)
+            
+            // Tier name and window
+            VStack(alignment: .leading, spacing: 2) {
+                Text(tierName)
+                    .font(.custom(AppFontName.workSansMedium, size: 14))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
+                
+                Text(windowText)
+                    .font(.custom(AppFontName.workSansRegular, size: 11))
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textTertiary : .secondary)
+            }
+            
+            Spacer()
+            
+            // Progress fraction and percentage
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(tierProgress.displayText)
+                    .font(.custom(AppFontName.workSansMedium, size: 14))
+                    .monospacedDigit()
+                    .foregroundStyle(colorScheme == .dark ? AppColors.textPrimary : .primary)
+                    .contentTransition(.numericText())
+                
+                Text("\(Int(tierProgress.progress * 100))%")
+                    .font(.custom(AppFontName.workSansRegular, size: 11))
+                    .foregroundStyle(tierProgress.isComplete ? tierProgress.tier.color : (colorScheme == .dark ? AppColors.textTertiary : .secondary))
+                    .contentTransition(.numericText())
+            }
+        }
+        .padding(.horizontal, 4)
     }
 }
 

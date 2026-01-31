@@ -131,8 +131,5 @@ struct TodayAndWeeklyCard: View {
             }
         }
         .padding(16)
-        .background(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.08), radius: 10, x: 0, y: 4)
     }
 }

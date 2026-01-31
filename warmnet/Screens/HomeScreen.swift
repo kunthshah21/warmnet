@@ -140,7 +140,7 @@ struct HomeScreen: View {
                     .padding(.bottom, 120) // Space for floating button
                 }
                 .ignoresSafeArea(edges: .top)
-                .scrollContentBackground(.visible)
+                .scrollContentBackground(.hidden)
                 
                 // Floating Add Contact Button
                 VStack {
