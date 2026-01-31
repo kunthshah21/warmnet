@@ -29,7 +29,7 @@ struct InsightsScreen: View {
     }
     
     private var backgroundColor: Color {
-        colorScheme == .dark ? AppColors.deepNavy : Color(.systemBackground)
+        colorScheme == .dark ? AppColors.deepNavy : Color(red: 0xF1/255, green: 0xF2/255, blue: 0xF6/255)
     }
     
     private var headingColor: Color {
