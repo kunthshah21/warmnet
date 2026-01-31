@@ -23,3 +23,4 @@ struct ContentView: View {
     ContentView()
         .modelContainer(for: Contact.self, inMemory: true)
 }
+

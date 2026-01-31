@@ -93,6 +93,7 @@ struct HomeScreen: View {
                     VStack(spacing: 25) {
                         // MARK: - Header Row
                         headerRow
+                            .padding(.top, 20)
                         
                         // MARK: - Add Network Reminder CTA
                         addReminderButton
