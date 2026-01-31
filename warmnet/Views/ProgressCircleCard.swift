@@ -55,23 +55,14 @@ struct ProgressCircleCard: View {
         Button {
             onTap?()
         } label: {
-            VStack(alignment: .leading, spacing: 12) {
-                // Header with title and arrow
-                HStack {
-                    Text("Progress")
-                        .font(.custom(AppFontName.workSansMedium, size: 18))
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
-                    Image(systemName: "arrow.up.right")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.primary)
-                        .padding(8)
-                        .background(Circle().fill(Color.black.opacity(0.1)))
-                }
+            VStack(alignment: .center, spacing: 8) {
+                // Header title centered
+                Text("Progress")
+                    .font(.custom(AppFontName.workSansMedium, size: 18))
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .center)
                 
-                Spacer()
+                Spacer(minLength: 0)
                 
                 // Concentric rings centered
                 HStack {
@@ -79,9 +70,11 @@ struct ProgressCircleCard: View {
                     ProgressConcentricRings(progresses: tierProgresses)
                     Spacer()
                 }
+                
+                Spacer(minLength: 0)
             }
             .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .center)
             .frame(height: 160)
             .background(
                 RoundedRectangle(cornerRadius: 20)
