@@ -48,32 +48,31 @@ struct NetworkHealthCard: View {
                 }
                 
                 // Network tier counts
-                HStack(spacing: 0) {
+                HStack(alignment: .top, spacing: 0) {
                     NetworkTierItem(
                         count: innerCircleCount,
                         label: "Close Network",
-                        color: AppColors.accentGreen
+                        color: Color(red: 0.2, green: 0.55, blue: 0.45),
+                        iconName: "person.fill"
                     )
-                    
-                    Spacer()
                     
                     NetworkTierItem(
                         count: keyRelationshipsCount,
                         label: "Middle Network",
-                        color: AppColors.mutedBlue
+                        color: Color(red: 0.25, green: 0.4, blue: 0.65),
+                        iconName: "person.2.fill"
                     )
-                    
-                    Spacer()
                     
                     NetworkTierItem(
                         count: broaderNetworkCount,
                         label: "Broader Network",
-                        color: .primary
+                        color: Color(red: 0.72, green: 0.58, blue: 0.2),
+                        iconName: "person.3.fill"
                     )
                 }
             }
             .padding(20)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 20)
                     .fill(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
@@ -91,36 +90,30 @@ struct NetworkTierItem: View {
     let count: Int
     let label: String
     let color: Color
+    let iconName: String
     
     var body: some View {
         VStack(spacing: 6) {
-            HStack(spacing: 6) {
-                // Network icon
-                NetworkIcon()
+            HStack(spacing: 4) {
+                Image(systemName: iconName)
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(color)
                 
                 Text("\(count)")
-                    .font(.custom(AppFontName.workSansMedium, size: 22))
+                    .font(.custom(AppFontName.workSansMedium, size: 20))
                     .fontWeight(.bold)
                     .foregroundStyle(color)
                     .contentTransition(.numericText())
             }
             
             Text(label)
-                .font(.custom(AppFontName.workSansRegular, size: 12))
+                .font(.custom(AppFontName.workSansMedium, size: 11))
+                .fontWeight(.bold)
                 .foregroundStyle(color)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.7)
         }
-    }
-}
-
-// MARK: - Network Icon
-
-struct NetworkIcon: View {
-    var body: some View {
-        Image(systemName: "person.3.sequence.fill")
-            .font(.system(size: 18))
+        .frame(maxWidth: .infinity)
     }
 }
 
