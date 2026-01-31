@@ -12,33 +12,51 @@ struct AIInsightCard: View {
     let onInteractionIdeas: () -> Void
     let onNetworkOpportunity: () -> Void
     
+    @Environment(\.colorScheme) private var colorScheme
+    
+    private var textColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
+    
+    private var buttonBackgroundColor: Color {
+        colorScheme == .dark ? Color(red: 0.20, green: 0.20, blue: 0.20) : Color(red: 0.90, green: 0.90, blue: 0.90)
+    }
+    
+    private var buttonTextColor: Color {
+        colorScheme == .dark ? Color(red: 0.60, green: 0.75, blue: 1.0) : Color(red: 0.19, green: 0.41, blue: 1)
+    }
+    
+    private var iconColor: Color {
+        colorScheme == .dark ? .white : .black
+    }
+    
     var body: some View {
-        VStack(spacing: 19) {
+        VStack(alignment: .leading, spacing: 19) {
             Text(insightText)
                 .font(.system(size: 15, weight: .medium))
                 .lineSpacing(4)
-                .foregroundColor(.black)
+                .foregroundColor(textColor)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            HStack(spacing: 21) {
+            HStack(alignment: .top, spacing: 21) {
                 Button {
                     onInteractionIdeas()
                 } label: {
                     HStack(spacing: 10) {
                         Image(systemName: "bubble.left.fill")
                             .font(.system(size: 14))
-                            .foregroundColor(.black)
+                            .foregroundColor(iconColor)
                             .frame(width: 25, height: 25)
                         
                         Text("Interaction ideas")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Color(red: 0.19, green: 0.41, blue: 1))
+                            .foregroundColor(buttonTextColor)
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     .frame(maxWidth: .infinity, minHeight: 53)
-                    .background(Color(red: 0.90, green: 0.90, blue: 0.90))
+                    .background(buttonBackgroundColor)
                     .cornerRadius(10)
                 }
                 
@@ -48,25 +66,23 @@ struct AIInsightCard: View {
                     HStack(spacing: 6) {
                         Image(systemName: "person.2.fill")
                             .font(.system(size: 14))
-                            .foregroundColor(.black)
+                            .foregroundColor(iconColor)
                             .frame(width: 25, height: 25)
                         
                         Text("Network Opportunity")
                             .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(Color(red: 0.19, green: 0.41, blue: 1))
+                            .foregroundColor(buttonTextColor)
                             .multilineTextAlignment(.leading)
                             .fixedSize(horizontal: false, vertical: true)
                     }
                     .padding(EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12))
                     .frame(maxWidth: .infinity, minHeight: 53)
-                    .background(Color(red: 0.90, green: 0.90, blue: 0.90))
+                    .background(buttonBackgroundColor)
                     .cornerRadius(10)
                 }
             }
         }
-        .padding()
-        .background(Color.white)
-        .cornerRadius(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

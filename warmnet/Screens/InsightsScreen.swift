@@ -54,13 +54,13 @@ struct InsightsScreen: View {
                                 a.font = .system(size: 37, weight: .bold)
                                 // Apply colors to specific ranges
                                 if let rangeGo = a.range(of: "Go ") {
-                                    a[rangeGo].foregroundColor = .black
+                                    a[rangeGo].foregroundColor = headingColor
                                 }
                                 if let rangeDeep = a.range(of: "Deep") {
                                     a[rangeDeep].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
                                 }
                                 if let rangeIntoYour = a.range(of: " into\nyour ") {
-                                    a[rangeIntoYour].foregroundColor = .black
+                                    a[rangeIntoYour].foregroundColor = headingColor
                                 }
                                 if let rangeNetwork = a.range(of: "Network") {
                                     a[rangeNetwork].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
@@ -78,20 +78,20 @@ struct InsightsScreen: View {
                                 HStack(spacing: 8) {
                                     Text(selectedDate, format: .dateTime.month(.abbreviated).day())
                                         .font(.custom("Inter", size: 12).weight(.medium))
-                                        .foregroundColor(Color(red: 0.34, green: 0.34, blue: 0.34))
+                                        .foregroundColor(colorScheme == .dark ? Color.white.opacity(0.7) : Color(red: 0.34, green: 0.34, blue: 0.34))
                                     
                                     Image(systemName: "chevron.down")
                                         .font(.system(size: 10, weight: .medium))
-                                        .foregroundColor(Color(red: 0.34, green: 0.34, blue: 0.34))
+                                        .foregroundColor(colorScheme == .dark ? Color.white.opacity(0.7) : Color(red: 0.34, green: 0.34, blue: 0.34))
                                 }
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 8)
-                                .background(Color.white)
+                                .background(colorScheme == .dark ? Color(red: 0.15, green: 0.15, blue: 0.15) : Color.white)
                                 .cornerRadius(10)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 10)
                                         .inset(by: 0.5)
-                                        .stroke(Color(red: 0.68, green: 0.68, blue: 0.68), lineWidth: 0.5)
+                                        .stroke(colorScheme == .dark ? Color.white.opacity(0.2) : Color(red: 0.68, green: 0.68, blue: 0.68), lineWidth: 0.5)
                                 )
                             }
                         }
