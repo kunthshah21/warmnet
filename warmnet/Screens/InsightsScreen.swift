@@ -48,21 +48,27 @@ struct InsightsScreen: View {
                     VStack(spacing: 16) {
                         // Header
                         HStack(spacing: 0) {
-                            Text("Go ")
-                                .font(.system(size: 37, weight: .bold))
-                                .foregroundColor(.black)
-                            +
-                            Text("Deep")
-                                .font(.system(size: 37, weight: .bold))
-                                .foregroundColor(Color(red: 0.38, green: 0.51, blue: 0.98))
-                            +
-                            Text(" into\nyour ")
-                                .font(.system(size: 37, weight: .bold))
-                                .foregroundColor(.black)
-                            +
-                            Text("Network")
-                                .font(.system(size: 37, weight: .bold))
-                                .foregroundColor(Color(red: 0.38, green: 0.51, blue: 0.98))
+                            let titleString: AttributedString = {
+                                var a = AttributedString("Go Deep into\nyour Network")
+                                // Apply base font to the whole string
+                                a.font = .system(size: 37, weight: .bold)
+                                // Apply colors to specific ranges
+                                if let rangeGo = a.range(of: "Go ") {
+                                    a[rangeGo].foregroundColor = .black
+                                }
+                                if let rangeDeep = a.range(of: "Deep") {
+                                    a[rangeDeep].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
+                                }
+                                if let rangeIntoYour = a.range(of: " into\nyour ") {
+                                    a[rangeIntoYour].foregroundColor = .black
+                                }
+                                if let rangeNetwork = a.range(of: "Network") {
+                                    a[rangeNetwork].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
+                                }
+                                return a
+                            }()
+                            
+                            Text(titleString)
                             
                             Spacer()
                             
@@ -92,13 +98,17 @@ struct InsightsScreen: View {
                         .padding(.horizontal)
                         .padding(.top, 20)
                         
-                        KPICard(
-                            innerCircleCount: innerCircleCount,
-                            keyRelationshipsCount: keyRelationshipsCount,
-                            broaderNetworkCount: broaderNetworkCount
+                        AIInsightCard(
+                            insightText: "This month, you've focused on connecting with professionals in the biotech and AI sectors. The trend shows a growing interest in collaborative projects at the intersection of these fields.",
+                            onInteractionIdeas: {
+                                // Handle interaction ideas action
+                            },
+                            onNetworkOpportunity: {
+                                // Handle network opportunity action
+                            }
                         )
                         .padding(.horizontal)
-
+                        
                         MapPreviewCard {
                             showMapSheet = true
                         }
@@ -264,3 +274,4 @@ struct StatRow: View {
     InsightsScreen()
         .modelContainer(for: [Contact.self, Interaction.self], inMemory: true)
 }
+
