@@ -120,6 +120,19 @@ struct HomeScreen: View {
                             
                             NetworkProgressCard()
                         }
+                        
+                        // MARK: - Overview Section
+                        OverviewSectionView(
+                            onWeeklyTrendTap: {
+                                // Handle weekly trend tap
+                            },
+                            onProgressTap: {
+                                // Handle progress tap
+                            },
+                            onNetworkHealthTap: {
+                                // Handle network health tap
+                            }
+                        )
                     }
                     .padding(.horizontal, 20)
                     .padding(.top, 60) // Account for safe area
