@@ -80,10 +80,8 @@ struct AIInsightCard: View {
         } else if hasError {
             errorView
         } else {
-            let isHomeSummary = insightType == .homeSummary
-            let contentColor = isHomeSummary
-                ? (colorScheme == .dark ? Color.white.opacity(0.65) : Color.black.opacity(0.6))
-                : textColor
+            // Use lighter text color for AI insight body (matches home screen style)
+            let contentColor = colorScheme == .dark ? Color.white.opacity(0.65) : Color.black.opacity(0.6)
             HStack(alignment: .top, spacing: 8) {
                 Text(insightText)
                     .font(.custom(AppFontName.workSansMedium, size: 15))
