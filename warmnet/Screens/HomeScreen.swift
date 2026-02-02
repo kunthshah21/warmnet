@@ -65,14 +65,9 @@ struct HomeScreen: View {
         }
     }
     
-    // AI-generated summary placeholder
-    private var aiSummary: String {
-        if todaysGoals.isEmpty {
-            return "You're all caught up! This is a great time to explore new connections or strengthen existing relationships in your network."
-        } else {
-            return "This month, you've focused on connecting with professionals in the biotech and AI sectors. The trend shows a growing interest in collaborative projects at the intersection of these fields."
-        }
-    }
+    // State for AI-related navigation
+    @State private var showInteractionIdeasChat = false
+    @State private var showNetworkOpportunityChat = false
     
     var body: some View {
         NavigationStack {
@@ -99,7 +94,15 @@ struct HomeScreen: View {
                         addReminderButton
                         
                         // MARK: - AI Summary
-                        aiSummarySection
+                        AIInsightCard(
+                            insightType: .homeSummary,
+                            onInteractionIdeas: {
+                                showInteractionIdeasChat = true
+                            },
+                            onNetworkOpportunity: {
+                                showNetworkOpportunityChat = true
+                            }
+                        )
                         
                         // MARK: - Today's Network Goals
                         TodaysNetworkGoalsView(
@@ -187,19 +190,38 @@ struct HomeScreen: View {
             .sheet(isPresented: $showAddReminderSheet) {
                 AddReminderSheet()
             }
+            .sheet(isPresented: $showInteractionIdeasChat) {
+                AIChatScreen(initialContext: .interactionIdeas(contactId: UUID(), contactName: "your contacts"))
+            }
+            .sheet(isPresented: $showNetworkOpportunityChat) {
+                AIChatScreen(initialContext: .networkOpportunity)
+            }
         }
     }
     
     // MARK: - Header Row
     
+    private var headerHeadingColor: Color {
+        colorScheme == .dark ? AppColors.textPrimary : .black
+    }
+    
     private var headerRow: some View {
         HStack(alignment: .bottom) {
-            // Greeting text on left
-            Text("\(greeting)\n\(userName.isEmpty ? "User" : userName)!")
-                .font(.custom(AppFontName.workSansMedium, size: 25))
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
-                .lineSpacing(4)
+            // Greeting text on left — same style as Insights title (Go Deep into your Network)
+            let titleString: AttributedString = {
+                let namePart = userName.isEmpty ? "User" : userName
+                var a = AttributedString("\(greeting)\n\(namePart)")
+                a.font = .system(size: 26, weight: .bold)
+                if let greetingRange = a.range(of: greeting) {
+                    a[greetingRange].foregroundColor = headerHeadingColor
+                }
+                if let nameRange = a.range(of: namePart) {
+                    a[nameRange].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
+                }
+                return a
+            }()
+            Text(titleString)
+                .lineSpacing(-2)
             
             Spacer()
             
@@ -244,15 +266,6 @@ struct HomeScreen: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - AI Summary Section
-    
-    private var aiSummarySection: some View {
-        Text(aiSummary)
-            .font(.custom(AppFontName.workSansMedium, size: 15))
-            .lineSpacing(7.5)
-            .foregroundStyle(.primary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
     
     // MARK: - Subviews
 
