@@ -116,13 +116,9 @@ struct HomeScreen: View {
                             }
                         )
                         
-                        // Other cards
-                        VStack(spacing: 16) {
-                            TodayAndWeeklyCard(contacts: contacts) { contact in
-                                preSelectedContact = contact
-                            }
-                            
-                            NetworkProgressCard()
+                        // Today and Weekly Card
+                        TodayAndWeeklyCard(contacts: contacts) { contact in
+                            preSelectedContact = contact
                         }
                         
                         // MARK: - Overview Section

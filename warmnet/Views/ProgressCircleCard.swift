@@ -8,70 +8,50 @@
 import SwiftUI
 import SwiftData
 
-/// Card displaying weekly progress with concentric ring visualization
+/// Card displaying network coverage progress with concentric ring visualization
+/// Tapping opens a popup with detailed statistics
 struct ProgressCircleCard: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query private var contacts: [Contact]
     @Query private var interactions: [Interaction]
     
+    @State private var showDetailSheet: Bool = false
+    @State private var tierProgresses: [TierProgress] = []
+    @State private var completedTiersThisSession: Set<Priority> = []
+    
     var onTap: (() -> Void)? = nil
-    
-    private var calendar: Calendar {
-        Calendar.current
-    }
-    
-    private var startOfWeek: Date {
-        calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-    }
-    
-    private var endOfWeek: Date {
-        calendar.dateInterval(of: .weekOfYear, for: Date())?.end ?? Date()
-    }
-    
-    // Calculate progress for each tier this week
-    private var tierProgresses: [TierProgressData] {
-        let priorities: [Priority] = [.innerCircle, .keyRelationships, .broaderNetwork]
-        
-        return priorities.map { priority in
-            let tierContacts = contacts.filter { $0.priority == priority }
-            let contactedThisWeek = tierContacts.filter { contact in
-                guard let lastContacted = contact.lastContacted else { return false }
-                return lastContacted >= startOfWeek && lastContacted <= endOfWeek
-            }.count
-            
-            let total = tierContacts.count
-            let progress = total > 0 ? Double(contactedThisWeek) / Double(total) : 0
-            
-            return TierProgressData(
-                priority: priority,
-                contacted: contactedThisWeek,
-                total: total,
-                progress: progress
-            )
-        }
-    }
     
     var body: some View {
         Button {
+            showDetailSheet = true
             onTap?()
         } label: {
             VStack(alignment: .center, spacing: 8) {
-                // Header title centered
-                Text("Progress")
-                    .font(.custom(AppFontName.workSansMedium, size: 18))
-                    .foregroundStyle(.primary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                
-                Spacer(minLength: 0)
-                
-                // Concentric rings centered
+                // Header with title and expand indicator
                 HStack {
+                    Text("Network Coverage")
+                        .font(.custom(AppFontName.workSansMedium, size: 18))
+                        .foregroundStyle(.primary)
+                    
                     Spacer()
-                    ProgressConcentricRings(progresses: tierProgresses)
-                    Spacer()
+                    
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.primary.opacity(0.6))
                 }
                 
-                Spacer(minLength: 0)
+                // Compact view with rings
+                VStack {
+                    Spacer(minLength: 0)
+                    
+                    HStack {
+                        Spacer()
+                        NetworkCoverageRings(tierProgresses: tierProgresses, size: 90)
+                        Spacer()
+                    }
+                    
+                    Spacer(minLength: 0)
+                }
             }
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .center)
@@ -82,76 +62,172 @@ struct ProgressCircleCard: View {
             )
         }
         .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Supporting Types
-
-struct TierProgressData: Identifiable {
-    let id = UUID()
-    let priority: Priority
-    let contacted: Int
-    let total: Int
-    let progress: Double
-    
-    var color: Color {
-        switch priority {
-        case .innerCircle:
-            return Color(red: 0.2, green: 0.9, blue: 0.7) // Cyan/teal
-        case .keyRelationships:
-            return Color(red: 0.7, green: 1.0, blue: 0.3) // Lime green
-        case .broaderNetwork:
-            return Color(red: 1.0, green: 0.4, blue: 0.6) // Pink/coral
+        .onAppear {
+            calculateProgress()
+        }
+        .onChange(of: contacts.count) { _, _ in
+            calculateProgress()
+        }
+        .onChange(of: interactions.count) { _, _ in
+            calculateProgress()
+        }
+        .sheet(isPresented: $showDetailSheet) {
+            NetworkCoverageDetailSheet(tierProgresses: tierProgresses)
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
+    
+    // MARK: - Progress Calculation
+    
+    private func calculateProgress() {
+        let newProgresses = NetworkProgressService.calculateAllProgress(contacts: contacts)
+        
+        // Check for newly completed tiers and trigger haptic
+        for newProgress in newProgresses {
+            let isNowComplete = newProgress.isComplete
+            let alreadyTriggeredThisSession = completedTiersThisSession.contains(newProgress.tier)
+            
+            if isNowComplete && !alreadyTriggeredThisSession {
+                triggerCompletionHaptic()
+                completedTiersThisSession.insert(newProgress.tier)
+            }
+        }
+        
+        withAnimation(.easeOut(duration: 0.3)) {
+            tierProgresses = newProgresses
+        }
+    }
+    
+    private func triggerCompletionHaptic() {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+    }
 }
 
-// MARK: - Concentric Rings for Progress Card
+// MARK: - Network Coverage Detail Sheet (Popup)
 
-struct ProgressConcentricRings: View {
-    let progresses: [TierProgressData]
+struct NetworkCoverageDetailSheet: View {
+    @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dismiss) private var dismiss
     
-    private let ringSize: CGFloat = 90
-    private let lineWidth: CGFloat = 10
-    private let gap: CGFloat = 12
+    let tierProgresses: [TierProgress]
+    
+    private var overallProgress: Double {
+        guard !tierProgresses.isEmpty else { return 0 }
+        let totalContacted = tierProgresses.reduce(0) { $0 + $1.contacted }
+        let totalExpected = tierProgresses.reduce(0) { $0 + $1.total }
+        guard totalExpected > 0 else { return 0 }
+        return Double(totalContacted) / Double(totalExpected)
+    }
+    
+    private var orderedTierProgresses: [TierProgress] {
+        let order: [Priority] = [.innerCircle, .keyRelationships, .broaderNetwork]
+        return order.compactMap { tier in
+            tierProgresses.first { $0.tier == tier }
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            // Header
+            Text("Network Coverage")
+                .font(.custom(AppFontName.workSansMedium, size: 22))
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 8)
+            
+            // Concentric rings with center percentage
+            ZStack {
+                NetworkCoverageRings(tierProgresses: tierProgresses, size: 140)
+                
+                // Overall completion percentage in the center
+                VStack(spacing: 2) {
+                    Text("\(Int(overallProgress * 100))%")
+                        .font(.custom(AppFontName.workSansMedium, size: 28))
+                        .foregroundStyle(.primary)
+                    
+                    Text("Coverage")
+                        .font(.custom(AppFontName.workSansRegular, size: 12))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .padding(.vertical, 8)
+            
+            // Detailed tier breakdown
+            if !tierProgresses.isEmpty {
+                VStack(spacing: 16) {
+                    ForEach(orderedTierProgresses) { tierProgress in
+                        NetworkCoverageTierRow(tierProgress: tierProgress)
+                    }
+                }
+                .padding(.horizontal, 8)
+            } else {
+                // Empty state
+                VStack(spacing: 12) {
+                    Image(systemName: "person.3")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary)
+                    
+                    Text("Add contacts to track progress")
+                        .font(.custom(AppFontName.workSansRegular, size: 16))
+                        .foregroundStyle(.secondary)
+                }
+                .frame(height: 100)
+            }
+            
+            Spacer()
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, 16)
+        .background(colorScheme == .dark ? Color(.systemBackground) : Color(.systemBackground))
+    }
+}
+
+// MARK: - Network Coverage Rings (Reusable)
+
+struct NetworkCoverageRings: View {
+    let tierProgresses: [TierProgress]
+    var size: CGFloat = 120
+    
+    private var lineWidth: CGFloat {
+        size >= 100 ? 12 : 10
+    }
+    
+    private var ringGap: CGFloat {
+        size >= 100 ? 16 : 12
+    }
+    
+    /// Order for rendering: outer to inner (Broader → Key → Inner)
+    private var orderedProgresses: [TierProgress] {
+        let order: [Priority] = [.broaderNetwork, .keyRelationships, .innerCircle]
+        return order.compactMap { tier in
+            tierProgresses.first { $0.tier == tier }
+        }
+    }
     
     var body: some View {
         ZStack {
-            // Outer ring - Broader Network (pink)
-            if let broader = progresses.first(where: { $0.priority == .broaderNetwork }) {
-                ProgressRingView(
-                    progress: broader.progress,
-                    color: broader.color,
+            ForEach(Array(orderedProgresses.enumerated()), id: \.element.id) { index, tierProgress in
+                let ringIndex = orderedProgresses.count - 1 - index
+                let ringSize = size - (CGFloat(ringIndex) * ringGap * 2)
+                
+                NetworkCoverageRingView(
+                    progress: tierProgress.progress,
+                    color: tierProgress.tier.color,
                     lineWidth: lineWidth,
                     size: ringSize
                 )
             }
-            
-            // Middle ring - Key Relationships (lime)
-            if let key = progresses.first(where: { $0.priority == .keyRelationships }) {
-                ProgressRingView(
-                    progress: key.progress,
-                    color: key.color,
-                    lineWidth: lineWidth,
-                    size: ringSize - gap * 2
-                )
-            }
-            
-            // Inner ring - Inner Circle (cyan)
-            if let inner = progresses.first(where: { $0.priority == .innerCircle }) {
-                ProgressRingView(
-                    progress: inner.progress,
-                    color: inner.color,
-                    lineWidth: lineWidth,
-                    size: ringSize - gap * 4
-                )
-            }
         }
-        .frame(width: ringSize, height: ringSize)
+        .frame(width: size, height: size)
     }
 }
 
-struct ProgressRingView: View {
+// MARK: - Single Ring View
+
+struct NetworkCoverageRingView: View {
     let progress: Double
     let color: Color
     let lineWidth: CGFloat
@@ -188,12 +264,82 @@ struct ProgressRingView: View {
     }
 }
 
+// MARK: - Tier Progress Row for Expanded View
+
+struct NetworkCoverageTierRow: View {
+    let tierProgress: TierProgress
+    
+    private var tierName: String {
+        switch tierProgress.tier {
+        case .innerCircle: return "Close Network"
+        case .keyRelationships: return "Middle Network"
+        case .broaderNetwork: return "Broader Network"
+        }
+    }
+    
+    private var windowText: String {
+        "Every \(tierProgress.windowDays) days"
+    }
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            // Colored indicator
+            Circle()
+                .fill(tierProgress.tier.color)
+                .frame(width: 10, height: 10)
+            
+            // Tier name and window
+            VStack(alignment: .leading, spacing: 2) {
+                Text(tierName)
+                    .font(.custom(AppFontName.workSansMedium, size: 14))
+                    .foregroundStyle(.primary)
+                
+                Text(windowText)
+                    .font(.custom(AppFontName.workSansRegular, size: 11))
+                    .foregroundStyle(.secondary)
+            }
+            
+            Spacer()
+            
+            // Progress fraction and percentage
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(tierProgress.displayText)
+                    .font(.custom(AppFontName.workSansMedium, size: 14))
+                    .monospacedDigit()
+                    .foregroundStyle(.primary)
+                    .contentTransition(.numericText())
+                
+                Text("\(Int(tierProgress.progress * 100))%")
+                    .font(.custom(AppFontName.workSansRegular, size: 11))
+                    .foregroundStyle(tierProgress.isComplete ? tierProgress.tier.color : .secondary)
+                    .contentTransition(.numericText())
+            }
+        }
+        .padding(.horizontal, 4)
+    }
+}
+
+// MARK: - Preview
+
 #Preview {
     ZStack {
-        Color.gray.opacity(0.1)
-            .ignoresSafeArea()
+        LinearGradient(
+            stops: [
+                .init(color: Color("Top"), location: 0.0),
+                .init(color: Color("Middle"), location: 0.15),
+                .init(color: Color("Bottom"), location: 0.35)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
         
-        ProgressCircleCard()
-            .padding()
+        ScrollView {
+            VStack(spacing: 20) {
+                ProgressCircleCard()
+                    .padding(.horizontal)
+            }
+            .padding(.top, 40)
+        }
     }
 }
