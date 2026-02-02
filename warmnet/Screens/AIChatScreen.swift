@@ -185,6 +185,8 @@ struct AIChatScreen: View {
             welcomeMessage = "I'm tracking your networking patterns. Ask me about your trends, or I can suggest ways to improve your consistency."
         case .contactDeepDive:
             welcomeMessage = "I can provide detailed insights about this contact and your relationship history. What would you like to know?"
+        case .weeklyTrendInsight(timePeriod: let timePeriod):
+            welcomeMessage = "Let's look at your \(timePeriod.rawValue.lowercased()) networking trends. I can summarize activity, highlight patterns, and suggest one action to improve. What would you like to explore?"
         }
         
         aiGenerator?.conversationManager.addAssistantMessage(welcomeMessage)

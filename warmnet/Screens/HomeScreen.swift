@@ -304,7 +304,7 @@ struct HomeScreen: View {
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Contact.self, PersonalisationData.self, configurations: config)
+    let container = try! ModelContainer(for: Contact.self, PersonalisationData.self, Interaction.self, configurations: config)
     
     // Create sample contacts for preview - set nextTouchDate to today so they appear in todaysGoals
     let today = Date()

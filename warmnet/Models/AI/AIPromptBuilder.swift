@@ -138,6 +138,11 @@ struct AIPromptBuilder {
             
         case .contactDeepDive(let contactId):
             return buildContactDeepDivePrompt(contactId: contactId, context: context)
+            
+        case .weeklyTrendInsight:
+            // For weekly trend insight, use the dedicated method with TrendAnalysisContext
+            // This case is handled separately via buildWeeklyTrendInsightPrompt
+            return buildTrendAnalysisPrompt(context: context)
         }
     }
     
@@ -258,6 +263,61 @@ struct AIPromptBuilder {
         
         Give 2-3 specific, personalized suggestions for deepening this connection.
         """
+    }
+    
+    // MARK: - Weekly Trend Insight Prompt
+    
+    /// Builds a specialized prompt for weekly trend analysis insights
+    static func buildWeeklyTrendInsightPrompt(
+        context: AIContextSnapshot,
+        trendContext: TrendAnalysisContext
+    ) -> String {
+        let periodName = trendContext.timePeriod == .daily ? "daily" : "weekly"
+        let trend = trendContext.trendDirection
+        let changePercent = abs(Int(trendContext.percentageChange))
+        
+        var prompt = """
+        Analyze the user's networking connection trends for the \(periodName) view.
+        
+        TREND DATA:
+        - Total connections: \(trendContext.totalConnections)
+        - Average per day: \(trendContext.formattedAverage)
+        - Trend direction: \(trend.displayText) (\(trendContext.formattedPercentageChange) change)
+        """
+        
+        if let bestDay = trendContext.bestDay {
+            prompt += "\n- Best day: \(bestDay.fullFormattedDate) with \(bestDay.count) connections"
+        }
+        
+        if let worstDay = trendContext.worstDay, trendContext.totalConnections > 0 {
+            prompt += "\n- Lowest day: \(worstDay.fullFormattedDate) with \(worstDay.count) connections"
+        }
+        
+        // Add daily breakdown summary
+        if !trendContext.dailyBreakdown.isEmpty {
+            let recentDays = trendContext.dailyBreakdown.suffix(7)
+            let daysSummary = recentDays.map { "\($0.formattedDate): \($0.count)" }.joined(separator: ", ")
+            prompt += "\n- Recent activity: \(daysSummary)"
+        }
+        
+        prompt += """
+        
+        
+        NETWORK CONTEXT:
+        - Total contacts in network: \(context.networkOverview.totalContacts)
+        - Currently overdue: \(context.networkOverview.overdueCount)
+        - Interactions this week: \(context.activityTrends.interactionsLast7Days)
+        - Interactions last 30 days: \(context.activityTrends.interactionsLast30Days)
+        
+        Provide a helpful insight (2-3 sentences) that:
+        1. Explains what the trend pattern reveals about their networking habits
+        2. Identifies one strength or area of improvement based on the data
+        3. Suggests one specific, actionable step to improve or maintain their momentum
+        
+        Be encouraging and constructive. Focus on patterns and actionable advice.
+        """
+        
+        return prompt
     }
     
     // MARK: - Chat Prompt

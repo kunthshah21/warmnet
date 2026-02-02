@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 /// Overview section displaying Weekly Trend, Progress, and Network Health cards
 struct OverviewSectionView: View {
@@ -36,7 +37,10 @@ struct OverviewSectionView: View {
 }
 
 #Preview {
-    ZStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Contact.self, Interaction.self, configurations: config)
+    
+    return ZStack {
         LinearGradient(
             stops: [
                 .init(color: Color("Top"), location: 0.0),
@@ -53,4 +57,5 @@ struct OverviewSectionView: View {
                 .padding(.horizontal, 20)
         }
     }
+    .modelContainer(container)
 }

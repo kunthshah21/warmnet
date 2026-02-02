@@ -209,22 +209,193 @@ class AIConversationManager {
 ```
 warmnet/
 ├── Models/
-│   └── AI/                              # Central AI folder
-│       ├── AIContextSnapshot.swift      # Data structures
-│       ├── AIContextService.swift       # Data aggregation
-│       ├── AIInsightGenerator.swift     # Foundation Models integration
-│       ├── AIConversationManager.swift  # Chat memory
-│       └── AIPromptBuilder.swift        # Prompt construction
+│   └── AI/                                    # Central AI folder
+│       ├── AIContextSnapshot.swift            # Data structures & InsightType enum
+│       ├── AIContextService.swift             # Data aggregation
+│       ├── AIInsightGenerator.swift           # Foundation Models integration
+│       ├── AIConversationManager.swift        # Chat memory
+│       ├── AIPromptBuilder.swift              # Prompt construction
+│       └── WeeklyTrendInsightService.swift    # NEW: Trend-specific insights
 ├── Views/
-│   ├── AIInsightCard.swift              # Insight display card
-│   └── AIChatView.swift                 # Chat UI components
+│   ├── AIInsightCard.swift                    # Insight display card
+│   ├── AIChatView.swift                       # Chat UI components
+│   ├── WeeklyTrendCard.swift                  # Trend card with sheet trigger
+│   ├── WeeklyTrendDetailSheet.swift           # NEW: Detailed trend view
+│   └── WeeklyTrendAIInsightView.swift         # NEW: AI insight component
 ├── Screens/
-│   ├── HomeScreen.swift                 # Uses AIInsightCard
-│   ├── InsightsScreen.swift             # Uses AIInsightCard
-│   └── AIChatScreen.swift               # Full chat interface
+│   ├── HomeScreen.swift                       # Uses AIInsightCard
+│   ├── InsightsScreen.swift                   # Uses AIInsightCard
+│   └── AIChatScreen.swift                     # Full chat interface
 └── Features and Logic/
-    └── AIInsights_Spec.md               # This documentation
+    └── AIInsights_Spec.md                     # This documentation
 ```
+
+## Weekly Trend Insights Feature
+
+### Architecture Overview (MV Pattern)
+
+The Weekly Trend Insights feature follows the **Model-View (MV) Architecture** pattern used throughout the warmnet application:
+
+- **Model Layer**: Data structures (`TrendAnalysisContext`, `TrendDayInfo`, `TrendTimePeriod`) and services (`WeeklyTrendInsightService`)
+- **View Layer**: UI components (`WeeklyTrendCard`, `WeeklyTrendDetailSheet`, `WeeklyTrendAIInsightView`)
+
+This architecture separates concerns by keeping business logic and data handling in the Model layer while the View layer focuses purely on presentation.
+
+### Components
+
+#### 1. WeeklyTrendInsightService
+Location: `Models/AI/WeeklyTrendInsightService.swift`
+
+Dedicated service for generating AI insights specifically for weekly trend analysis:
+
+```swift
+@Observable
+class WeeklyTrendInsightService {
+    // Generate insight based on time period and current trend data
+    func generateTrendInsight(
+        for period: TrendTimePeriod,
+        trendData: [TrendDayInfo]
+    ) async throws -> String
+    
+    // Build specialized prompt with trend-specific context
+    func buildTrendContext(
+        data: [TrendDayInfo],
+        period: TrendTimePeriod
+    ) -> TrendAnalysisContext
+}
+```
+
+**Features:**
+- Builds `TrendAnalysisContext` from raw interaction data
+- Calculates metrics: total connections, daily average, best/worst days
+- Determines trend direction and percentage change
+- Leverages existing AI infrastructure for insight generation
+
+#### 2. TrendTimePeriod Enum
+Location: `Models/AI/AIContextSnapshot.swift`
+
+```swift
+enum TrendTimePeriod: String, CaseIterable, Codable {
+    case daily = "Daily"    // Last 7 days
+    case weekly = "Weekly"  // Last 4 weeks (28 days)
+}
+```
+
+#### 3. TrendAnalysisContext
+Location: `Models/AI/AIContextSnapshot.swift`
+
+Context structure passed to AI for trend analysis:
+
+```swift
+struct TrendAnalysisContext: Codable {
+    let timePeriod: TrendTimePeriod
+    let totalConnections: Int
+    let averagePerDay: Double
+    let bestDay: TrendDayInfo?
+    let worstDay: TrendDayInfo?
+    let trendDirection: TrendDirection
+    let percentageChange: Double
+    let dailyBreakdown: [TrendDayInfo]
+}
+```
+
+#### 4. UI Components
+
+**WeeklyTrendDetailSheet** (`Views/WeeklyTrendDetailSheet.swift`):
+- Time period filter (segmented control)
+- Enhanced bar chart visualization
+- Statistics cards (Total, Avg/Day, Best Day)
+- AI Insights section
+
+**WeeklyTrendAIInsightView** (`Views/WeeklyTrendAIInsightView.swift`):
+- Loading shimmer animation
+- Error state with retry
+- Refresh button for regenerating insights
+
+### Data Flow Diagram
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                         Weekly Trend Insights Flow                            │
+│                                                                               │
+│  ┌─────────────────┐                                                          │
+│  │ WeeklyTrendCard │ (Overview Section)                                       │
+│  │                 │                                                          │
+│  │  [User Taps]    │                                                          │
+│  └────────┬────────┘                                                          │
+│           │                                                                   │
+│           ▼                                                                   │
+│  ┌─────────────────────────────────────────────────────────────────┐          │
+│  │              WeeklyTrendDetailSheet (Sheet Modal)                │          │
+│  │                                                                  │          │
+│  │  ┌──────────────────────┐                                        │          │
+│  │  │ Time Period Filter   │ ◄─── User selects Daily/Weekly         │          │
+│  │  │ [Daily] [Weekly]     │                                        │          │
+│  │  └──────────┬───────────┘                                        │          │
+│  │             │                                                    │          │
+│  │             ▼                                                    │          │
+│  │  ┌──────────────────────┐                                        │          │
+│  │  │   Enhanced Chart     │ ◄─── Filters data by selected period   │          │
+│  │  │   + Statistics       │                                        │          │
+│  │  └──────────────────────┘                                        │          │
+│  │             │                                                    │          │
+│  │             ▼                                                    │          │
+│  │  ┌──────────────────────────────────────────────────────────┐    │          │
+│  │  │           WeeklyTrendAIInsightView                        │    │          │
+│  │  │                       │                                   │    │          │
+│  │  │                       ▼                                   │    │          │
+│  │  │           WeeklyTrendInsightService                       │    │          │
+│  │  │                │              │                           │    │          │
+│  │  │                ▼              ▼                           │    │          │
+│  │  │    buildTrendContext()  AIContextService                  │    │          │
+│  │  │                │              │                           │    │          │
+│  │  │                └──────┬───────┘                           │    │          │
+│  │  │                       ▼                                   │    │          │
+│  │  │              AIPromptBuilder                              │    │          │
+│  │  │    buildWeeklyTrendInsightPrompt()                        │    │          │
+│  │  │                       │                                   │    │          │
+│  │  │                       ▼                                   │    │          │
+│  │  │         Foundation Models (iOS 26+)                       │    │          │
+│  │  │              or Fallback                                  │    │          │
+│  │  │                       │                                   │    │          │
+│  │  │                       ▼                                   │    │          │
+│  │  │            AI Insight Text                                │    │          │
+│  │  │     "Your networking activity has been..."                │    │          │
+│  │  └──────────────────────────────────────────────────────────┘    │          │
+│  └──────────────────────────────────────────────────────────────────┘          │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Prompt Engineering for Trends
+
+The `buildWeeklyTrendInsightPrompt()` method constructs prompts that:
+
+1. **Provide trend data context**:
+   - Total connections in the period
+   - Average connections per day
+   - Best and worst performing days
+   - Trend direction (increasing/decreasing/stable)
+   - Percentage change
+
+2. **Include network context**:
+   - Total contacts in network
+   - Overdue contact count
+   - Recent interaction counts
+
+3. **Request actionable insights**:
+   - Explain what the trend reveals
+   - Identify strengths or areas for improvement
+   - Suggest one specific action
+
+### InsightType Extension
+
+The `InsightType` enum now includes:
+
+```swift
+case weeklyTrendInsight(timePeriod: TrendTimePeriod)
+```
+
+This type is handled by `WeeklyTrendInsightService` directly using `buildWeeklyTrendInsightPrompt()` for specialized trend analysis.
 
 ## Context Sources
 
@@ -239,6 +410,7 @@ The AI has access to the following data:
 | UserSettings | Queue size, preferences | App context |
 | NetworkProgressService | Tier coverage stats | Health scoring |
 | DailyQueueGenerator | Overdue contacts, priority | Goal identification |
+| WeeklyTrendInsightService | Trend analysis, daily breakdown | Weekly trend AI insights |
 
 ## Conversation Memory
 
@@ -313,17 +485,24 @@ The AI has access to the following data:
 - `AIContextService`: Verify snapshot construction from mock data
 - `AIPromptBuilder`: Validate prompt structure and content
 - `AIConversationManager`: Test session persistence and limits
+- `WeeklyTrendInsightService`: Test trend context building and metrics calculation
+- `TrendAnalysisContext`: Verify percentage change and direction calculations
 
 ### Integration Tests
 - Full insight generation flow with sample data
 - Chat streaming with mock responses
 - Session resumption after app restart
+- Weekly trend insight generation with varying data patterns
+- Time period filter state persistence
 
 ### UI Tests
 - Loading states in AIInsightCard
 - Chat scroll behavior with streaming
 - Empty state and suggestions
 - Error retry flow
+- WeeklyTrendDetailSheet time period filter toggle
+- WeeklyTrendAIInsightView loading shimmer and refresh
+- Bar chart scaling with different data ranges
 
 ## Implementation Status
 
@@ -338,6 +517,11 @@ The AI has access to the following data:
 - [x] AIChatScreen full interface
 - [x] HomeScreen integration
 - [x] InsightsScreen integration
+- [x] WeeklyTrendInsightService for trend analysis
+- [x] WeeklyTrendDetailSheet with time period filters
+- [x] WeeklyTrendAIInsightView component
+- [x] TrendTimePeriod and TrendAnalysisContext data structures
+- [x] buildWeeklyTrendInsightPrompt() prompt builder
 
 ### Future Enhancements
 - [ ] Foundation Models API integration (when SDK available)
@@ -346,3 +530,5 @@ The AI has access to the following data:
 - [ ] Contact-specific chat deep links
 - [ ] Insight caching with invalidation
 - [ ] Analytics on insight engagement
+- [ ] Weekly trend notification with AI summary
+- [ ] Export trend data as report

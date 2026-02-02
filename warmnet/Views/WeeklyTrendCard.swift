@@ -9,9 +9,13 @@ import SwiftUI
 import SwiftData
 
 /// Card displaying weekly interaction trend with a bar chart visualization
+/// Tapping opens a detail sheet with time filters and AI insights
 struct WeeklyTrendCard: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query private var interactions: [Interaction]
+    
+    /// Sheet presentation state
+    @State private var showDetailSheet: Bool = false
     
     var onTap: (() -> Void)? = nil
     
@@ -41,12 +45,18 @@ struct WeeklyTrendCard: View {
         return data
     }
     
+    /// Convert DayData to TrendDayInfo for the detail sheet
+    private var trendDataForSheet: [TrendDayInfo] {
+        weeklyData.map { TrendDayInfo(date: $0.date, count: $0.count) }
+    }
+    
     private var maxCount: Int {
         max(weeklyData.map { $0.count }.max() ?? 1, 1)
     }
     
     var body: some View {
         Button {
+            showDetailSheet = true
             onTap?()
         } label: {
             VStack(alignment: .leading, spacing: 12) {
@@ -86,6 +96,11 @@ struct WeeklyTrendCard: View {
             )
         }
         .buttonStyle(.plain)
+        .sheet(isPresented: $showDetailSheet) {
+            WeeklyTrendDetailSheet(trendData: trendDataForSheet)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
     }
     
     private func barHeight(for count: Int) -> CGFloat {
@@ -108,11 +123,15 @@ struct DayData: Identifiable {
 }
 
 #Preview {
-    ZStack {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+    let container = try! ModelContainer(for: Contact.self, Interaction.self, configurations: config)
+    
+    return ZStack {
         Color.gray.opacity(0.1)
             .ignoresSafeArea()
         
         WeeklyTrendCard()
             .padding()
     }
+    .modelContainer(container)
 }

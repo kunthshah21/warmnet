@@ -283,6 +283,7 @@ enum InsightType: Equatable {
     case networkOpportunity
     case trendAnalysis
     case contactDeepDive(contactId: UUID)
+    case weeklyTrendInsight(timePeriod: TrendTimePeriod)
     
     var title: String {
         switch self {
@@ -298,6 +299,78 @@ enum InsightType: Equatable {
             return "Trend Analysis"
         case .contactDeepDive:
             return "Contact Insights"
+        case .weeklyTrendInsight:
+            return "Weekly Trend Insights"
         }
+    }
+}
+
+// MARK: - Trend Time Period
+
+/// Time period options for trend analysis filtering
+enum TrendTimePeriod: String, CaseIterable, Codable {
+    case daily = "Daily"
+    case weekly = "Weekly"
+    
+    var displayName: String {
+        rawValue
+    }
+    
+    /// Number of days to look back for this time period
+    var lookbackDays: Int {
+        switch self {
+        case .daily:
+            return 7  // Last 7 days for daily view
+        case .weekly:
+            return 28 // Last 4 weeks for weekly view
+        }
+    }
+}
+
+// MARK: - Trend Analysis Context
+
+/// Context structure for detailed trend analysis
+struct TrendAnalysisContext: Codable {
+    let timePeriod: TrendTimePeriod
+    let totalConnections: Int
+    let averagePerDay: Double
+    let bestDay: TrendDayInfo?
+    let worstDay: TrendDayInfo?
+    let trendDirection: TrendDirection
+    let percentageChange: Double
+    let dailyBreakdown: [TrendDayInfo]
+    
+    var formattedAverage: String {
+        String(format: "%.1f", averagePerDay)
+    }
+    
+    var formattedPercentageChange: String {
+        let sign = percentageChange >= 0 ? "+" : ""
+        return "\(sign)\(Int(percentageChange))%"
+    }
+}
+
+/// Information about a specific day's trend data
+struct TrendDayInfo: Codable, Identifiable {
+    let id: UUID
+    let date: Date
+    let count: Int
+    
+    init(date: Date, count: Int) {
+        self.id = UUID()
+        self.date = date
+        self.count = count
+    }
+    
+    var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEE"
+        return formatter.string(from: date)
+    }
+    
+    var fullFormattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM d"
+        return formatter.string(from: date)
     }
 }
