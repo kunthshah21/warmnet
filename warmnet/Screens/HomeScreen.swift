@@ -116,11 +116,6 @@ struct HomeScreen: View {
                             }
                         )
                         
-                        // Today and Weekly Card
-                        TodayAndWeeklyCard(contacts: contacts) { contact in
-                            preSelectedContact = contact
-                        }
-                        
                         // MARK: - Overview Section
                         OverviewSectionView(
                             onWeeklyTrendTap: {
