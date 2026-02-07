@@ -176,9 +176,6 @@ struct LogInteractionSheet: View {
                             .padding()
                             .background(Color(.secondarySystemBackground))
                             .clipShape(RoundedRectangle(cornerRadius: 16))
-                        
-                        // AI Writing Assistant
-                        AIWritingAssistantView(text: $notes)
                     }
                     .padding(.horizontal)
                 }
