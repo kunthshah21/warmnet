@@ -58,9 +58,9 @@ struct TodaysNetworkGoalsView: View {
     // MARK: - Empty State
     
     private var emptyGoalsState: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 12) {
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 32))
+                .font(.system(size: 40))
                 .foregroundStyle(AppColors.accentGreen)
             
             Text("You're all caught up for today!")
@@ -68,8 +68,7 @@ struct TodaysNetworkGoalsView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 4)
-        .padding(.bottom, 8)
+        .padding(.vertical, 30)
     }
     
     // MARK: - Goals Carousel

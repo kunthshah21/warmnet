@@ -16,8 +16,6 @@ struct InsightsScreen: View {
     @State private var showMapSheet = false
     @State private var selectedDate = Date()
     @State private var showDatePicker = false
-    @State private var showInteractionIdeasChat = false
-    @State private var showNetworkOpportunityChat = false
 
     // MARK: - Computed Properties
     private var innerCircleCount: Int {
@@ -101,12 +99,12 @@ struct InsightsScreen: View {
                         .padding(.top, 20)
                         
                         AIInsightCard(
-                            insightType: .networkAnalysis,
+                            insightText: "This month, you've focused on connecting with professionals in the biotech and AI sectors. The trend shows a growing interest in collaborative projects at the intersection of these fields.",
                             onInteractionIdeas: {
-                                showInteractionIdeasChat = true
+                                // Handle interaction ideas action
                             },
                             onNetworkOpportunity: {
-                                showNetworkOpportunityChat = true
+                                // Handle network opportunity action
                             }
                         )
                         .padding(.horizontal)
@@ -169,12 +167,6 @@ struct InsightsScreen: View {
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.visible)
                     .padding()
-            }
-            .sheet(isPresented: $showInteractionIdeasChat) {
-                AIChatScreen(initialContext: .interactionIdeas(contactId: UUID(), contactName: "your contacts"))
-            }
-            .sheet(isPresented: $showNetworkOpportunityChat) {
-                AIChatScreen(initialContext: .networkOpportunity)
             }
         }
     }

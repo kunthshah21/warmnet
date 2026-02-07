@@ -295,15 +295,21 @@ struct AddContactSheet: View {
                 }
                 
                 Section {
-                     ZStack(alignment: .topLeading) {
-                        if notes.isEmpty {
-                            Text("Notes")
-                                .foregroundStyle(.secondary)
-                                .padding(.top, 8)
-                                .padding(.leading, 4)
+                    VStack(alignment: .leading, spacing: 0) {
+                        ZStack(alignment: .topLeading) {
+                            if notes.isEmpty {
+                                Text("Notes")
+                                    .foregroundStyle(.secondary)
+                                    .padding(.top, 8)
+                                    .padding(.leading, 4)
+                            }
+                            TextEditor(text: $notes)
+                                .frame(minHeight: 100)
                         }
-                        TextEditor(text: $notes)
-                            .frame(minHeight: 100)
+                        
+                        // AI Writing Assistant
+                        AIWritingAssistantView(text: $notes)
+                            .padding(.horizontal, -16)
                     }
                 }
                 
