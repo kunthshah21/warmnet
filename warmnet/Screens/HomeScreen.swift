@@ -65,76 +65,73 @@ struct HomeScreen: View {
         }
     }
     
-    // AI-generated summary placeholder
-    private var aiSummary: String {
-        if todaysGoals.isEmpty {
-            return "You're all caught up! This is a great time to explore new connections or strengthen existing relationships in your network."
-        } else {
-            return "This month, you've focused on connecting with professionals in the biotech and AI sectors. The trend shows a growing interest in collaborative projects at the intersection of these fields."
-        }
-    }
+    // State for AI-related navigation
+    @State private var showInteractionIdeasChat = false
+    @State private var showNetworkOpportunityChat = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                backgroundColor
-                    .ignoresSafeArea()
+                // Background gradient
+                LinearGradient(
+                    stops: [
+                        .init(color: Color("Top"), location: 0.0),
+                        .init(color: Color("Middle"), location: 0.15),
+                        .init(color: Color("Bottom"), location: 0.35)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
                 ScrollView {
-                    VStack(spacing: 0) {
-                        // MARK: - Top Card (pulled from top)
-                        VStack(spacing: 20) {
-                            // MARK: - Header Row
-                            headerRow
-                                .padding(.top, 20)
-                            
-                            // MARK: - Add Network Reminder CTA
-                            addReminderButton
-                            
-                            // MARK: - AI Summary
-                            aiSummarySection
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 60) // Account for safe area
-                        .padding(.bottom, 40)
-                        .background(
-                            colorScheme == .dark
-                                ? Color(red: 0.11, green: 0.11, blue: 0.13)
-                                : Color.white
-                        )
-                        .cornerRadius(60, corners: [.bottomLeft, .bottomRight])
-                        .shadow(color: Color.black.opacity(0.08), radius: 12, x: 0, y: 4)
+                    VStack(spacing: 25) {
+                        // MARK: - Header Row
+                        headerRow
+                            .padding(.top, 20)
                         
-                        VStack(spacing: 25) {
-                            // MARK: - Today's Network Goals
-                            TodaysNetworkGoalsView(
-                                contacts: todaysGoals,
-                                onContactTap: { contact in
-                                    preSelectedContact = contact
-                                },
-                                onSeeAllTap: {
-                                    // Navigate to full list or reminders
-                                    showNotifications = true
-                                }
-                            )
-                            
-                            // MARK: - Overview Section
-                            OverviewSectionView(
-                                onWeeklyTrendTap: {
-                                    // Handle weekly trend tap
-                                },
-                                onProgressTap: {
-                                    // Handle progress tap
-                                },
-                                onNetworkHealthTap: {
-                                    // Handle network health tap
-                                }
-                            )
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 25)
-                        .padding(.bottom, 120) // Space for floating button
+                        // MARK: - Add Network Reminder CTA
+                        addReminderButton
+                        
+                        // MARK: - AI Summary
+                        AIInsightCard(
+                            insightType: .homeSummary,
+                            onInteractionIdeas: {
+                                showInteractionIdeasChat = true
+                            },
+                            onNetworkOpportunity: {
+                                showNetworkOpportunityChat = true
+                            }
+                        )
+                        
+                        // MARK: - Today's Network Goals
+                        TodaysNetworkGoalsView(
+                            contacts: todaysGoals,
+                            onContactTap: { contact in
+                                preSelectedContact = contact
+                            },
+                            onSeeAllTap: {
+                                // Navigate to full list or reminders
+                                showNotifications = true
+                            }
+                        )
+                        
+                        // MARK: - Overview Section
+                        OverviewSectionView(
+                            onWeeklyTrendTap: {
+                                // Handle weekly trend tap
+                            },
+                            onProgressTap: {
+                                // Handle progress tap
+                            },
+                            onNetworkHealthTap: {
+                                // Handle network health tap
+                            }
+                        )
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 60) // Account for safe area
+                    .padding(.bottom, 120) // Space for floating button
                 }
                 .ignoresSafeArea(edges: .top)
                 .scrollContentBackground(.hidden)
@@ -184,30 +181,38 @@ struct HomeScreen: View {
             .sheet(isPresented: $showAddReminderSheet) {
                 AddReminderSheet()
             }
+            .sheet(isPresented: $showInteractionIdeasChat) {
+                AIChatScreen(initialContext: .interactionIdeas(contactId: UUID(), contactName: "your contacts"))
+            }
+            .sheet(isPresented: $showNetworkOpportunityChat) {
+                AIChatScreen(initialContext: .networkOpportunity)
+            }
         }
     }
     
     // MARK: - Header Row
     
+    private var headerHeadingColor: Color {
+        colorScheme == .dark ? AppColors.textPrimary : .black
+    }
+    
     private var headerRow: some View {
         HStack(alignment: .bottom) {
-            // Greeting text on left
+            // Greeting text on left — same style as Insights title (Go Deep into your Network)
             let titleString: AttributedString = {
-                let name = userName.isEmpty ? "User" : userName
-                var a = AttributedString("\(greeting)\n\(name)!")
-                
-                // Apply base font to the whole string
-                a.font = .system(size: 28, weight: .bold)
-                a.foregroundColor = .primary
-                
-                // Apply blue color to name
-                if let rangeName = a.range(of: name) {
-                    a[rangeName].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
+                let namePart = userName.isEmpty ? "User" : userName
+                var a = AttributedString("\(greeting)\n\(namePart)")
+                a.font = .system(size: 26, weight: .bold)
+                if let greetingRange = a.range(of: greeting) {
+                    a[greetingRange].foregroundColor = headerHeadingColor
+                }
+                if let nameRange = a.range(of: namePart) {
+                    a[nameRange].foregroundColor = Color(red: 0.38, green: 0.51, blue: 0.98)
                 }
                 return a
             }()
-            
             Text(titleString)
+                .lineSpacing(-2)
             
             Spacer()
             
@@ -252,22 +257,19 @@ struct HomeScreen: View {
         .buttonStyle(.plain)
     }
     
-    // MARK: - AI Summary Section
-    
-    private var aiSummarySection: some View {
-        Text(aiSummary)
-            .font(.custom(AppFontName.workSansRegular, size: 15))
-            .lineSpacing(4)
-            .foregroundStyle(.primary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
     
     // MARK: - Subviews
 
-    private var backgroundColor: Color {
-        colorScheme == .dark
-            ? AppColors.deepNavy
-            : Color(red: 0xF1/255, green: 0xF2/255, blue: 0xF6/255)
+    private var backgroundTopColor: Color {
+        colorScheme == .dark ? AppColors.deepNavy : Color(.sRGB, white: 0.98, opacity: 1)
+    }
+
+    private var backgroundBottomColor: Color {
+        colorScheme == .dark ? AppColors.charcoal.opacity(0.95) : Color(.sRGB, white: 0.94, opacity: 1)
+    }
+
+    private var headingColor: Color {
+        .primary
     }
     
     private var addContactButton: some View {
@@ -302,7 +304,7 @@ struct HomeScreen: View {
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Contact.self, PersonalisationData.self, configurations: config)
+    let container = try! ModelContainer(for: Contact.self, PersonalisationData.self, Interaction.self, configurations: config)
     
     // Create sample contacts for preview - set nextTouchDate to today so they appear in todaysGoals
     let today = Date()
