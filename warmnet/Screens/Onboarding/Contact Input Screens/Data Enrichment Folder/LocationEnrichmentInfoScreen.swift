@@ -72,7 +72,6 @@ struct LocationEnrichmentInfoScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToEnrichment) {
             LocationEnrichmentScreen(onFlowComplete: {
-                print("LocationEnrichmentInfoScreen: onFlowComplete called")
                 onFlowComplete()
             }, isOnboarding: isOnboarding)
         }

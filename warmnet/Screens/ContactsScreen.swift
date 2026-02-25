@@ -4,11 +4,16 @@ import SwiftData
 struct ContactsScreen: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Contact.name) private var contacts: [Contact]
+    @Query private var personalisationData: [PersonalisationData]
     
     @State private var showAddContact = false
     @State private var showContactImport = false
     @State private var searchText = ""
     @State private var selectedPriority: Priority? = nil
+    
+    private var displayName: String {
+        personalisationData.first?.name ?? "My Card"
+    }
     
     private var groupedContacts: [(key: String, value: [Contact])] {
         let filtered = contacts.filter { contact in
@@ -111,7 +116,7 @@ struct ContactsScreen: View {
                                         )
                                     
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("Kunth Shah")
+                                        Text(displayName)
                                             .font(.title3.weight(.semibold))
                                         Text("My Card")
                                             .font(.subheadline)

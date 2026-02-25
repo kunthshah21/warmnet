@@ -219,7 +219,6 @@ extension ContactLocationMatcher {
             } catch {
                 // Keep city without coordinate on error
                 geocodedCities.append(city)
-                print("ContactLocationMatcher: Failed to geocode \(searchQuery): \(error)")
             }
             
             // Small delay to avoid rate limiting

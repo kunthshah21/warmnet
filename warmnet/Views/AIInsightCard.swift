@@ -219,8 +219,8 @@ extension AIInsightCard {
     
     return AIInsightCard(
         insightType: .homeSummary,
-        onInteractionIdeas: { print("Interaction ideas tapped") },
-        onNetworkOpportunity: { print("Network opportunity tapped") }
+        onInteractionIdeas: { },
+        onNetworkOpportunity: { }
     )
     .padding()
     .background(Color(red: 0xF1/255, green: 0xF2/255, blue: 0xF6/255))
@@ -230,8 +230,8 @@ extension AIInsightCard {
 #Preview("Static Text (Legacy)") {
     AIInsightCard(
         insightText: "This month, you've focused on connecting with professionals in the biotech and AI sectors. The trend shows a growing interest in collaborative projects at the intersection of these fields.",
-        onInteractionIdeas: { print("Interaction ideas tapped") },
-        onNetworkOpportunity: { print("Network opportunity tapped") }
+        onInteractionIdeas: { },
+        onNetworkOpportunity: { }
     )
     .padding()
     .background(Color(red: 0xF1/255, green: 0xF2/255, blue: 0xF6/255))

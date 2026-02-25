@@ -36,9 +36,7 @@ struct SecondaryButton: View {
 }
 
 #Preview {
-    SecondaryButton(title: "Login to my Account") {
-        print("Secondary button tapped")
-    }
+    SecondaryButton(title: "Login to my Account") { }
     .padding()
     .background(AppColors.deepNavy)
 }

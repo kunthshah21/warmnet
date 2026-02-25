@@ -1,1 +1,63 @@
-/DerivedData
+# Xcode
+DerivedData/
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspace/xcuserdata/
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+*.workspace/xcshareddata/swiftpm/
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+Carthage/Checkouts/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.app
+
+# Provisioning profiles
+*.mobileprovision
+*.provisionprofile
+
+# Secrets / Environment
+.env
+.env.*
+*.xcconfig
+
+# Project-specific
+WARMNET_Portfolio_Document.txt

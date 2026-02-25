@@ -72,11 +72,7 @@ struct PriorityEnrichInfoScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToEnrichment) {
             PriorityEnrichmentScreen(onSave: {
-                // Handle save completion, maybe navigate to next step or dismiss
-                // For now, we can just print or dismiss if it was the last step
-                print("Saved priorities")
             }, onFlowComplete: {
-                print("PriorityEnrichInfoScreen: onFlowComplete called")
                 onFlowComplete()
             }, isOnboarding: isOnboarding)
         }

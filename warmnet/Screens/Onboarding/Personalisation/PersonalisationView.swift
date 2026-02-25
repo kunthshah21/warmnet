@@ -129,16 +129,7 @@ struct PersonalisationView: View {
         
         modelContext.insert(personalisationData)
         
-        do {
-            try modelContext.save()
-            print("✅ Personalisation data saved successfully")
-            print("Goal: \(selectedGoal?.rawValue ?? "None")")
-            print("Challenges: \(selectedChallenges.map { $0.rawValue })")
-            print("Connection Size: \(selectedSize?.rawValue ?? "None")")
-            print("Communication Style: \(selectedStyle?.rawValue ?? "None")")
-        } catch {
-            print("❌ Failed to save personalisation data: \(error.localizedDescription)")
-        }
+        try? modelContext.save()
     }
     
     private func resetData() {

@@ -115,15 +115,9 @@ final class LocationNotificationService: NSObject {
     /// Setup geofences for contact cities
     /// - Parameter contacts: All contacts to analyze
     func setupGeofences(for contacts: [Contact]) async {
-        guard authorizationStatus.canUseGeofencing else {
-            print("LocationNotificationService: Cannot setup geofences - need Always authorization")
-            return
-        }
+        guard authorizationStatus.canUseGeofencing else { return }
         
-        guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else {
-            print("LocationNotificationService: Geofencing not available on this device")
-            return
-        }
+        guard CLLocationManager.isMonitoringAvailable(for: CLCircularRegion.self) else { return }
         
         isSettingUpGeofences = true
         
@@ -169,11 +163,9 @@ final class LocationNotificationService: NSObject {
             )
             monitoredCities.append(monitoredCity)
             
-            print("LocationNotificationService: Monitoring \(cityPriority.city) at \(coordinate.latitude), \(coordinate.longitude)")
         }
         
         isSettingUpGeofences = false
-        print("LocationNotificationService: Setup \(monitoredCities.count) geofences")
     }
     
     /// Stop all geofence monitoring
@@ -196,10 +188,7 @@ final class LocationNotificationService: NSObject {
         guard region is CLCircularRegion else { return }
         
         // Find the monitored city for this region
-        guard let monitoredCity = monitoredCities.first(where: { $0.regionIdentifier == region.identifier }) else {
-            print("LocationNotificationService: Unknown region entered: \(region.identifier)")
-            return
-        }
+        guard let monitoredCity = monitoredCities.first(where: { $0.regionIdentifier == region.identifier }) else { return }
         
         Task {
             await processRegionEntry(for: monitoredCity)
@@ -208,44 +197,24 @@ final class LocationNotificationService: NSObject {
     
     /// Process region entry and potentially send notification
     private func processRegionEntry(for city: MonitoredCity) async {
-        guard let context = modelContext else {
-            print("LocationNotificationService: No model context available")
-            return
-        }
+        guard let context = modelContext else { return }
         
-        // Get user settings
         let settings = UserSettings.getOrCreate(from: context)
         
-        // Check if location notifications are enabled
-        guard settings.locationNotificationsEnabled else {
-            print("LocationNotificationService: Location notifications disabled")
-            return
-        }
+        guard settings.locationNotificationsEnabled else { return }
         
-        // Check quiet hours
-        if settings.isInQuietHours {
-            print("LocationNotificationService: In quiet hours, skipping notification")
-            return
-        }
+        if settings.isInQuietHours { return }
         
-        // Check cooldown
         let canNotify = NotificationHistory.canNotify(
             for: city.city,
             cooldownHours: settings.notificationCooldownHours,
             context: context
         )
         
-        guard canNotify else {
-            print("LocationNotificationService: Cooldown active for \(city.city)")
-            return
-        }
+        guard canNotify else { return }
         
-        // Fetch contacts in this city
         let contacts = await fetchContactsInCity(city.city, context: context)
-        guard !contacts.isEmpty else {
-            print("LocationNotificationService: No contacts found in \(city.city)")
-            return
-        }
+        guard !contacts.isEmpty else { return }
         
         // Get display names for notification
         let displayNames = ContactLocationMatcher.getDisplayNames(from: contacts, maxNames: 3)
@@ -272,7 +241,7 @@ final class LocationNotificationService: NSObject {
             context: context
         )
         
-        print("LocationNotificationService: Sent notification for \(city.city) with \(contacts.count) contacts")
+    
     }
     
     /// Fetch contacts for a specific city
@@ -294,7 +263,6 @@ final class LocationNotificationService: NSObject {
                 return lhsWeight > rhsWeight
             }
         } catch {
-            print("LocationNotificationService: Failed to fetch contacts: \(error)")
             return []
         }
     }
@@ -322,10 +290,7 @@ final class LocationNotificationService: NSObject {
     func simulateRegionEntry(city: String) {
         guard let monitoredCity = monitoredCities.first(where: {
             $0.city.lowercased() == city.lowercased()
-        }) else {
-            print("LocationNotificationService: City \(city) not monitored")
-            return
-        }
+        }) else { return }
         
         Task {
             await processRegionEntry(for: monitoredCity)
@@ -349,23 +314,18 @@ extension LocationNotificationService: CLLocationManagerDelegate {
     }
     
     nonisolated func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        print("LocationNotificationService: Entered region \(region.identifier)")
         Task { @MainActor in
             handleRegionEntry(region)
         }
     }
     
     nonisolated func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
-        // Currently not used, but can be implemented for "once per visit" tracking
-        print("LocationNotificationService: Exited region \(region.identifier)")
     }
     
     nonisolated func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
-        print("LocationNotificationService: Monitoring failed for region \(region?.identifier ?? "unknown"): \(error)")
     }
     
     nonisolated func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("LocationNotificationService: Location manager error: \(error)")
     }
 }
 

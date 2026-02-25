@@ -146,11 +146,7 @@ struct SettingsScreen: View {
     // MARK: - Actions
     
     private func resetAllData() {
-        do {
-            try modelContext.delete(model: Contact.self)
-        } catch {
-            print("Failed to reset data: \(error)")
-        }
+        try? modelContext.delete(model: Contact.self)
     }
     
     private func resetOnboarding() {

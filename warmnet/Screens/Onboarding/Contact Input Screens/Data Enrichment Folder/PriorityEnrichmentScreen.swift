@@ -46,10 +46,7 @@ struct PriorityEnrichmentScreen: View {
         .background(isOnboarding ? Color.black : Color(uiColor: .systemBackground))
         .navigationDestination(isPresented: $navigateToLocation) {
             LocationEnrichmentInfoScreen(onEnrich: {
-                // TODO: Navigate to actual location enrichment screen
-                print("Start location enrichment")
             }, onFlowComplete: {
-                print("PriorityEnrichmentScreen: onFlowComplete called")
                 onFlowComplete()
             }, isOnboarding: isOnboarding)
         }

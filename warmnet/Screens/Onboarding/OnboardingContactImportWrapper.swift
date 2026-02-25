@@ -26,7 +26,6 @@ struct OnboardingContactImportWrapper: View {
             switch currentScreen {
             case .contactImport:
                 ImportContactsScreen(onFlowComplete: {
-                    print("OnboardingContactImportWrapper: onFlowComplete called, transitioning to finalCongratulations")
                     withAnimation(.easeInOut(duration: 0.5)) {
                         currentScreen = .finalCongratulations
                     }
@@ -68,13 +67,9 @@ struct OnboardingContactImportWrapper: View {
             case .paywall:
                 PaywallScreen(
                     onContinue: {
-                        // User selected premium
-                        print("User selected premium plan")
                         onComplete()
                     },
                     onSkip: {
-                        // User continues with free
-                        print("User continues with free plan")
                         onComplete()
                     }
                 )

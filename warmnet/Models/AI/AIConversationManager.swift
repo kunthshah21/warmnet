@@ -170,9 +170,7 @@ class AIConversationManager {
             encoder.dateEncodingStrategy = .iso8601
             let data = try encoder.encode(session)
             UserDefaults.standard.set(data, forKey: sessionStorageKey)
-        } catch {
-            print("AIConversationManager: Failed to save session: \(error)")
-        }
+        } catch { }
     }
     
     /// Load a previous session from UserDefaults
@@ -197,7 +195,6 @@ class AIConversationManager {
             currentSession = session
             return true
         } catch {
-            print("AIConversationManager: Failed to load session: \(error)")
             clearSession()
             return false
         }

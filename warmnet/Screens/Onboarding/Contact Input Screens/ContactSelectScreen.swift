@@ -97,19 +97,12 @@ struct ContactSelectScreen: View {
             EnrichInfoScreen(onGetStarted: {
                 // Navigation handled internally
             }, onFlowComplete: {
-                print("ContactSelectScreen: onFlowComplete called, onFlowComplete is \(onFlowComplete != nil ? "provided" : "nil")")
-                // If we're in onboarding mode, dismiss back to ImportContactsScreen
                 if let onFlowComplete = onFlowComplete {
-                    print("ContactSelectScreen: Dismissing to parent screen")
                     dismiss()
-                    // Call the completion handler after dismissing
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        print("ContactSelectScreen: Calling onFlowComplete callback")
                         onFlowComplete()
                     }
                 } else {
-                    print("ContactSelectScreen: No callback, dismissing navigation")
-                    // Default behavior: Dismiss back to the root
                     navigateToEnrichment = false
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         dismiss()

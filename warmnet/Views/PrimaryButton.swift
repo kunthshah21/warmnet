@@ -36,13 +36,9 @@ struct PrimaryButton: View {
 
 #Preview {
     VStack(spacing: 20) {
-        PrimaryButton("Add Contact", icon: "plus") {
-            print("Tapped")
-        }
+        PrimaryButton("Add Contact", icon: "plus") { }
         
-        PrimaryButton("Save") {
-            print("Saved")
-        }
+        PrimaryButton("Save") { }
     }
     .padding()
     .background(AppColors.deepNavy)

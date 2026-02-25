@@ -38,11 +38,8 @@ class MigrationHelper {
             
             if migratedCount > 0 {
                 try modelContext.save()
-                print("✅ Successfully migrated \(migratedCount) contact interaction(s)")
             }
-        } catch {
-            print("❌ Error migrating contact interactions: \(error)")
-        }
+        } catch { }
     }
     
     /// Checks if migration has already been performed
@@ -57,7 +54,6 @@ class MigrationHelper {
                 contact.lastContacted != nil && contact.interactions.isEmpty
             }
         } catch {
-            print("❌ Error checking migration status: \(error)")
             return false
         }
     }

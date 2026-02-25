@@ -266,9 +266,7 @@ struct ReminderQueueDebugView: View {
             }
             .sorted { $0.1 < $1.1 } // Sort by days until (soonest first)
             
-        } catch {
-            print("Failed to load reminder data: \(error)")
-        }
+        } catch { }
     }
     
     // Background colors

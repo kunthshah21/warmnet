@@ -81,22 +81,9 @@ struct ProfileEditScreen: View {
                 profileImage = UIImage(data: photoData)
             }
         } else {
-            // Create initial profile data with defaults
-            let calendar = Calendar.current
-            let defaultBirthdate = calendar.date(from: DateComponents(year: 2004, month: 5, day: 21)) ?? Date()
-            
-            let newProfile = PersonalisationData(
-                name: "Kunth",
-                email: "kunth@gmail.com",
-                birthday: defaultBirthdate
-            )
+            let newProfile = PersonalisationData()
             modelContext.insert(newProfile)
             try? modelContext.save()
-            
-            // Load the default values into state
-            name = "Kunth"
-            email = "kunth@gmail.com"
-            birthdate = defaultBirthdate
         }
     }
     

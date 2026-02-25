@@ -85,12 +85,9 @@ struct warmnetApp: App {
         
         switch action {
         case NotificationManager.NotificationAction.viewContacts.identifier:
-            // TODO: Deep link to contacts filtered by city
-            // This would require a navigation coordinator pattern
-            print("warmnetApp: User wants to view contacts in \(city)")
+            break
             
         case NotificationManager.NotificationAction.snooze.identifier:
-            // Snooze notifications for this city for 2 hours
             let snoozeUntil = Calendar.current.date(byAdding: .hour, value: 2, to: Date()) ?? Date()
             
             let descriptor = FetchDescriptor<NotificationHistory>(
@@ -105,10 +102,9 @@ struct warmnetApp: App {
                 latestHistory.snooze(until: snoozeUntil)
                 try? context.save()
             }
-            print("warmnetApp: Snoozed notifications for \(city) until \(snoozeUntil)")
             
         case NotificationManager.NotificationAction.dismiss.identifier:
-            print("warmnetApp: User dismissed notification for \(city)")
+            break
             
         default:
             break

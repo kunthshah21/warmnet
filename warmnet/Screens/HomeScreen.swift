@@ -326,7 +326,7 @@ struct HomeScreen: View {
     
     // Create sample profile data
     let profileData = PersonalisationData()
-    profileData.name = "Kunth"
+    profileData.name = "Alex"
     container.mainContext.insert(profileData)
     
     return HomeScreen()

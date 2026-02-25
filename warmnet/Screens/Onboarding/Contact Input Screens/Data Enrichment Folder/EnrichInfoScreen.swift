@@ -68,10 +68,7 @@ struct EnrichInfoScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationDestination(isPresented: $navigateToPriority) {
             PriorityEnrichInfoScreen(onEnrich: {
-                // TODO: Navigate to next step or finish
-                print("Priority enrichment done")
             }, onFlowComplete: {
-                print("EnrichInfoScreen: onFlowComplete called")
                 onFlowComplete()
             }, isOnboarding: isOnboarding)
         }

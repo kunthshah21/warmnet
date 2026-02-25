@@ -78,7 +78,6 @@ final class NotificationManager: NSObject {
             await refreshAuthorizationStatus()
             return granted
         } catch {
-            print("NotificationManager: Failed to request authorization: \(error)")
             return false
         }
     }
@@ -163,10 +162,7 @@ final class NotificationManager: NSObject {
         contactCount: Int,
         userInfo: [String: Any] = [:]
     ) async {
-        guard authorizationStatus.canSendNotifications else {
-            print("NotificationManager: Cannot send notification - not authorized")
-            return
-        }
+        guard authorizationStatus.canSendNotifications else { return }
         
         let notifContent = NotificationContentProvider.content(
             for: .locationEntry(city: city, contactNames: contactNames, totalCount: contactCount)
@@ -196,12 +192,7 @@ final class NotificationManager: NSObject {
             trigger: trigger
         )
         
-        do {
-            try await notificationCenter.add(request)
-            print("NotificationManager: Scheduled notification for \(city)")
-        } catch {
-            print("NotificationManager: Failed to schedule notification: \(error)")
-        }
+        try? await notificationCenter.add(request)
     }
 
     /// Schedule birthday notifications for a contact
@@ -236,12 +227,7 @@ final class NotificationManager: NSObject {
         let id1 = "birthday_day_\(contact.id.uuidString)"
         let request1 = UNNotificationRequest(identifier: id1, content: content1, trigger: trigger1)
         
-        do {
-            try await notificationCenter.add(request1)
-            print("NotificationManager: Scheduled birthday (day of) notification for \(contact.name)")
-        } catch {
-            print("NotificationManager: Failed to schedule birthday (day of) notification: \(error)")
-        }
+        try? await notificationCenter.add(request1)
         
         // --- Notification 2 (1 Week Before) ---
         // Trigger: 7 days before the birthday at 9:00 AM.
@@ -274,12 +260,7 @@ final class NotificationManager: NSObject {
             let id2 = "birthday_week_\(contact.id.uuidString)"
             let request2 = UNNotificationRequest(identifier: id2, content: content2, trigger: trigger2)
             
-            do {
-                try await notificationCenter.add(request2)
-                print("NotificationManager: Scheduled birthday (1 week before) notification for \(contact.name)")
-            } catch {
-                print("NotificationManager: Failed to schedule birthday (1 week before) notification: \(error)")
-            }
+            try? await notificationCenter.add(request2)
         }
     }
 
