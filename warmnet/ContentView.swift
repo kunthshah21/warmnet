@@ -12,6 +12,10 @@ struct ContentView: View {
                 ContactsScreen()
             }
             
+            Tab("Reminders", systemImage: "bell.fill") {
+                RemindersScreen()
+            }
+            
             Tab("Insights", systemImage: "chart.bar.fill") {
                 InsightsScreen()
             }
