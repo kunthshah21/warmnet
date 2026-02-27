@@ -11,7 +11,6 @@ struct HomeScreen: View {
     @State private var showSettings = false
     @State private var showNotifications = false
     @State private var showMapSheet = false
-    @State private var showAddReminderSheet = false
     @State private var preSelectedContact: Contact?
     
     private var profileData: PersonalisationData? {
@@ -89,9 +88,6 @@ struct HomeScreen: View {
                         // MARK: - Header Row
                         headerRow
                             .padding(.top, 20)
-                        
-                        // MARK: - Add Network Reminder CTA
-                        addReminderButton
                         
                         // MARK: - AI Summary
                         AIInsightCard(
@@ -178,9 +174,6 @@ struct HomeScreen: View {
             .sheet(isPresented: $showSettings) {
                 SettingsScreen()
             }
-            .sheet(isPresented: $showAddReminderSheet) {
-                AddReminderSheet()
-            }
             .sheet(isPresented: $showInteractionIdeasChat) {
                 AIChatScreen(initialContext: .interactionIdeas(contactId: UUID(), contactName: "your contacts"))
             }
@@ -239,24 +232,6 @@ struct HomeScreen: View {
             }
         }
     }
-    
-    // MARK: - Add Reminder Button
-    
-    private var addReminderButton: some View {
-        Button {
-            showAddReminderSheet = true
-        } label: {
-            Text("Add Network Reminder")
-                .font(.custom(AppFontName.workSansMedium, size: 16))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: 64)
-                .background(Color(red: 0.09, green: 0.09, blue: 0.11))
-                .cornerRadius(100)
-        }
-        .buttonStyle(.plain)
-    }
-    
     
     // MARK: - Subviews
 
