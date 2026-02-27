@@ -135,13 +135,13 @@ Created comprehensive specification document: `AIWritingAssistant_Spec.md`
 ## Files Modified/Created
 
 ### Created
-- `warmnet/Views/AIWritingAssistantView.swift` (159 lines)
+- `warmnet/Views/AI/AIWritingAssistantView.swift` (159 lines)
 - `warmnet/Features and Logic/AIWritingAssistant_Spec.md` (Documentation)
 - `warmnet/Features and Logic/AIWritingAssistant_Summary.md` (This file)
 
 ### Modified
-- `warmnet/Screens/LogInteractionSheet.swift` (Added AIWritingAssistantView integration)
-- `warmnet/Screens/AddContactSheet.swift` (Added AIWritingAssistantView integration)
+- `warmnet/Screens/Contacts/LogInteractionSheet.swift` (Added AIWritingAssistantView integration)
+- `warmnet/Screens/Contacts/AddContactSheet.swift` (Added AIWritingAssistantView integration)
 
 ## Architecture Alignment
 

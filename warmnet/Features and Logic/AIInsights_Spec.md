@@ -301,13 +301,13 @@ struct TrendAnalysisContext: Codable {
 
 #### 4. UI Components
 
-**WeeklyTrendDetailSheet** (`Views/WeeklyTrendDetailSheet.swift`):
+**WeeklyTrendDetailSheet** (`Views/Insights/WeeklyTrendDetailSheet.swift`):
 - Time period filter (segmented control)
 - Enhanced bar chart visualization
 - Statistics cards (Total, Avg/Day, Best Day)
 - AI Insights section
 
-**WeeklyTrendAIInsightView** (`Views/WeeklyTrendAIInsightView.swift`):
+**WeeklyTrendAIInsightView** (`Views/AI/WeeklyTrendAIInsightView.swift`):
 - Loading shimmer animation
 - Error state with retry
 - Refresh button for regenerating insights

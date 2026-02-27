@@ -44,21 +44,29 @@ All data is stored **locally on-device** using SwiftData. No data is transmitted
 warmnet/
 ├── Models/
 │   ├── AI/                     # AI context, prompts, conversation management
+│   ├── DataModels/             # Core SwiftData models (Contact, Interaction, Milestone)
+│   ├── Location/               # CoreLocation, geocoding, and contact location services
 │   ├── Notifications/          # Birthday and geolocation notification services
 │   ├── ReminderSystem/         # Tiered reminder scheduling and urgency calculation
-│   ├── Contact.swift           # Core contact model
-│   ├── Interaction.swift       # Interaction logging model
-│   └── ...
+│   └── Utilities/              # Country codes, migration helpers, progress calculations
 ├── Screens/
-│   ├── Onboarding/             # Multi-step onboarding and enrichment flow
-│   ├── Settings/               # Settings, profile, appearance, privacy
+│   ├── AI/                     # AI chat conversation screen
+│   ├── Contacts/               # Contact list, detail, add/edit, and interaction logging
+│   ├── Home/                   # Main dashboard screen
+│   ├── Insights/               # AI insights and analytics dashboard
+│   ├── Map/                    # Interactive contact map view
+│   ├── Onboarding/             # Multi-step onboarding, enrichment, and personalisation
+│   ├── Reminders/              # Reminder calendar screen
 │   ├── ReminderDebug/          # Debug views for reminder queue inspection
-│   ├── HomeScreen.swift        # Main dashboard
-│   ├── ContactsScreen.swift    # Contact list with A-Z index
-│   ├── InsightsScreen.swift    # AI insights and analytics
-│   ├── MapScreen.swift         # Contact map view
-│   └── ...
-├── Views/                      # Reusable UI components
+│   ├── Settings/               # Settings, profile, appearance, privacy
+│   └── Testing/                # Test screens for notifications and location
+├── Views/
+│   ├── AI/                     # AI chat, insight cards, and writing assistant components
+│   ├── Contact/                # Contact rows, avatars, and profile icons
+│   ├── Dashboard/              # KPI cards, progress rings, network health components
+│   ├── Insights/               # Weekly trend cards and detail sheets
+│   ├── Map/                    # Clustered map, filter bar, and map preview components
+│   └── Shared/                 # Reusable buttons and form fields
 ├── DesignSystem/               # Typography and design tokens
 ├── Features and Logic/         # Feature specification documents
 └── warmnetApp.swift            # App entry point

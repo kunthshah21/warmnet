@@ -9,7 +9,7 @@ February 7, 2026
 ## Feature Components
 
 ### 1. AIWritingAssistantView.swift
-**Location:** `warmnet/Views/AIWritingAssistantView.swift`
+**Location:** `warmnet/Views/AI/AIWritingAssistantView.swift`
 
 A reusable SwiftUI component that monitors text input and provides contextual writing prompts.
 
