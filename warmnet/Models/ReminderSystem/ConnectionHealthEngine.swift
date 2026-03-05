@@ -43,11 +43,13 @@ struct ConnectionHealthEngine {
     ///   - contact: The contact that was interacted with
     ///   - interaction: The interaction that was logged
     ///   - manualReminder: Optional manual reminder that this interaction fulfills
+    ///   - settings: Optional user settings for customized scoring behavior
     ///   - currentDate: The current date (defaults to now, injectable for testing)
     static func recordInteraction(
         contact: Contact,
         interaction: Interaction,
         manualReminder: ManualReminder? = nil,
+        settings: UserSettings? = nil,
         currentDate: Date = Date()
     ) {
         let interactionDate = interaction.date
@@ -87,6 +89,12 @@ struct ConnectionHealthEngine {
             pointsEarned += ScoringConstants.streakMilestoneBonus
         }
         
+        // Apply scoring gain multiplier from settings (higher = stricter, points worth less)
+        // Inverted: user sees "Forgiving" to "Strict", so we divide by the multiplier
+        if let settings = settings {
+            pointsEarned = pointsEarned / settings.scoringGainMultiplier
+        }
+        
         // Update connection score (clamped to 0-100)
         contact.connectionScore = min(
             ScoringConstants.maxScore,
@@ -111,7 +119,7 @@ struct ConnectionHealthEngine {
         }
         
         // Delegate to ReminderScheduler for next touch date calculation
-        ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: interactionDate)
+        ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: interactionDate, settings: settings)
         
         // Update timestamps
         contact.lastScoreUpdate = currentDate
@@ -125,9 +133,11 @@ struct ConnectionHealthEngine {
     ///
     /// - Parameters:
     ///   - contacts: Array of contacts to apply decay to
+    ///   - settings: Optional user settings for customized decay behavior
     ///   - currentDate: The current date (defaults to now, injectable for testing)
-    static func applyDecay(to contacts: [Contact], currentDate: Date = Date()) {
+    static func applyDecay(to contacts: [Contact], settings: UserSettings? = nil, currentDate: Date = Date()) {
         let calendar = Calendar.current
+        let decayMultiplier = settings?.decayRateMultiplier ?? 1.0
         
         for contact in contacts {
             guard let lastUpdate = contact.lastScoreUpdate else {
@@ -147,7 +157,7 @@ struct ConnectionHealthEngine {
             let isSeverelyOverdue = daysOverdue > frequencyDays * 2
             
             let decayRate = isSeverelyOverdue ? DecayConstants.severelyOverdueDecay : baseDecay
-            let totalDecay = decayRate * Double(daysSinceUpdate)
+            let totalDecay = decayRate * Double(daysSinceUpdate) * decayMultiplier
             
             // Apply decay (clamped to minimum score)
             contact.connectionScore = max(
@@ -164,10 +174,13 @@ struct ConnectionHealthEngine {
     /// Calculates the health penalty to add to priority score in the daily queue.
     /// Low-health contacts get a boost to surface them in the queue.
     ///
-    /// - Parameter contact: The contact to calculate penalty for
+    /// - Parameters:
+    ///   - contact: The contact to calculate penalty for
+    ///   - settings: Optional user settings for customized health boost behavior
     /// - Returns: The penalty value to add to priority score
-    static func healthPenalty(for contact: Contact) -> Double {
-        max(0, (ScoringConstants.defaultScore - contact.connectionScore) * 0.3)
+    static func healthPenalty(for contact: Contact, settings: UserSettings? = nil) -> Double {
+        let multiplier = settings?.healthPenaltyMultiplier ?? 1.0
+        return max(0, (ScoringConstants.defaultScore - contact.connectionScore) * 0.3 * multiplier)
     }
     
     // MARK: - Helpers

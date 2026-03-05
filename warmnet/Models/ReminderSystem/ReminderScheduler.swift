@@ -14,7 +14,11 @@ struct ReminderScheduler {
     
     /// Calculate initial next touch date for a new contact with random distribution
     /// Algorithm: next_touch_date = current_date + RANDOM(0, frequency_days)
-    static func scheduleNewContact(_ contact: Contact, currentDate: Date = Date()) {
+    /// - Parameters:
+    ///   - contact: The contact to schedule
+    ///   - currentDate: The current date (defaults to now, injectable for testing)
+    ///   - settings: Optional user settings for customized frequency values
+    static func scheduleNewContact(_ contact: Contact, currentDate: Date = Date(), settings: UserSettings? = nil) {
         // Check for custom schedule override
         if contact.useCustomSchedule {
             if let nextDate = calculateNextCustomDate(contact: contact, from: currentDate) {
@@ -30,7 +34,12 @@ struct ReminderScheduler {
             return
         }
         
-        let config = TierConfiguration.forPriority(priority)
+        let config: TierConfiguration
+        if let settings = settings {
+            config = TierConfiguration.forPriority(priority, settings: settings)
+        } else {
+            config = TierConfiguration.forPriority(priority)
+        }
         let randomOffset = Int.random(in: 0...config.frequencyDays)
         
         if let nextDate = Calendar.current.date(byAdding: .day, value: randomOffset, to: currentDate) {
@@ -48,7 +57,11 @@ struct ReminderScheduler {
     /// buffer = frequency_days × variance_percent
     /// random_adjustment = RANDOM(-buffer, +buffer)
     /// next_touch_date = current_date + frequency_days + random_adjustment
-    static func rescheduleAfterInteraction(_ contact: Contact, interactionDate: Date = Date()) {
+    /// - Parameters:
+    ///   - contact: The contact to reschedule
+    ///   - interactionDate: The date of the interaction (defaults to now)
+    ///   - settings: Optional user settings for customized frequency values
+    static func rescheduleAfterInteraction(_ contact: Contact, interactionDate: Date = Date(), settings: UserSettings? = nil) {
         // Check for custom schedule override
         if contact.useCustomSchedule {
             if let nextDate = calculateNextCustomDate(contact: contact, from: interactionDate) {
@@ -64,7 +77,12 @@ struct ReminderScheduler {
             return
         }
         
-        let config = TierConfiguration.forPriority(priority)
+        let config: TierConfiguration
+        if let settings = settings {
+            config = TierConfiguration.forPriority(priority, settings: settings)
+        } else {
+            config = TierConfiguration.forPriority(priority)
+        }
         
         // Calculate variance buffer
         let buffer = config.varianceBuffer

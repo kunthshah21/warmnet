@@ -13,12 +13,23 @@ The Settings Page serves as the central hub for user configuration, legal inform
 ### 2. Customisation
 - **Appearance**: Dedicated screen (`AppearanceScreen`) to toggle between Light, Dark, and System themes.
 
-### 3. Support & Legal
+### 3. Advanced
+- **Scoring & Priorities**: Dedicated screen (`AdvancedScoringScreen`) for power users to customize:
+  - Per-tier contact frequency multipliers
+  - Per-tier queue priority weight multipliers
+  - Global scoring sensitivity (forgiving to strict)
+  - Decay speed (slow to fast)
+  - Health boost strength (off to aggressive)
+  - Daily queue size
+
+For detailed documentation, see **Features and Logic/AdvancedScoring_Spec.md**.
+
+### 4. Support & Legal
 - **Report a Bug**: Screen (`ReportBugScreen`) for user feedback.
 - **Manage Subscription**: Screen (`SubscriptionScreen`) for premium features.
 - **Privacy Policy**: View (`PrivacyPolicyView`) outlining data handling practices.
 
-### 4. Testing & Debugging
+### 5. Testing & Debugging
 Consolidates developer tools and testing functions:
 - **Test Location Notifications**: Opens comprehensive location notification testing interface (`LocationNotificationTestScreen`)
   - System status verification
@@ -40,6 +51,7 @@ For detailed testing documentation, see **TestingFeatures.md**.
   - `SettingsScreen.swift`: Main entry point.
   - `ProfileEditScreen.swift`
   - `AppearanceScreen.swift`
+  - `AdvancedScoringScreen.swift`: Advanced scoring and priority customization.
   - `NotificationsSettingsScreen.swift`
   - `ReportBugScreen.swift`
   - `SubscriptionScreen.swift`
@@ -54,9 +66,10 @@ For detailed testing documentation, see **TestingFeatures.md**.
   1. **Profile Header**: Custom view with avatar and text.
   2. **Manage Profile**: Navigation link.
   3. **Customise Experience**: Navigation link.
-  4. **Notifications**: Navigation link.
-  5. **Support & Legal**: Navigation links.
-  6. **Testing & Debug**: Action buttons.
+  4. **Advanced**: Navigation link to advanced scoring settings.
+  5. **Notifications**: Navigation link.
+  6. **Support & Legal**: Navigation links.
+  7. **Testing & Debug**: Action buttons.
 
 ### Data Flow
 - **Profile Data**: Currently using dummy data strings. Future integration with `PersonalisationData` or a dedicated `UserProfile` model is planned.

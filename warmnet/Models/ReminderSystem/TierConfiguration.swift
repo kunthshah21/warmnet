@@ -14,7 +14,7 @@ struct TierConfiguration {
     let tierWeight: Int
     let variancePercent: Double
     
-    /// Get configuration for a specific priority tier
+    /// Get configuration for a specific priority tier (using default values)
     static func forPriority(_ priority: Priority) -> TierConfiguration {
         switch priority {
         case .innerCircle:
@@ -39,6 +39,34 @@ struct TierConfiguration {
                 variancePercent: 0.15
             )
         }
+    }
+    
+    /// Get configuration for a specific priority tier with user-customized multipliers
+    /// - Parameters:
+    ///   - priority: The contact priority tier
+    ///   - settings: User settings containing frequency and priority multipliers
+    /// - Returns: Configuration with adjusted frequency and weight values
+    static func forPriority(_ priority: Priority, settings: UserSettings) -> TierConfiguration {
+        let base = forPriority(priority)
+        let freqMultiplier = settings.frequencyMultiplier(for: priority)
+        let prioMultiplier = settings.priorityMultiplier(for: priority)
+        
+        return TierConfiguration(
+            name: base.name,
+            frequencyDays: max(1, Int(Double(base.frequencyDays) / freqMultiplier)),
+            tierWeight: max(1, Int(round(Double(base.tierWeight) * prioMultiplier))),
+            variancePercent: base.variancePercent
+        )
+    }
+    
+    /// Get base (default) frequency days for a tier without any multipliers applied
+    static func baseFrequencyDays(for priority: Priority) -> Int {
+        forPriority(priority).frequencyDays
+    }
+    
+    /// Get base (default) tier weight for a tier without any multipliers applied
+    static func baseTierWeight(for priority: Priority) -> Int {
+        forPriority(priority).tierWeight
     }
     
     /// Calculate the variance buffer in days for this tier

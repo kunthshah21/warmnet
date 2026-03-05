@@ -49,7 +49,7 @@ struct DailyQueueGenerator {
             guard let priority = contact.priority else { return nil }
             
             let daysOverdue = ReminderScheduler.daysOverdue(contact, currentDate: currentDate)
-            let config = TierConfiguration.forPriority(priority)
+            let config = TierConfiguration.forPriority(priority, settings: settings)
             
             // Calculate urgency bonus
             let urgencyBonus = UrgencyBonusCalculator.calculateBonus(
@@ -64,7 +64,7 @@ struct DailyQueueGenerator {
             )
             
             // Priority score = (days_overdue × tier_weight) + urgency_bonus + health_penalty
-            let healthPenalty = ConnectionHealthEngine.healthPenalty(for: contact)
+            let healthPenalty = ConnectionHealthEngine.healthPenalty(for: contact, settings: settings)
             let priorityScore = Double(daysOverdue * config.tierWeight) + urgencyBonus + healthPenalty
             
             return QueueContact(
@@ -187,7 +187,7 @@ struct DailyQueueGenerator {
             guard let priority = contact.priority else { return nil }
             
             let daysOverdue = ReminderScheduler.daysOverdue(contact, currentDate: currentDate)
-            let config = TierConfiguration.forPriority(priority)
+            let config = TierConfiguration.forPriority(priority, settings: settings)
             
             let urgencyBonus = UrgencyBonusCalculator.calculateBonus(
                 for: contact,
@@ -200,7 +200,7 @@ struct DailyQueueGenerator {
                 currentDate: currentDate
             )
             
-            let healthPenalty = ConnectionHealthEngine.healthPenalty(for: contact)
+            let healthPenalty = ConnectionHealthEngine.healthPenalty(for: contact, settings: settings)
             let priorityScore = Double(daysOverdue * config.tierWeight) + urgencyBonus + healthPenalty
             
             return QueueContact(

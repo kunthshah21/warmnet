@@ -90,7 +90,8 @@ struct warmnetApp: App {
     private func applyConnectionHealthDecay(context: ModelContext) {
         let descriptor = FetchDescriptor<Contact>()
         if let contacts = try? context.fetch(descriptor) {
-            ConnectionHealthEngine.applyDecay(to: contacts)
+            let settings = UserSettings.getOrCreate(from: context)
+            ConnectionHealthEngine.applyDecay(to: contacts, settings: settings)
             try? context.save()
         }
     }

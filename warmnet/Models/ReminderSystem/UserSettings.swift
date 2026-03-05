@@ -47,6 +47,22 @@ final class UserSettings {
     var quietHoursStart: Int  // Hour (0-23)
     var quietHoursEnd: Int    // Hour (0-23)
     
+    // Advanced Scoring: Per-Tier Frequency Multipliers (0.5 to 2.0)
+    // Higher = more frequent reminders (base days are divided by this)
+    var innerCircleFrequencyMultiplier: Double = 1.0
+    var keyRelationshipsFrequencyMultiplier: Double = 1.0
+    var broaderNetworkFrequencyMultiplier: Double = 1.0
+    
+    // Advanced Scoring: Per-Tier Priority Weight Multipliers (0.5 to 3.0)
+    var innerCirclePriorityMultiplier: Double = 1.0
+    var keyRelationshipsPriorityMultiplier: Double = 1.0
+    var broaderNetworkPriorityMultiplier: Double = 1.0
+    
+    // Advanced Scoring: Global Multipliers
+    var scoringGainMultiplier: Double = 1.0      // 0.5 to 2.0 (higher = stricter)
+    var decayRateMultiplier: Double = 1.0        // 0.5 to 2.0 (higher = faster decay)
+    var healthPenaltyMultiplier: Double = 1.0   // 0.0 to 2.0 (higher = more boost for low-health)
+    
     var createdAt: Date
     var updatedAt: Date
     
@@ -162,5 +178,104 @@ final class UserSettings {
         } else {
             return currentHour >= quietHoursStart && currentHour < quietHoursEnd
         }
+    }
+    
+    // MARK: - Advanced Scoring Settings
+    
+    /// Get frequency multiplier for a specific priority tier
+    func frequencyMultiplier(for priority: Priority) -> Double {
+        switch priority {
+        case .innerCircle:
+            return innerCircleFrequencyMultiplier
+        case .keyRelationships:
+            return keyRelationshipsFrequencyMultiplier
+        case .broaderNetwork:
+            return broaderNetworkFrequencyMultiplier
+        }
+    }
+    
+    /// Get priority weight multiplier for a specific priority tier
+    func priorityMultiplier(for priority: Priority) -> Double {
+        switch priority {
+        case .innerCircle:
+            return innerCirclePriorityMultiplier
+        case .keyRelationships:
+            return keyRelationshipsPriorityMultiplier
+        case .broaderNetwork:
+            return broaderNetworkPriorityMultiplier
+        }
+    }
+    
+    /// Update frequency multiplier for a tier (clamped to 0.5-2.0)
+    func setFrequencyMultiplier(_ value: Double, for priority: Priority) {
+        let clamped = min(2.0, max(0.5, value))
+        switch priority {
+        case .innerCircle:
+            innerCircleFrequencyMultiplier = clamped
+        case .keyRelationships:
+            keyRelationshipsFrequencyMultiplier = clamped
+        case .broaderNetwork:
+            broaderNetworkFrequencyMultiplier = clamped
+        }
+        self.updatedAt = Date()
+    }
+    
+    /// Update priority weight multiplier for a tier (clamped to 0.5-3.0)
+    func setPriorityMultiplier(_ value: Double, for priority: Priority) {
+        let clamped = min(3.0, max(0.5, value))
+        switch priority {
+        case .innerCircle:
+            innerCirclePriorityMultiplier = clamped
+        case .keyRelationships:
+            keyRelationshipsPriorityMultiplier = clamped
+        case .broaderNetwork:
+            broaderNetworkPriorityMultiplier = clamped
+        }
+        self.updatedAt = Date()
+    }
+    
+    /// Update global scoring gain multiplier (clamped to 0.5-2.0)
+    func setScoringGainMultiplier(_ value: Double) {
+        scoringGainMultiplier = min(2.0, max(0.5, value))
+        self.updatedAt = Date()
+    }
+    
+    /// Update global decay rate multiplier (clamped to 0.5-2.0)
+    func setDecayRateMultiplier(_ value: Double) {
+        decayRateMultiplier = min(2.0, max(0.5, value))
+        self.updatedAt = Date()
+    }
+    
+    /// Update health penalty multiplier (clamped to 0.0-2.0)
+    func setHealthPenaltyMultiplier(_ value: Double) {
+        healthPenaltyMultiplier = min(2.0, max(0.0, value))
+        self.updatedAt = Date()
+    }
+    
+    /// Reset all advanced scoring settings to defaults
+    func resetAdvancedToDefaults() {
+        innerCircleFrequencyMultiplier = 1.0
+        keyRelationshipsFrequencyMultiplier = 1.0
+        broaderNetworkFrequencyMultiplier = 1.0
+        innerCirclePriorityMultiplier = 1.0
+        keyRelationshipsPriorityMultiplier = 1.0
+        broaderNetworkPriorityMultiplier = 1.0
+        scoringGainMultiplier = 1.0
+        decayRateMultiplier = 1.0
+        healthPenaltyMultiplier = 1.0
+        self.updatedAt = Date()
+    }
+    
+    /// Check if any advanced settings have been modified from defaults
+    var hasCustomAdvancedSettings: Bool {
+        innerCircleFrequencyMultiplier != 1.0 ||
+        keyRelationshipsFrequencyMultiplier != 1.0 ||
+        broaderNetworkFrequencyMultiplier != 1.0 ||
+        innerCirclePriorityMultiplier != 1.0 ||
+        keyRelationshipsPriorityMultiplier != 1.0 ||
+        broaderNetworkPriorityMultiplier != 1.0 ||
+        scoringGainMultiplier != 1.0 ||
+        decayRateMultiplier != 1.0 ||
+        healthPenaltyMultiplier != 1.0
     }
 }

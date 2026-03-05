@@ -380,12 +380,13 @@ struct AddContactSheet: View {
              contact.updatedAt = Date()
              
              if priorityChanged || contact.useCustomSchedule != useCustomSchedule {
-                 if let lastContacted = contact.lastContacted {
-                     ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: lastContacted)
-                 } else {
-                     ReminderScheduler.scheduleNewContact(contact)
-                 }
-             }
+                let settings = UserSettings.getOrCreate(from: modelContext)
+                if let lastContacted = contact.lastContacted {
+                    ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: lastContacted, settings: settings)
+                } else {
+                    ReminderScheduler.scheduleNewContact(contact, settings: settings)
+                }
+            }
         } else {
              let contact = Contact(
                 name: adjustedName,
@@ -406,8 +407,9 @@ struct AddContactSheet: View {
                 scheduleInterval: scheduleInterval,
                 scheduleDays: selectedDays.map { $0.rawValue }
             )
-             ReminderScheduler.scheduleNewContact(contact)
-             modelContext.insert(contact)
+            let settings = UserSettings.getOrCreate(from: modelContext)
+            ReminderScheduler.scheduleNewContact(contact, settings: settings)
+            modelContext.insert(contact)
         }
         dismiss()
     }

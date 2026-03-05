@@ -96,11 +96,33 @@ Decay is applied when the app becomes active, based on days since `lastScoreUpda
 Low-health contacts get a priority boost in the daily queue:
 
 ```
-health_penalty = max(0, (50 - connectionScore) × 0.3)
+health_penalty = max(0, (50 - connectionScore) × 0.3 × healthPenaltyMultiplier)
 priority_score = (days_overdue × tier_weight) + urgency_bonus + health_penalty
 ```
 
 This ensures that fading relationships naturally surface for attention.
+
+## Configurable Multipliers
+
+All scoring and decay values can be customized through **Advanced Scoring Settings** (Settings → Advanced → Scoring & Priorities). See `AdvancedScoring_Spec.md` for full documentation.
+
+### Available Multipliers
+
+| Setting | Range | Default | Effect |
+|---------|-------|---------|--------|
+| Per-Tier Frequency | 0.5–2.0 | 1.0 | Divides base frequency days (higher = more frequent) |
+| Per-Tier Priority | 0.5–3.0 | 1.0 | Multiplies tier weight in queue |
+| Scoring Sensitivity | 0.5–2.0 | 1.0 | Divides points earned (higher = stricter) |
+| Decay Speed | 0.5–2.0 | 1.0 | Multiplies decay rates |
+| Health Boost | 0.0–2.0 | 1.0 | Multiplies health penalty in queue |
+
+### How Multipliers Flow
+
+1. **TierConfiguration.forPriority(_:settings:)** applies frequency and priority multipliers
+2. **ConnectionHealthEngine.recordInteraction()** applies scoring sensitivity
+3. **ConnectionHealthEngine.applyDecay()** applies decay speed
+4. **ConnectionHealthEngine.healthPenalty()** applies health boost multiplier
+5. **DailyQueueGenerator** uses settings-aware tier config and health penalty
 
 ## Data Flow
 
@@ -219,7 +241,12 @@ On first app launch after update, `MigrationHelper.migrateConnectionHealth()` ru
 | `Models/DataModels/ManualReminder.swift` | Lifecycle properties, enums |
 | `Models/ReminderSystem/ConnectionHealthEngine.swift` | Core scoring and decay logic |
 | `Models/ReminderSystem/DailyQueueGenerator.swift` | Health penalty in priority score |
+| `Models/ReminderSystem/TierConfiguration.swift` | Settings-aware frequency/priority config |
+| `Models/ReminderSystem/UserSettings.swift` | Multiplier properties and helpers |
+| `Models/ReminderSystem/ReminderScheduler.swift` | Scheduling with settings |
 | `Screens/Contacts/LogInteractionSheet.swift` | Fulfill reminders on interaction |
+| `Screens/Contacts/AddContactSheet.swift` | Schedule with settings |
+| `Screens/Settings/AdvancedScoringScreen.swift` | UI for configuring multipliers |
 | `Views/Dashboard/DashboardSheets.swift` | Create reminders without overwriting nextTouchDate |
 | `Screens/Reminders/RemindersScreen.swift` | Filter to pending reminders |
 | `Models/Utilities/MigrationHelper.swift` | Data migration |

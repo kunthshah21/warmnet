@@ -250,11 +250,15 @@ struct LogInteractionSheet: View {
             _ = ConnectionHealthEngine.createNextOccurrence(from: fulfilled, context: modelContext)
         }
         
+        // Fetch user settings for customized scoring behavior
+        let settings = UserSettings.getOrCreate(from: modelContext)
+        
         // Use ConnectionHealthEngine for unified scoring and rescheduling
         ConnectionHealthEngine.recordInteraction(
             contact: contact,
             interaction: interaction,
             manualReminder: fulfilledReminder,
+            settings: settings,
             currentDate: interactionDate
         )
         

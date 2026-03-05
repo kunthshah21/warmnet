@@ -76,6 +76,13 @@ struct SettingsScreen: View {
                     }
                 }
                 
+                // MARK: - Advanced
+                Section("Advanced") {
+                    NavigationLink(destination: AdvancedScoringScreen()) {
+                        Label("Scoring & Priorities", systemImage: "slider.horizontal.3")
+                    }
+                }
+                
                 // MARK: - Notifications
                 Section {
                     NavigationLink(destination: NotificationsSettingsScreen()) {
