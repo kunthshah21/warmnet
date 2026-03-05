@@ -85,6 +85,10 @@ struct RemindersScreen: View {
                     remindersSetSection
                 }
                 
+                if !manualReminders.isEmpty && !automaticReminders.isEmpty {
+                    Divider()
+                }
+                
                 if !automaticReminders.isEmpty {
                     automaticRemindersSection
                 }
@@ -97,9 +101,14 @@ struct RemindersScreen: View {
     
     private var remindersSetSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Reminders Set")
-                .font(.custom(AppFontName.workSansMedium, size: 20))
-                .foregroundStyle(.primary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Network Reminders")
+                    .font(.custom(AppFontName.workSansMedium, size: 20))
+                    .foregroundStyle(.primary)
+                Text("Reminders you've created")
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
+                    .foregroundStyle(.secondary)
+            }
             
             LazyVStack(spacing: 12) {
                 ForEach(manualReminders) { reminder in
@@ -114,9 +123,14 @@ struct RemindersScreen: View {
     
     private var automaticRemindersSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Automatic Reminders")
-                .font(.custom(AppFontName.workSansMedium, size: 20))
-                .foregroundStyle(.primary)
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Suggested Reminders")
+                    .font(.custom(AppFontName.workSansMedium, size: 20))
+                    .foregroundStyle(.primary)
+                Text("Based on your contact frequency")
+                    .font(.custom(AppFontName.workSansRegular, size: 14))
+                    .foregroundStyle(.secondary)
+            }
             
             LazyVStack(spacing: 12) {
                 ForEach(automaticReminders) { contact in
