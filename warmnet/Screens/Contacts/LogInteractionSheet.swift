@@ -48,6 +48,7 @@ struct LogInteractionSheet: View {
                 let typeIndex = index % interactionTypes.count
                 let newType = interactionTypes[typeIndex]
                 if interactionType != newType {
+                    HapticManager.selection()
                     withAnimation {
                         interactionType = newType
                     }
@@ -154,6 +155,7 @@ struct LogInteractionSheet: View {
                                     .containerRelativeFrame(.horizontal, count: 3, spacing: 0)
                                     .id(index)
                                     .onTapGesture {
+                                        HapticManager.selection()
                                         withAnimation {
                                             scrollID = index
                                         }
@@ -188,7 +190,10 @@ struct LogInteractionSheet: View {
             .scrollDismissesKeyboard(.interactively)
             
             // Save Button
-            Button(action: saveInteraction) {
+            Button {
+                HapticManager.notification(.success)
+                saveInteraction()
+            } label: {
                 Text("Save Interaction")
                     .font(.headline)
                     .fontWeight(.bold)
@@ -210,6 +215,7 @@ struct LogInteractionSheet: View {
     
     private func contactRow(for contact: Contact) -> some View {
         Button {
+            HapticManager.impact(.light)
             selectedContact = contact
         } label: {
             HStack {

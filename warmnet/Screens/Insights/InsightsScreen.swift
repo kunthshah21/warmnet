@@ -75,6 +75,7 @@ struct InsightsScreen: View {
                             Spacer()
                             
                             Button {
+                                HapticManager.impact(.light)
                                 showDatePicker.toggle()
                             } label: {
                                 HStack(spacing: 8) {
@@ -169,6 +170,9 @@ struct InsightsScreen: View {
                     .presentationDetents([.medium])
                     .presentationDragIndicator(.visible)
                     .padding()
+                    .onChange(of: selectedDate) {
+                        HapticManager.selection()
+                    }
             }
             .sheet(isPresented: $showInteractionIdeasChat) {
                 AIChatScreen(initialContext: .interactionIdeas(contactId: UUID(), contactName: "your contacts"))
@@ -188,6 +192,7 @@ struct CalendarAccessCard: View {
     
     var body: some View {
         Button {
+            HapticManager.impact(.light)
             showCalendar = true
         } label: {
             HStack {

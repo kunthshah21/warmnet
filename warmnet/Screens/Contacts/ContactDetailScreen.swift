@@ -116,6 +116,7 @@ struct ContactDetailScreen: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Edit") {
+                    HapticManager.impact(.light)
                     showEditSheet = true
                 }
             }
@@ -244,6 +245,7 @@ struct ContactDetailScreen: View {
             
             // Interaction History Toggle
             Button {
+                HapticManager.impact(.light)
                 withAnimation(.spring(duration: 0.4, bounce: 0.2)) {
                     showHistory.toggle()
                 }

@@ -56,6 +56,7 @@ struct WeeklyTrendCard: View {
     
     var body: some View {
         Button {
+            HapticManager.impact(.light)
             showDetailSheet = true
             onTap?()
         } label: {

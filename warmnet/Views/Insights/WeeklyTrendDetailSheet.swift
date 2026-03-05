@@ -103,6 +103,7 @@ struct WeeklyTrendDetailSheet: View {
         HStack(spacing: 0) {
             ForEach(TrendTimePeriod.allCases, id: \.self) { period in
                 Button {
+                    HapticManager.selection()
                     withAnimation(.easeInOut(duration: 0.2)) {
                         selectedPeriod = period
                     }

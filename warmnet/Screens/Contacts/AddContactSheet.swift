@@ -115,7 +115,7 @@ struct AddContactSheet: View {
                         }
                         
                         Button("Add Photo") {
-                            // Photo picker placeholder
+                            HapticManager.impact(.light)
                         }
                         .font(.subheadline)
                     }
@@ -136,6 +136,7 @@ struct AddContactSheet: View {
                     if !phoneNumber.isEmpty {
                         HStack {
                             Button {
+                                HapticManager.impact(.light)
                                 phoneNumber = ""
                             } label: {
                                 Image(systemName: "minus.circle.fill")
@@ -146,6 +147,7 @@ struct AddContactSheet: View {
                             Menu {
                                 ForEach(CountryCode.all) { code in
                                     Button {
+                                        HapticManager.selection()
                                         selectedCountryCode = code
                                     } label: {
                                         Text(code.fullDisplayName)
@@ -169,6 +171,7 @@ struct AddContactSheet: View {
                         }
                     } else {
                         Button {
+                            HapticManager.impact(.light)
                             phoneNumber = " "
                         } label: {
                             HStack {
@@ -183,6 +186,7 @@ struct AddContactSheet: View {
                     if !email.isEmpty {
                          HStack {
                             Button {
+                                HapticManager.impact(.light)
                                 email = ""
                             } label: {
                                 Image(systemName: "minus.circle.fill")
@@ -202,6 +206,7 @@ struct AddContactSheet: View {
                         }
                     } else {
                          Button {
+                            HapticManager.impact(.light)
                             email = " "
                         } label: {
                             HStack {
@@ -219,6 +224,7 @@ struct AddContactSheet: View {
                      if let bday = birthday {
                         HStack {
                              Button {
+                                HapticManager.impact(.light)
                                 birthday = nil
                                 showBirthdayPicker = false
                             } label: {
@@ -233,6 +239,7 @@ struct AddContactSheet: View {
                              Spacer()
                             
                              Button {
+                                HapticManager.impact(.light)
                                 showBirthdayPicker.toggle()
                              } label: {
                                 Text(bday, style: .date)
@@ -245,6 +252,7 @@ struct AddContactSheet: View {
                         }
                      } else {
                          Button {
+                            HapticManager.impact(.light)
                             birthday = Date()
                             showBirthdayPicker = true
                         } label: {
@@ -316,6 +324,7 @@ struct AddContactSheet: View {
                 if contactToEdit != nil {
                      Section {
                         Button {
+                            HapticManager.notification(.warning)
                             showDeleteConfirmation = true
                         } label: {
                             Text("Delete Contact")
@@ -332,19 +341,32 @@ struct AddContactSheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { saveContact() }
-                        .fontWeight(.semibold)
-                        .disabled(firstName.isEmpty && lastName.isEmpty && company.isEmpty)
+                    Button("Done") {
+                        HapticManager.notification(.success)
+                        saveContact()
+                    }
+                    .fontWeight(.semibold)
+                    .disabled(firstName.isEmpty && lastName.isEmpty && company.isEmpty)
                 }
             }
             .alert("Delete Contact?", isPresented: $showDeleteConfirmation) {
                 Button("Delete", role: .destructive) {
+                    HapticManager.notification(.error)
                     if let contact = contactToEdit {
                         modelContext.delete(contact)
                         dismiss()
                     }
                 }
                 Button("Cancel", role: .cancel) {}
+            }
+            .onChange(of: priority) { _, _ in
+                HapticManager.selection()
+            }
+            .onChange(of: useCustomSchedule) { _, _ in
+                HapticManager.impact(.light)
+            }
+            .onChange(of: scheduleFrequency) { _, _ in
+                HapticManager.selection()
             }
         }
     }
@@ -460,7 +482,10 @@ struct DayToggle: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.selection()
+            action()
+        } label: {
             Text(day)
                 .font(.custom(AppFontName.workSansMedium, size: 11))
                 .frame(width: 32, height: 32)

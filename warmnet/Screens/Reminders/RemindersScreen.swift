@@ -57,6 +57,11 @@ struct RemindersScreen: View {
             .sheet(isPresented: $showAddReminderSheet) {
                 AddReminderSheet()
             }
+            .onChange(of: showAddReminderSheet) { _, isPresented in
+                if isPresented {
+                    HapticManager.impact(.medium)
+                }
+            }
         }
     }
     
@@ -69,6 +74,7 @@ struct RemindersScreen: View {
             Spacer()
             
             Button {
+                HapticManager.impact(.light)
                 showAddReminderSheet = true
             } label: {
                 Image(systemName: "plus")
@@ -120,6 +126,9 @@ struct RemindersScreen: View {
                         ReminderContactRow(contact: reminder.contact)
                     }
                     .buttonStyle(.plain)
+                    .simultaneousGesture(TapGesture().onEnded {
+                        HapticManager.impact(.light)
+                    })
                 }
             }
         }
@@ -142,6 +151,9 @@ struct RemindersScreen: View {
                         ReminderContactRow(contact: contact)
                     }
                     .buttonStyle(.plain)
+                    .simultaneousGesture(TapGesture().onEnded {
+                        HapticManager.impact(.light)
+                    })
                 }
             }
         }
@@ -149,6 +161,7 @@ struct RemindersScreen: View {
     
     private var addReminderButton: some View {
         Button {
+            HapticManager.impact(.light)
             showAddReminderSheet = true
         } label: {
             Text("Add Network Reminder")

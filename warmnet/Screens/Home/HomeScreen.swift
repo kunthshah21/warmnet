@@ -213,6 +213,7 @@ struct HomeScreen: View {
             HStack(spacing: 14) {
                 // Notification button
                 Button {
+                    HapticManager.impact(.light)
                     showNotifications = true
                 } label: {
                     Image(systemName: "bell.fill")
@@ -226,6 +227,7 @@ struct HomeScreen: View {
                     profilePhoto: profileData?.profilePhoto,
                     size: 63,
                     action: {
+                        HapticManager.impact(.light)
                         showSettings = true
                     }
                 )
@@ -250,12 +252,14 @@ struct HomeScreen: View {
     private var addContactButton: some View {
         Menu {
             Button {
+                HapticManager.impact(.medium)
                 showAddContact = true
             } label: {
                 Label("Add Contact", systemImage: "person.badge.plus")
             }
             
             Button {
+                HapticManager.impact(.medium)
                 preSelectedContact = nil
                 showLogInteraction = true
             } label: {

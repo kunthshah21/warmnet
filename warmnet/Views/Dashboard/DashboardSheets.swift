@@ -88,6 +88,7 @@ struct AddReminderSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
+                        HapticManager.impact(.light)
                         dismiss()
                     }
                 }
@@ -95,6 +96,7 @@ struct AddReminderSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     if selectedContact != nil {
                         Button("Save") {
+                            HapticManager.notification(.success)
                             saveReminder()
                             dismiss()
                         }
@@ -109,6 +111,7 @@ struct AddReminderSheet: View {
         List {
             ForEach(filteredContacts) { contact in
                 Button {
+                    HapticManager.impact(.light)
                     withAnimation {
                         selectedContact = contact
                         reminderTitle = contact.name
@@ -157,6 +160,7 @@ struct AddReminderSheet: View {
                     Spacer()
                     
                     Button {
+                        HapticManager.impact(.light)
                         withAnimation {
                             selectedContact = nil
                             resetFormState()
@@ -228,6 +232,7 @@ struct AddReminderSheet: View {
                     Menu {
                         ForEach(ReminderRepeatInterval.allCases, id: \.self) { interval in
                             Button {
+                                HapticManager.impact(.light)
                                 repeatInterval = interval
                             } label: {
                                 HStack {
@@ -287,6 +292,9 @@ struct AddReminderSheet: View {
                 
                 Toggle("", isOn: $hasDate)
                     .labelsHidden()
+                    .onChange(of: hasDate) { _, _ in
+                        HapticManager.selection()
+                    }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -300,6 +308,9 @@ struct AddReminderSheet: View {
                     .labelsHidden()
                     .padding(.horizontal, 8)
                     .padding(.bottom, 8)
+                    .onChange(of: reminderDate) { _, _ in
+                        HapticManager.selection()
+                    }
             }
             
             Divider()
@@ -334,6 +345,9 @@ struct AddReminderSheet: View {
                 
                 Toggle("", isOn: $hasTime)
                     .labelsHidden()
+                    .onChange(of: hasTime) { _, _ in
+                        HapticManager.selection()
+                    }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -347,6 +361,9 @@ struct AddReminderSheet: View {
                     .labelsHidden()
                     .frame(maxHeight: 180)
                     .clipped()
+                    .onChange(of: reminderTime) { _, _ in
+                        HapticManager.selection()
+                    }
             }
             
             Divider()
@@ -414,7 +431,10 @@ struct AddReminderSheet: View {
                 .labelsHidden()
                 .onChange(of: isUrgent) { _, newValue in
                     if newValue {
+                        HapticManager.notification(.warning)
                         enableUrgentDefaults()
+                    } else {
+                        HapticManager.selection()
                     }
                 }
         }
@@ -564,6 +584,7 @@ struct NotificationsSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
+                        HapticManager.impact(.light)
                         dismiss()
                     }
                 }
@@ -593,6 +614,7 @@ struct NotificationsSheet: View {
             Section {
                 ForEach(upcomingReminders.prefix(10)) { contact in
                     Button {
+                        HapticManager.impact(.light)
                         onContactTap(contact)
                         dismiss()
                     } label: {
@@ -672,6 +694,7 @@ struct TimeZonePicker: View {
         List {
             ForEach(filteredTimeZones, id: \.identifier) { zone in
                 Button {
+                    HapticManager.impact(.light)
                     selectedTimeZone = zone
                     dismiss()
                 } label: {

@@ -7,6 +7,7 @@ struct MapPreviewCard: View {
 
     var body: some View {
         Button {
+            HapticManager.impact(.light)
             onTap()
         } label: {
             VStack(alignment: .leading, spacing: 12) {

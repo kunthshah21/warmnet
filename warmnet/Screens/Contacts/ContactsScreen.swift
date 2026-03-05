@@ -42,6 +42,7 @@ struct ContactsScreen: View {
                         .fontWeight(.bold)
                     Spacer()
                     Button {
+                        HapticManager.impact(.light)
                         showAddContact = true
                     } label: {
                         Image(systemName: "plus")
@@ -52,6 +53,7 @@ struct ContactsScreen: View {
                     
                     Menu {
                         Button {
+                            HapticManager.impact(.light)
                             showContactImport = true
                         } label: {
                             Label("Add from Contacts", systemImage: "person.crop.circle.badge.plus")
@@ -137,8 +139,12 @@ struct ContactsScreen: View {
                                         }
                                         .opacity(0)
                                     }
+                                    .simultaneousGesture(TapGesture().onEnded {
+                                        HapticManager.impact(.light)
+                                    })
                                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                         Button(role: .destructive) {
+                                            HapticManager.notification(.warning)
                                             deleteContact(contact)
                                         } label: {
                                             Label("Delete", systemImage: "trash")
@@ -162,8 +168,8 @@ struct ContactsScreen: View {
                                         .foregroundStyle(AppColors.mutedBlue)
                                         .frame(width: 20)
                                         .onTapGesture {
+                                            HapticManager.selection()
                                             withAnimation {
-                                                // Find the closest section
                                                 if let section = groupedContacts.first(where: { $0.key >= letter }) {
                                                     proxy.scrollTo(section.key, anchor: .top)
                                                 }
@@ -207,7 +213,10 @@ struct FilterButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.selection()
+            action()
+        } label: {
             Text(title)
                 .font(.custom(AppFontName.workSansMedium, size: 13))
                 .padding(.horizontal, 16)

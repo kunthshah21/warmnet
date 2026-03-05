@@ -22,6 +22,7 @@ struct ReminderEmptyStateView: View {
                 .padding(.horizontal, 32)
             
             Button {
+                HapticManager.impact(.light)
                 onAddReminder()
             } label: {
                 Text("Add Network Reminder")

@@ -82,6 +82,7 @@ struct AIWritingAssistantView: View {
     
     private var askBriveIndicator: some View {
         Button {
+            HapticManager.impact(.medium)
             generatePrompt()
         } label: {
             HStack(spacing: 8) {
@@ -128,6 +129,7 @@ struct AIWritingAssistantView: View {
                 
                 // Refresh button
                 Button {
+                    HapticManager.impact(.light)
                     regeneratePrompt()
                 } label: {
                     Image(systemName: "arrow.clockwise")

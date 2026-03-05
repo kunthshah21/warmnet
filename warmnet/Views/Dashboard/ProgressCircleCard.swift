@@ -23,6 +23,7 @@ struct ProgressCircleCard: View {
     
     var body: some View {
         Button {
+            HapticManager.impact(.light)
             showDetailSheet = true
             onTap?()
         } label: {
@@ -99,9 +100,7 @@ struct ProgressCircleCard: View {
     }
     
     private func triggerCompletionHaptic() {
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.prepare()
-        generator.impactOccurred()
+        HapticManager.impact(.medium)
     }
 }
 

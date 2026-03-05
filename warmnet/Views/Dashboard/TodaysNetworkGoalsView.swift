@@ -44,6 +44,7 @@ struct TodaysNetworkGoalsView: View {
             Spacer()
             
             Button {
+                HapticManager.impact(.light)
                 onSeeAllTap?()
             } label: {
                 Text("See all")
@@ -79,6 +80,7 @@ struct TodaysNetworkGoalsView: View {
             HStack(spacing: cardSpacing) {
                 ForEach(contacts) { contact in
                     Button {
+                        HapticManager.impact(.light)
                         onContactTap(contact)
                     } label: {
                         goalContactCard(for: contact)

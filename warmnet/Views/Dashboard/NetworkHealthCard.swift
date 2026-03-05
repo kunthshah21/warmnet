@@ -29,6 +29,7 @@ struct NetworkHealthCard: View {
     
     var body: some View {
         Button {
+            HapticManager.impact(.light)
             onTap?()
         } label: {
             VStack(alignment: .leading, spacing: 16) {

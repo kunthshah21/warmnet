@@ -12,7 +12,10 @@ struct PrimaryButton: View {
     }
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticManager.impact(.medium)
+            action()
+        } label: {
             HStack(spacing: 10) {
                 if let icon = icon {
                     Image(systemName: icon)

@@ -60,6 +60,7 @@ struct AIInsightCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
         .onTapGesture {
+            HapticManager.impact(.light)
             showChat = true
         }
         .task {
@@ -108,6 +109,7 @@ struct AIInsightCard: View {
                     .foregroundColor(textColor)
                 
                 Button("Tap to retry") {
+                    HapticManager.notification(.warning)
                     Task {
                         await loadInsight()
                     }
@@ -123,6 +125,7 @@ struct AIInsightCard: View {
     private var actionButtonsRow: some View {
         HStack(alignment: .top, spacing: 21) {
             Button {
+                HapticManager.impact(.light)
                 onInteractionIdeas()
             } label: {
                 HStack(spacing: 10) {
@@ -145,6 +148,7 @@ struct AIInsightCard: View {
             .buttonStyle(.plain)
             
             Button {
+                HapticManager.impact(.light)
                 onNetworkOpportunity()
             } label: {
                 HStack(spacing: 6) {
@@ -184,9 +188,11 @@ struct AIInsightCard: View {
             let insight = try await aiGenerator?.generateInsight(type: insightType) ?? ""
             insightText = insight
             hasError = false
+            HapticManager.notification(.success)
         } catch {
             hasError = true
             insightText = ""
+            HapticManager.notification(.error)
         }
         
         isLoading = false
