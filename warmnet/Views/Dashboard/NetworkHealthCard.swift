@@ -32,52 +32,48 @@ struct NetworkHealthCard: View {
             onTap?()
         } label: {
             VStack(alignment: .leading, spacing: 16) {
-                // Header with title and arrow
-                HStack {
+                HStack(alignment: .top) {
                     Text("Network Health")
-                        .font(.custom(AppFontName.workSansMedium, size: 18))
+                        .font(.custom(AppFontName.workSansMedium, size: 16))
                         .foregroundStyle(.primary)
                     
                     Spacer()
                     
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.primary)
-                        .padding(8)
-                        .background(Circle().fill(Color.black.opacity(0.1)))
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
                 }
                 
-                // Network tier counts
                 HStack(alignment: .top, spacing: 0) {
                     NetworkTierItem(
                         count: innerCircleCount,
                         label: "Close Network",
-                        color: Color(red: 0.2, green: 0.55, blue: 0.45),
+                        color: Priority.innerCircle.color,
                         iconName: "person.fill"
                     )
                     
                     NetworkTierItem(
                         count: keyRelationshipsCount,
                         label: "Middle Network",
-                        color: Color(red: 0.25, green: 0.4, blue: 0.65),
+                        color: Priority.keyRelationships.color,
                         iconName: "person.2.fill"
                     )
                     
                     NetworkTierItem(
                         count: broaderNetworkCount,
                         label: "Broader Network",
-                        color: Color(red: 0.72, green: 0.58, blue: 0.2),
+                        color: Priority.broaderNetwork.color,
                         iconName: "person.3.fill"
                     )
                 }
             }
-            .padding(20)
+            .padding(16)
             .frame(maxWidth: .infinity)
-            .background(
+            .background {
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(colorScheme == .dark ? AppColors.charcoal : Color(uiColor: .secondarySystemGroupedBackground))
-                    .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
-            )
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .shadow(color: colorScheme == .dark ? .clear : .black.opacity(0.04), radius: 10, x: 0, y: 4)
+            }
         }
         .buttonStyle(.plain)
     }
@@ -86,7 +82,6 @@ struct NetworkHealthCard: View {
 // MARK: - Network Tier Item
 
 struct NetworkTierItem: View {
-    @Environment(\.colorScheme) private var colorScheme
     let count: Int
     let label: String
     let color: Color
@@ -94,22 +89,20 @@ struct NetworkTierItem: View {
     
     var body: some View {
         VStack(spacing: 6) {
-            HStack(spacing: 4) {
+            HStack(spacing: 5) {
                 Image(systemName: iconName)
-                    .font(.system(size: 16, weight: .semibold))
+                    .font(.system(size: 14, weight: .semibold))
                     .foregroundStyle(color)
                 
                 Text("\(count)")
-                    .font(.custom(AppFontName.workSansMedium, size: 20))
-                    .fontWeight(.bold)
-                    .foregroundStyle(color)
+                    .font(.custom(AppFontName.workSansMedium, size: 22))
+                    .foregroundStyle(.primary)
                     .contentTransition(.numericText())
             }
             
             Text(label)
-                .font(.custom(AppFontName.workSansMedium, size: 11))
-                .fontWeight(.bold)
-                .foregroundStyle(color)
+                .font(.custom(AppFontName.workSansRegular, size: 12))
+                .foregroundStyle(.secondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }

@@ -60,28 +60,24 @@ struct WeeklyTrendCard: View {
             onTap?()
         } label: {
             VStack(alignment: .leading, spacing: 12) {
-                // Header with title and arrow
-                HStack {
+                HStack(alignment: .top) {
                     Text("Weekly Trend")
-                        .font(.custom(AppFontName.workSansMedium, size: 18))
-                        .foregroundStyle(.white)
+                        .font(.custom(AppFontName.workSansMedium, size: 16))
+                        .foregroundStyle(.primary)
                     
                     Spacer()
                     
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(8)
-                        .background(Circle().fill(Color.white.opacity(0.2)))
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
                 }
                 
                 Spacer()
                 
-                // Bar chart
                 HStack(alignment: .bottom, spacing: 3) {
                     ForEach(weeklyData) { day in
                         RoundedRectangle(cornerRadius: 2)
-                            .fill(Color.white.opacity(0.9))
+                            .fill(AppColors.mutedBlue)
                             .frame(width: 4, height: barHeight(for: day.count))
                     }
                 }
@@ -90,10 +86,11 @@ struct WeeklyTrendCard: View {
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: 160)
-            .background(
+            .background {
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(AppColors.mutedBlue)
-            )
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .shadow(color: colorScheme == .dark ? .clear : .black.opacity(0.04), radius: 10, x: 0, y: 4)
+            }
         }
         .buttonStyle(.plain)
         .sheet(isPresented: $showDetailSheet) {

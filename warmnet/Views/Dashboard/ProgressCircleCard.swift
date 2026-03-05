@@ -26,21 +26,19 @@ struct ProgressCircleCard: View {
             showDetailSheet = true
             onTap?()
         } label: {
-            VStack(alignment: .center, spacing: 8) {
-                // Header with title and expand indicator
-                HStack {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) {
                     Text("Network Coverage")
-                        .font(.custom(AppFontName.workSansMedium, size: 18))
+                        .font(.custom(AppFontName.workSansMedium, size: 16))
                         .foregroundStyle(.primary)
                     
                     Spacer()
                     
                     Image(systemName: "arrow.up.right")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.primary.opacity(0.6))
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(.tertiary)
                 }
                 
-                // Compact view with rings
                 VStack {
                     Spacer(minLength: 0)
                     
@@ -54,12 +52,13 @@ struct ProgressCircleCard: View {
                 }
             }
             .padding(16)
-            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: 160)
-            .background(
+            .background {
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(red: 0.85, green: 0.82, blue: 0.95)) // Lavender/purple tint
-            )
+                    .fill(Color(uiColor: .secondarySystemGroupedBackground))
+                    .shadow(color: colorScheme == .dark ? .clear : .black.opacity(0.04), radius: 10, x: 0, y: 4)
+            }
         }
         .buttonStyle(.plain)
         .onAppear {
