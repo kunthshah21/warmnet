@@ -59,12 +59,27 @@ Generates the daily list of contacts to reach out to:
 
 **Algorithm:**
 1. Filter contacts where `next_touch_date ≤ current_date`
-2. Calculate priority score: `days_overdue × tier_weight`
+2. Calculate priority score: `(days_overdue × tier_weight) + urgency_bonus + health_penalty`
 3. Reserve top 2 slots for Inner Circle contacts (if available)
 4. Fill remaining slots with highest priority scores
 5. Return up to `max_queue_size` contacts
 
-### 4. UserSettings
+### 4. ConnectionHealthEngine
+Manages persistent connection health scores and integrates manual reminders:
+
+**Key Functions:**
+- `recordInteraction()`: Awards points based on timing, updates streakCount, handles manual reminder fulfillment
+- `applyDecay()`: Applies passive decay on app activation based on tier and overdue status
+- `healthPenalty()`: Calculates boost for low-health contacts in queue
+
+**Scoring:**
+- On-time interaction: +8 to +15 points
+- Late interaction: +3 to +7 points
+- Manual reminder bonus: +2 points
+- Streak milestone (every 3): +3 points
+- Daily decay: -0.02 to -0.5 per day (varies by tier and overdue status)
+
+### 5. UserSettings
 User-configurable preferences:
 - `dailyQueueSize`: 3-10 contacts per day (default: 5)
 - Stored as SwiftData model for persistence
@@ -88,9 +103,18 @@ Contact saved to SwiftData
 ```
 User logs interaction with contact
     ↓
-ReminderScheduler.rescheduleAfterInteraction()
+Find pending ManualReminders for contact
     ↓
-Variance applied (±15% of frequency)
+Mark reminder as .completed (link interaction)
+    ↓
+If repeating: create next occurrence
+    ↓
+ConnectionHealthEngine.recordInteraction()
+    ↓
+Calculate points (timing + manual bonus + streak)
+Update connectionScore, streakCount
+    ↓
+ReminderScheduler.rescheduleAfterInteraction()
     ↓
 Contact.nextTouchDate updated
 Contact.lastContacted updated

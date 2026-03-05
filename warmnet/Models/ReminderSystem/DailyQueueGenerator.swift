@@ -63,8 +63,9 @@ struct DailyQueueGenerator {
                 currentDate: currentDate
             )
             
-            // Priority score = (days_overdue × tier_weight) + urgency_bonus
-            let priorityScore = Double(daysOverdue * config.tierWeight) + urgencyBonus
+            // Priority score = (days_overdue × tier_weight) + urgency_bonus + health_penalty
+            let healthPenalty = ConnectionHealthEngine.healthPenalty(for: contact)
+            let priorityScore = Double(daysOverdue * config.tierWeight) + urgencyBonus + healthPenalty
             
             return QueueContact(
                 contact: contact,
@@ -199,7 +200,8 @@ struct DailyQueueGenerator {
                 currentDate: currentDate
             )
             
-            let priorityScore = Double(daysOverdue * config.tierWeight) + urgencyBonus
+            let healthPenalty = ConnectionHealthEngine.healthPenalty(for: contact)
+            let priorityScore = Double(daysOverdue * config.tierWeight) + urgencyBonus + healthPenalty
             
             return QueueContact(
                 contact: contact,

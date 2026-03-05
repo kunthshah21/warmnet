@@ -19,6 +19,19 @@ enum ReminderRepeatInterval: String, Codable, CaseIterable {
     case every6Months = "Every 6 Months"
 }
 
+enum ReminderStatus: String, Codable, CaseIterable {
+    case pending = "pending"
+    case completed = "completed"
+    case missed = "missed"
+    case snoozed = "snoozed"
+}
+
+enum ReminderSource: String, Codable, CaseIterable {
+    case manual = "manual"
+    case automatic = "automatic"
+    case urgent = "urgent"
+}
+
 @Model
 final class ManualReminder {
     var id: UUID
@@ -32,11 +45,27 @@ final class ManualReminder {
     var hasTime: Bool = false
     var createdAt: Date
     
+    // Lifecycle properties
+    var statusRaw: String = "pending"
+    var completedAt: Date?
+    var linkedInteractionId: UUID?
+    var sourceRaw: String = "manual"
+    
     @Relationship var contact: Contact
     
     var repeatInterval: ReminderRepeatInterval {
         get { ReminderRepeatInterval(rawValue: repeatIntervalRaw) ?? .never }
         set { repeatIntervalRaw = newValue.rawValue }
+    }
+    
+    var status: ReminderStatus {
+        get { ReminderStatus(rawValue: statusRaw) ?? .pending }
+        set { statusRaw = newValue.rawValue }
+    }
+    
+    var source: ReminderSource {
+        get { ReminderSource(rawValue: sourceRaw) ?? .manual }
+        set { sourceRaw = newValue.rawValue }
     }
 
     init(
@@ -48,7 +77,9 @@ final class ManualReminder {
         isUrgent: Bool = false,
         repeatInterval: ReminderRepeatInterval = .never,
         hasDate: Bool = false,
-        hasTime: Bool = false
+        hasTime: Bool = false,
+        status: ReminderStatus = .pending,
+        source: ReminderSource = .manual
     ) {
         self.id = UUID()
         self.contact = contact
@@ -60,7 +91,19 @@ final class ManualReminder {
         self.repeatIntervalRaw = repeatInterval.rawValue
         self.hasDate = hasDate
         self.hasTime = hasTime
+        self.statusRaw = status.rawValue
+        self.sourceRaw = isUrgent ? ReminderSource.urgent.rawValue : source.rawValue
         self.createdAt = Date()
+    }
+    
+    func markCompleted(interactionId: UUID? = nil) {
+        self.status = .completed
+        self.completedAt = Date()
+        self.linkedInteractionId = interactionId
+    }
+    
+    func markMissed() {
+        self.status = .missed
     }
     
     var combinedDateTime: Date? {

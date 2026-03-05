@@ -88,9 +88,16 @@ Contact saved to SwiftData
 ```
 User logs interaction with contact
     ↓
-ReminderScheduler.rescheduleAfterInteraction()
+Find and fulfill pending ManualReminders
     ↓
-Variance applied (±15% of frequency)
+If repeating: create next occurrence
+    ↓
+ConnectionHealthEngine.recordInteraction()
+    ↓
+Calculate points earned (timing + bonuses)
+Update connectionScore, streakCount
+    ↓
+ReminderScheduler.rescheduleAfterInteraction()
     ↓
 Contact.nextTouchDate updated
 Contact.lastContacted updated
@@ -145,12 +152,23 @@ Small variances make the system feel less robotic and more human.
 - [x] Configurable bonus values in UserSettings
 - [x] Bonus breakdown for UI display
 
-### 🔲 Phase 3 (Optimization) - PLANNED
+### ✅ Phase 3 (Connection Health) - IMPLEMENTED
+- [x] Connection Health Engine with persistent scoring
+- [x] Manual reminder lifecycle (pending → completed/missed)
+- [x] Health penalty in priority score formula
+- [x] Passive decay based on tier and overdue status
+- [x] Streak tracking and milestone bonuses
+- [x] Repeat reminder support (reminders now actually repeat)
+- [x] Migration helper for existing data
+
+> **See also:** [ConnectionHealth_Spec.md](./ConnectionHealth_Spec.md) for full documentation.
+
+### 🔲 Phase 4 (Optimization) - PLANNED
 - [ ] Bulk import even distribution
 - [ ] Advanced queue filtering
-- [ ] Advanced priority scoring
 - [ ] Analytics dashboard
 - [ ] Adaptive frequency suggestions
+- [ ] Connection health visualization
 
 ## Usage Examples
 
@@ -231,13 +249,16 @@ The urgency bonus system adds time-sensitive priority boosts to contacts, ensuri
 ### Priority Score Formula
 
 ```
-priority_score = (days_overdue × tier_weight) + urgency_bonus
+priority_score = (days_overdue × tier_weight) + urgency_bonus + health_penalty
 
 Where:
 - days_overdue = max(0, current_date - next_touch_date)
 - tier_weight = 3 (Inner), 2 (Key), 1 (Broader)
 - urgency_bonus = birthday_bonus + milestone_bonus + overdue_bonus
+- health_penalty = max(0, (50 - connectionScore) × 0.3)
 ```
+
+The `health_penalty` boosts contacts with low connection health scores, ensuring fading relationships surface in the queue. See [ConnectionHealth_Spec.md](./ConnectionHealth_Spec.md) for details on how connection scores are calculated.
 
 ### UI Integration
 

@@ -32,6 +32,13 @@ final class Contact {
     var nextTouchDate: Date?
     var lastContacted: Date?
     
+    // Connection Health properties
+    var connectionScore: Double = 50.0
+    var streakCount: Int = 0
+    var totalInteractionCount: Int = 0
+    var averageResponseDays: Double = 0.0
+    var lastScoreUpdate: Date?
+    
     var createdAt: Date
     var updatedAt: Date
     
@@ -61,7 +68,12 @@ final class Contact {
         scheduleInterval: Int? = nil,
         scheduleDays: [String]? = nil,
         nextTouchDate: Date? = nil,
-        lastContacted: Date? = nil
+        lastContacted: Date? = nil,
+        connectionScore: Double = 50.0,
+        streakCount: Int = 0,
+        totalInteractionCount: Int = 0,
+        averageResponseDays: Double = 0.0,
+        lastScoreUpdate: Date? = nil
     ) {
         self.id = UUID()
         self.name = name
@@ -84,6 +96,11 @@ final class Contact {
         self.scheduleDays = scheduleDays
         self.nextTouchDate = nextTouchDate
         self.lastContacted = lastContacted
+        self.connectionScore = connectionScore
+        self.streakCount = streakCount
+        self.totalInteractionCount = totalInteractionCount
+        self.averageResponseDays = averageResponseDays
+        self.lastScoreUpdate = lastScoreUpdate
         self.createdAt = Date()
         self.updatedAt = Date()
     }

@@ -5,6 +5,7 @@ struct LogInteractionSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Contact.name) private var contacts: [Contact]
+    @Query private var manualReminders: [ManualReminder]
     
     @State private var selectedContact: Contact?
     @State private var interactionDate = Date()
@@ -237,8 +238,25 @@ struct LogInteractionSheet: View {
         
         modelContext.insert(interaction)
         
-        // Reschedule contact using reminder system
-        ReminderScheduler.rescheduleAfterInteraction(contact, interactionDate: interactionDate)
+        // Find and fulfill any pending manual reminders for this contact
+        let pendingReminders = manualReminders.filter {
+            $0.contact.id == contact.id && $0.status == .pending
+        }
+        let fulfilledReminder = pendingReminders.first
+        fulfilledReminder?.markCompleted(interactionId: interaction.id)
+        
+        // Handle repeat interval: spawn next occurrence
+        if let fulfilled = fulfilledReminder, fulfilled.repeatInterval != .never {
+            _ = ConnectionHealthEngine.createNextOccurrence(from: fulfilled, context: modelContext)
+        }
+        
+        // Use ConnectionHealthEngine for unified scoring and rescheduling
+        ConnectionHealthEngine.recordInteraction(
+            contact: contact,
+            interaction: interaction,
+            manualReminder: fulfilledReminder,
+            currentDate: interactionDate
+        )
         
         dismiss()
     }

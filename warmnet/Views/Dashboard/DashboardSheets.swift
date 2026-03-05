@@ -482,12 +482,10 @@ struct AddReminderSheet: View {
             isUrgent: isUrgent,
             repeatInterval: repeatInterval,
             hasDate: hasDate,
-            hasTime: hasTime
+            hasTime: hasTime,
+            status: .pending,
+            source: isUrgent ? .urgent : .manual
         )
-        
-        if let combinedDate = manual.combinedDateTime {
-            contact.nextTouchDate = combinedDate
-        }
         
         modelContext.insert(manual)
         

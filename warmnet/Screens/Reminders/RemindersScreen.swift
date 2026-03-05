@@ -8,8 +8,12 @@ struct RemindersScreen: View {
     
     @State private var showAddReminderSheet = false
     
-    private var manualReminderContactIDs: Set<UUID> {
-        Set(manualReminders.map { $0.contact.id })
+    private var pendingManualReminders: [ManualReminder] {
+        manualReminders.filter { $0.status == .pending }
+    }
+    
+    private var pendingReminderContactIDs: Set<UUID> {
+        Set(pendingManualReminders.map { $0.contact.id })
     }
     
     private var automaticReminders: [Contact] {
@@ -23,14 +27,14 @@ struct RemindersScreen: View {
             .filter { contact in
                 let dueDate = calendar.startOfDay(for: contact.nextReminderDate)
                 let isInRange = dueDate <= weekFromNow
-                let hasManualReminder = manualReminderContactIDs.contains(contact.id)
-                return isInRange && !hasManualReminder
+                let hasPendingReminder = pendingReminderContactIDs.contains(contact.id)
+                return isInRange && !hasPendingReminder
             }
             .sorted { $0.nextReminderDate < $1.nextReminderDate }
     }
     
     private var hasAnyReminders: Bool {
-        !manualReminders.isEmpty || !automaticReminders.isEmpty
+        !pendingManualReminders.isEmpty || !automaticReminders.isEmpty
     }
     
     var body: some View {
@@ -81,11 +85,11 @@ struct RemindersScreen: View {
                 addReminderButton
                     .padding(.top, 8)
                 
-                if !manualReminders.isEmpty {
+                if !pendingManualReminders.isEmpty {
                     remindersSetSection
                 }
                 
-                if !manualReminders.isEmpty && !automaticReminders.isEmpty {
+                if !pendingManualReminders.isEmpty && !automaticReminders.isEmpty {
                     Divider()
                 }
                 
@@ -111,7 +115,7 @@ struct RemindersScreen: View {
             }
             
             LazyVStack(spacing: 12) {
-                ForEach(manualReminders) { reminder in
+                ForEach(pendingManualReminders) { reminder in
                     NavigationLink(destination: ContactDetailScreen(contact: reminder.contact)) {
                         ReminderContactRow(contact: reminder.contact)
                     }

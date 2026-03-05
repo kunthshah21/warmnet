@@ -77,6 +77,21 @@ struct warmnetApp: App {
             
             // Cleanup old notification history
             NotificationHistory.cleanupOldRecords(context: context)
+            
+            // Apply connection health decay on app launch
+            applyConnectionHealthDecay(context: context)
+            
+            // Run migration for connection health if needed
+            MigrationHelper.migrateConnectionHealth(modelContext: context)
+        }
+    }
+    
+    /// Apply passive decay to all contacts' connection scores
+    private func applyConnectionHealthDecay(context: ModelContext) {
+        let descriptor = FetchDescriptor<Contact>()
+        if let contacts = try? context.fetch(descriptor) {
+            ConnectionHealthEngine.applyDecay(to: contacts)
+            try? context.save()
         }
     }
     
