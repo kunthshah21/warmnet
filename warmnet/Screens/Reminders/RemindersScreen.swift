@@ -166,7 +166,8 @@ struct RemindersScreen: View {
     let manualReminder = ManualReminder(
         contact: sampleContacts[0],
         reminderDate: today,
-        note: "Catch up about the project"
+        note: "Catch up about the project",
+        hasDate: true
     )
     container.mainContext.insert(manualReminder)
     
