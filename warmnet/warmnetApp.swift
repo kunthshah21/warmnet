@@ -16,6 +16,7 @@ struct warmnetApp: App {
             Interaction.self,
             UserSettings.self,
             NotificationHistory.self,
+            ManualReminder.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

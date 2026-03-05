@@ -4,13 +4,33 @@ import SwiftData
 struct RemindersScreen: View {
     @Environment(\.colorScheme) private var colorScheme
     @Query private var contacts: [Contact]
+    @Query(sort: \ManualReminder.reminderDate) private var manualReminders: [ManualReminder]
     
     @State private var showAddReminderSheet = false
     
-    private var scheduledReminders: [Contact] {
-        contacts
-            .filter { $0.nextTouchDate != nil }
+    private var manualReminderContactIDs: Set<UUID> {
+        Set(manualReminders.map { $0.contact.id })
+    }
+    
+    private var automaticReminders: [Contact] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        guard let weekFromNow = calendar.date(byAdding: .day, value: 7, to: today) else {
+            return []
+        }
+        
+        return contacts
+            .filter { contact in
+                let dueDate = calendar.startOfDay(for: contact.nextReminderDate)
+                let isInRange = dueDate <= weekFromNow
+                let hasManualReminder = manualReminderContactIDs.contains(contact.id)
+                return isInRange && !hasManualReminder
+            }
             .sorted { $0.nextReminderDate < $1.nextReminderDate }
+    }
+    
+    private var hasAnyReminders: Bool {
+        !manualReminders.isEmpty || !automaticReminders.isEmpty
     }
     
     var body: some View {
@@ -21,12 +41,12 @@ struct RemindersScreen: View {
                     .padding(.top)
                     .padding(.bottom, 8)
                 
-                if scheduledReminders.isEmpty {
+                if hasAnyReminders {
+                    remindersList
+                } else {
                     ReminderEmptyStateView(onAddReminder: {
                         showAddReminderSheet = true
                     })
-                } else {
-                    remindersList
                 }
             }
             .toolbar(.hidden, for: .navigationBar)
@@ -57,23 +77,56 @@ struct RemindersScreen: View {
     
     private var remindersList: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: 24) {
                 addReminderButton
                     .padding(.top, 8)
                 
-                LazyVStack(spacing: 12) {
-                    ForEach(scheduledReminders) { contact in
-                        NavigationLink(destination: ContactDetailScreen(contact: contact)) {
-                            ReminderContactRow(contact: contact)
-                        }
-                        .buttonStyle(.plain)
-                    }
+                if !manualReminders.isEmpty {
+                    remindersSetSection
+                }
+                
+                if !automaticReminders.isEmpty {
+                    automaticRemindersSection
                 }
             }
             .padding(.horizontal)
             .padding(.bottom, 24)
         }
         .scrollContentBackground(.visible)
+    }
+    
+    private var remindersSetSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Reminders Set")
+                .font(.custom(AppFontName.workSansMedium, size: 20))
+                .foregroundStyle(.primary)
+            
+            LazyVStack(spacing: 12) {
+                ForEach(manualReminders) { reminder in
+                    NavigationLink(destination: ContactDetailScreen(contact: reminder.contact)) {
+                        ReminderContactRow(contact: reminder.contact)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+    
+    private var automaticRemindersSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Automatic Reminders")
+                .font(.custom(AppFontName.workSansMedium, size: 20))
+                .foregroundStyle(.primary)
+            
+            LazyVStack(spacing: 12) {
+                ForEach(automaticReminders) { contact in
+                    NavigationLink(destination: ContactDetailScreen(contact: contact)) {
+                        ReminderContactRow(contact: contact)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
     }
     
     private var addReminderButton: some View {
@@ -94,7 +147,7 @@ struct RemindersScreen: View {
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Contact.self, configurations: config)
+    let container = try! ModelContainer(for: Contact.self, ManualReminder.self, configurations: config)
     
     let today = Date()
     let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
@@ -109,6 +162,13 @@ struct RemindersScreen: View {
     for contact in sampleContacts {
         container.mainContext.insert(contact)
     }
+    
+    let manualReminder = ManualReminder(
+        contact: sampleContacts[0],
+        reminderDate: today,
+        note: "Catch up about the project"
+    )
+    container.mainContext.insert(manualReminder)
     
     return RemindersScreen()
         .modelContainer(container)

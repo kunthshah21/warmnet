@@ -164,9 +164,9 @@ struct AddReminderSheet: View {
     
     private func saveReminder() {
         guard let contact = selectedContact else { return }
-        // Update the contact's next reminder date
         contact.nextTouchDate = reminderDate
-        // In a full implementation, you might also save the note to a separate Reminder entity
+        let manual = ManualReminder(contact: contact, reminderDate: reminderDate, note: reminderNote)
+        modelContext.insert(manual)
     }
 }
 
