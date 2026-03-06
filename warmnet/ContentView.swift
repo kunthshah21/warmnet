@@ -10,12 +10,12 @@ struct ContentView: View {
                 HomeScreen()
             }
 
-            Tab("Contacts", systemImage: "person.2.fill", value: 1) {
-                ContactsScreen()
+            Tab("Reminders", systemImage: "bell.fill", value: 1) {
+                RemindersScreen()
             }
 
-            Tab("Reminders", systemImage: "bell.fill", value: 2) {
-                RemindersScreen()
+            Tab("Contacts", systemImage: "person.2.fill", value: 2) {
+                ContactsScreen()
             }
 
             Tab("Insights", systemImage: "chart.bar.fill", value: 3) {
