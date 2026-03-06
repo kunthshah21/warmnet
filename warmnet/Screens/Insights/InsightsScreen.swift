@@ -120,7 +120,11 @@ struct InsightsScreen: View {
                         // Full Calendar Access
                         CalendarAccessCard()
                             .padding(.horizontal)
-                        
+
+                        // Top Contacted People
+                        TopContactedCard()
+                            .padding(.horizontal)
+
                         // Engagement Stats
                         VStack(spacing: 12) {
                             Text("Engagement Statistics")
